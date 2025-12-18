@@ -279,8 +279,56 @@ Ajude a identificar:
 
 ---
 
+## Testes para Sistemas com IA
+
+> [!NOTE]
+> Sistemas que usam LLMs requerem estratégias de teste específicas.
+
+### Validação de Outputs de LLMs
+
+**Desafio**: Respostas de IA são não-determinísticas e difíceis de assertar.
+
+**Estratégias**:
+- **Testes de formato**: Validar que a resposta tem a estrutura esperada (JSON, campos obrigatórios)
+- **Testes de sanidade**: Verificar que a resposta não contém conteúdo proibido
+- **Testes de similaridade**: Comparar respostas com golden datasets usando embeddings
+
+### Prompt para Gerar Testes de IA
+
+```text
+Esta função usa um LLM para [DESCREVA]:
+[COLE CÓDIGO]
+
+Gere testes que validem:
+- Formato da resposta (schema, campos)
+- Ausência de conteúdo proibido
+- Comportamento com inputs edge case
+- Timeout e fallbacks
+```
+
+### Métricas de Qualidade para IA
+
+| Métrica | O que mede | Alvo |
+|---|---|---|
+| **Latência** | Tempo de resposta do LLM | < 3s (p95) |
+| **Taxa de sucesso** | Respostas válidas / total | > 95% |
+| **Coerência** | Respostas fazem sentido | Avaliação manual amostrada |
+| **Custo** | Tokens consumidos por request | Monitorar tendência |
+
+### Checklist para Testes de IA
+
+- [ ] Testes de formato/schema implementados
+- [ ] Testes de timeout e fallback
+- [ ] Monitoramento de latência em produção
+- [ ] Golden dataset para regressão
+- [ ] Avaliação manual periódica de amostras
+
+---
+
 ## Boas práticas com IA em Testes
 
 - Use IA para acelerar análise e geração de testes, mas execute e valide sempre na sua pipeline.
 - Evite confiar cegamente em asserts gerados; revise a lógica.
 - Registre prompts úteis como parte da documentação de QA.
+- Para sistemas com IA, combine testes automatizados com avaliação humana.
+

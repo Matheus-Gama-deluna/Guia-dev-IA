@@ -283,8 +283,50 @@ Ajude a estruturar um plano de resposta com:
 
 ---
 
+## Riscos de Segurança com IA Generativa
+
+> [!WARNING]
+> O uso de LLMs em desenvolvimento introduz novos vetores de ataque.
+
+### Prompt Injection
+**Risco**: Usuários maliciosos podem manipular inputs para fazer a IA executar ações não autorizadas.
+
+**Mitigação**:
+- Nunca passe input de usuário diretamente para prompts de sistema
+- Valide e sanitize inputs antes de enviar à IA
+- Use limites de contexto e instruções de segurança
+
+### Data Leakage em Prompts
+**Risco**: Dados sensíveis enviados para APIs de IA podem ser expostos ou usados para treinamento.
+
+**Mitigação**:
+- Nunca envie PII, secrets ou dados de produção para IA
+- Use versões self-hosted ou com data processing agreements
+- Mascare dados sensíveis antes de colar em prompts
+
+### Alucinações e Código Inseguro
+**Risco**: IA pode gerar código com vulnerabilidades ou sugerir práticas inseguras.
+
+**Mitigação**:
+- Sempre revise código gerado por IA
+- Execute análise estática (SAST) em código gerado
+- Não confie em afirmações de segurança da IA sem verificar
+
+### Checklist de Segurança para Uso de LLMs
+
+- [ ] Nenhum secret/senha em prompts
+- [ ] Inputs de usuário sanitizados antes de IA
+- [ ] Código gerado revisado por humano
+- [ ] SAST executado em código gerado
+- [ ] Dados de produção não expostos em prompts
+- [ ] Logs de prompts não contêm dados sensíveis
+
+---
+
 ## Boas práticas com IA em Segurança
 
 - Nunca cole segredos reais (tokens, senhas, chaves) em prompts.
 - Use IA para **planejar e revisar**, não para executar comandos destrutivos sem supervisão.
 - Combine recomendações da IA com guias oficiais (OWASP, NIST).
+- Trate outputs de IA como código não-confiável que precisa de revisão.
+
