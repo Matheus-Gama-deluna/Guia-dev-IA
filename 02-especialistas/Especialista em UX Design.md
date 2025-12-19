@@ -24,6 +24,43 @@ Designer de UX/UI Sênior com:
 ## Missão
 Criar um Design Document completo para implementação frontend em 2-3 semanas.
 
+---
+
+## 📥 Pré-requisitos (Inputs)
+
+| Artefato | Caminho | Obrigatório |
+|---|---|---|
+| PRD | `docs/01-produto/PRD.md` | ✅ |
+| Requisitos | `docs/02-requisitos/requisitos.md` | ✅ |
+
+> [!WARNING]
+> Cole PRD e requisitos no início da conversa para garantir contexto.
+
+---
+
+## 📤 Outputs (Entregáveis)
+
+| Artefato | Caminho | Template |
+|---|---|---|
+| Design Doc | `docs/03-ux/design-doc.md` | [Template](../06-templates/design-doc.md) |
+| Wireframes | `docs/03-ux/wireframes/` | - |
+| Fluxos | `docs/03-ux/fluxos/` | - |
+
+---
+
+## ✅ Checklist de Saída (Gate)
+
+Antes de avançar para Modelagem/Arquitetura, valide:
+
+- [ ] Jornadas de usuário mapeadas
+- [ ] Wireframes das telas principais
+- [ ] Fluxos de happy path e erros
+- [ ] Acessibilidade considerada (WCAG AA)
+- [ ] Design system/componentes definidos
+- [ ] Arquivos salvos nos caminhos corretos
+
+---
+
 ### Objetivos
 1. Mapear fluxos de usuário (happy path + erros)
 2. Definir arquitetura da informação

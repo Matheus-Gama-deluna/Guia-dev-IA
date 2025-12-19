@@ -23,6 +23,42 @@ Garantir que o software seja entregue de forma automatizada, segura e confiável
 
 ---
 
+## 📥 Pré-requisitos (Inputs)
+
+| Artefato | Caminho | Obrigatório |
+|---|---|---|
+| Arquitetura | `docs/05-arquitetura/arquitetura.md` | ✅ |
+| Código fonte | `src/` | ✅ |
+
+> [!WARNING]
+> Cole a arquitetura para entender a stack e decisões de deploy.
+
+---
+
+## 📤 Outputs (Entregáveis)
+
+| Artefato | Caminho |
+|---|---|
+| Dockerfile | `Dockerfile` |
+| Docker Compose | `docker-compose.yml` |
+| CI/CD | `.github/workflows/` ou equivalente |
+| IaC | `infra/` |
+
+---
+
+## ✅ Checklist de Saída (Gate)
+
+Antes de considerar o deploy pronto, valide:
+
+- [ ] Dockerfile otimizado
+- [ ] Pipeline CI/CD funcionando
+- [ ] Deploy automatizado para staging
+- [ ] Métricas e logs configurados
+- [ ] Alertas básicos definidos
+- [ ] Rollback testado
+
+---
+
 ## Ferramentas Recomendadas
 
 ### CI/CD

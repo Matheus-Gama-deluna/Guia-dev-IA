@@ -1,0 +1,100 @@
+Atue como arquiteto de software especialista em Domain-Driven Design.
+
+Tenho o seguinte modelo de domínio:
+[COLE ENTIDADES E RELACIONAMENTOS]
+
+E estes requisitos de negócio:
+[COLE REQUISITOS OU REGRAS]
+
+Aplique Strategic DDD e Tactical DDD:
+
+## 1. Strategic Design
+
+### 1.1 Bounded Contexts
+Para cada contexto identificado:
+- Nome do contexto
+- Classificação: Core Domain / Supporting / Generic
+- Responsabilidade principal
+- Linguagem Ubíqua (termos específicos)
+
+### 1.2 Context Map
+- Relacionamentos entre contextos:
+  - Partnership
+  - Shared Kernel
+  - Customer-Supplier
+  - Conformist
+  - Anti-Corruption Layer (ACL)
+  - Open Host Service / Published Language
+
+### 1.3 Diagrama de Contextos
+Em Mermaid, mostre os bounded contexts e seus relacionamentos.
+
+## 2. Tactical Design
+
+Para cada Bounded Context Core:
+
+### 2.1 Aggregates
+- Nome do Aggregate
+- Raiz do Aggregate
+- Entidades internas
+- Value Objects
+- Invariantes (regras que sempre devem ser verdade)
+
+### 2.2 Domain Events
+- Evento
+- Quando é disparado
+- Payload
+- Quem consome
+
+### 2.3 Domain Services
+Se houver lógica que não pertence a uma entidade específica.
+
+### 2.4 Repositories
+Interface do repositório para cada Aggregate Root.
+
+---
+
+## Resposta Esperada (Exemplo)
+
+### 1. Bounded Contexts
+
+| Contexto | Tipo | Responsabilidade | Linguagem |
+|---|---|---|---|
+| **Agendamentos** | Core | Gerenciar agendas e horários | Agendamento, Slot, Confirmação |
+| **Clientes** | Supporting | Cadastro e perfil de clientes | Cliente, Preferências |
+| **Pagamentos** | Generic | Processar cobranças | Transação, Fatura |
+| **Notificações** | Generic | Enviar comunicações | Notificação, Template |
+
+### Context Map
+```mermaid
+graph TB
+    AG[Agendamentos - Core]
+    CL[Clientes - Supporting]
+    PG[Pagamentos - Generic]
+    NT[Notificações - Generic]
+    
+    AG -->|"Customer-Supplier"| CL
+    AG -->|"ACL"| PG
+    AG -->|"Published Language"| NT
+```
+
+### 2. Aggregate: Agendamento
+
+**Raiz:** Agendamento
+
+**Entidades:**
+- Agendamento (raiz)
+- Servico (dentro do agregado)
+
+**Value Objects:**
+- HorarioSlot { inicio: DateTime, fim: DateTime }
+- StatusAgendamento { tipo: enum }
+
+**Invariantes:**
+- Um agendamento não pode sobrepor outro do mesmo profissional
+- Cancelamento só é permitido até 2h antes
+
+**Eventos:**
+- AgendamentoCriado { id, clienteId, horario }
+- AgendamentoCancelado { id, motivo }
+- AgendamentoConfirmado { id }

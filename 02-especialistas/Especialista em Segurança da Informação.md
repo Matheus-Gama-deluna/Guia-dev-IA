@@ -20,6 +20,41 @@ Garantir a segurança do software em todas as fases do ciclo de vida, com foco e
 - Conformidade regulatória
 - Resposta rápida a incidentes
 
+---
+
+## 📥 Pré-requisitos (Inputs)
+
+| Artefato | Caminho | Obrigatório |
+|---|---|---|
+| Arquitetura | `docs/05-arquitetura/arquitetura.md` | ✅ |
+| Requisitos | `docs/02-requisitos/requisitos.md` | ⚠️ Recomendado |
+
+> [!WARNING]
+> Cole a arquitetura no início da conversa para garantir contexto.
+
+---
+
+## 📤 Outputs (Entregáveis)
+
+| Artefato | Caminho | Template |
+|---|---|---|
+| Checklist de Segurança | `docs/06-seguranca/checklist-seguranca.md` | [Template](../06-templates/checklist-seguranca.md) |
+
+---
+
+## ✅ Checklist de Saída (Gate)
+
+Antes de avançar para Testes/Implementação, valide:
+
+- [ ] OWASP Top 10 revisado
+- [ ] Estratégia de autenticação definida
+- [ ] Autorização (RBAC/ABAC) planejada
+- [ ] Dados sensíveis mapeados
+- [ ] Compliance identificado (LGPD, etc.)
+- [ ] Arquivo salvo no caminho correto
+
+---
+
 ### Pilares da Segurança
 1. **Confidencialidade**: Acesso apenas a autorizados
 2. **Integridade**: Dados precisos e completos

@@ -2,6 +2,10 @@
 
 Documento detalhado para criação do MCP Server que automatiza o uso do Guia-dev-IA.
 
+**Versão:** 2.0  
+**Atualizado:** 2024-12-19  
+**Status:** Especificação completa
+
 ---
 
 ## 1. Visão Geral
@@ -15,54 +19,71 @@ Documento detalhado para criação do MCP Server que automatiza o uso do Guia-de
 Criar um servidor MCP que:
 1. **Guia o desenvolvedor** pelo fluxo correto de desenvolvimento
 2. **Injeta contexto** dos especialistas automaticamente
-3. **Persiste entregáveis** em estrutura organizada
+3. **Persiste entregáveis** em estrutura organizada usando templates
 4. **Mantém estado** do projeto entre sessões
+5. **Valida gates** entre fases garantindo qualidade
+6. **Classifica complexidade** e adapta fluxo automaticamente
+
+### Novidades na v2.0
+
+- ✅ **Sistema de Gates**: Validação entre fases
+- ✅ **Templates integrados**: 13 templates de artefatos
+- ✅ **Especialistas avançados**: DDD, Performance, Observabilidade
+- ✅ **Classificador de complexidade**: Fluxos adaptativos
+- ✅ **Prompts avançados**: Arquitetura C4, DDD, escalabilidade
 
 ---
 
 ## 2. Arquitetura
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     CLIENTE (IDE/Claude)                    │
-├─────────────────────────────────────────────────────────────┤
-│                              │                              │
-│                              ▼                              │
-│  ┌───────────────────────────────────────────────────────┐ │
-│  │                    MCP SERVER                         │ │
-│  ├───────────────────────────────────────────────────────┤ │
-│  │                                                       │ │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐   │ │
-│  │  │  RESOURCES  │  │    TOOLS    │  │   PROMPTS   │   │ │
-│  │  │             │  │             │  │             │   │ │
-│  │  │ • guia://   │  │ • iniciar   │  │ • discovery │   │ │
-│  │  │   especial- │  │ • proximo   │  │ • requisitos│   │ │
-│  │  │   ista/{n}  │  │ • salvar    │  │ • arquitet. │   │ │
-│  │  │ • guia://   │  │ • status    │  │             │   │ │
-│  │  │   contexto  │  │ • contexto  │  │             │   │ │
-│  │  └─────────────┘  └─────────────┘  └─────────────┘   │ │
-│  │                         │                             │ │
-│  │                         ▼                             │ │
-│  │  ┌───────────────────────────────────────────────────┐│ │
-│  │  │              STATE MANAGER                        ││ │
-│  │  │  • Fase atual do projeto                          ││ │
-│  │  │  • Entregáveis gerados                            ││ │
-│  │  │  • Contexto acumulado                             ││ │
-│  │  └───────────────────────────────────────────────────┘│ │
-│  │                         │                             │ │
-│  │                         ▼                             │ │
-│  │  ┌───────────────────────────────────────────────────┐│ │
-│  │  │              FILE SYSTEM                          ││ │
-│  │  │  • Guia-dev-IA (especialistas, guias)             ││ │
-│  │  │  • Projeto do usuário (docs/, src/)               ││ │
-│  │  └───────────────────────────────────────────────────┘│ │
-│  └───────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                     CLIENTE (IDE/Claude)                        │
+├─────────────────────────────────────────────────────────────────┤
+│                              │                                  │
+│                              ▼                                  │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │                    MCP SERVER v2.0                        │  │
+│  ├───────────────────────────────────────────────────────────┤  │
+│  │                                                           │  │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐       │  │
+│  │  │  RESOURCES  │  │    TOOLS    │  │   PROMPTS   │       │  │
+│  │  │             │  │             │  │             │       │  │
+│  │  │ • especial- │  │ • iniciar   │  │ • discovery │       │  │
+│  │  │   istas     │  │ • proximo   │  │ • c4-completo│      │  │
+│  │  │ • templates │  │ • validar_  │  │ • ddd       │       │  │
+│  │  │ • prompts   │  │   gate      │  │ • escalab.  │       │  │
+│  │  │ • contexto  │  │ • salvar    │  │ • observ.   │       │  │
+│  │  └─────────────┘  │ • classif.  │  └─────────────┘       │  │
+│  │                   └─────────────┘                         │  │
+│  │                         │                                 │  │
+│  │  ┌──────────────────────┴────────────────────────────┐   │  │
+│  │  │              GATE VALIDATOR                        │   │  │
+│  │  │  • Valida checklist de saída por fase              │   │  │
+│  │  │  • Bloqueia avanço se artefato incompleto          │   │  │
+│  │  │  • Sugere correções automáticas                    │   │  │
+│  │  └───────────────────────────────────────────────────┘   │  │
+│  │                         │                                 │  │
+│  │  ┌──────────────────────┴────────────────────────────┐   │  │
+│  │  │              STATE MANAGER                         │   │  │
+│  │  │  • Fase atual do projeto                           │   │  │
+│  │  │  • Entregáveis gerados + validação                 │   │  │
+│  │  │  • Contexto acumulado                              │   │  │
+│  │  │  • Nível de complexidade                           │   │  │
+│  │  └───────────────────────────────────────────────────┘   │  │
+│  │                         │                                 │  │
+│  │  ┌──────────────────────┴────────────────────────────┐   │  │
+│  │  │              FILE SYSTEM                           │   │  │
+│  │  │  • Guia-dev-IA (especialistas, guias, templates)   │   │  │
+│  │  │  • Projeto do usuário (docs/, src/)                │   │  │
+│  │  └───────────────────────────────────────────────────┘   │  │
+│  └───────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 3. Estrutura do Projeto
+## 3. Estrutura do Projeto MCP
 
 ```
 mcp-guia-dev-ia/
@@ -72,21 +93,34 @@ mcp-guia-dev-ia/
 │   │
 │   ├── resources/               # Handlers de Resources
 │   │   ├── index.ts
-│   │   ├── especialistas.ts     # Lê especialistas do guia
+│   │   ├── especialistas.ts     # Lê especialistas (15 arquivos)
 │   │   ├── guias.ts             # Lê guias do guia
-│   │   ├── prompts.ts           # Lê templates de prompts
+│   │   ├── templates.ts         # Lê templates de artefatos (13 arquivos)
+│   │   ├── prompts.ts           # Lê templates de prompts avançados
 │   │   └── contexto.ts          # Lê contexto do projeto
 │   │
 │   ├── tools/                   # Handlers de Tools
 │   │   ├── index.ts
 │   │   ├── iniciar-projeto.ts   # Inicia novo projeto
+│   │   ├── classificar.ts       # Classifica complexidade do projeto
 │   │   ├── nova-feature.ts      # Inicia fluxo de feature
 │   │   ├── corrigir-bug.ts      # Inicia fluxo de debug
 │   │   ├── refatorar.ts         # Inicia fluxo de refatoração
 │   │   ├── proximo.ts           # Avança para próxima fase
+│   │   ├── validar-gate.ts      # Valida checklist de saída
 │   │   ├── status.ts            # Retorna status atual
-│   │   ├── salvar.ts            # Salva entregável
-│   │   └── contexto.ts          # Retorna contexto completo
+│   │   ├── salvar.ts            # Salva entregável usando template
+│   │   ├── contexto.ts          # Retorna contexto completo
+│   │   │
+│   │   ├── analise/             # Tools de Análise
+│   │   │   ├── seguranca.ts     # Análise de vulnerabilidades
+│   │   │   ├── performance.ts   # Análise de performance
+│   │   │   ├── qualidade.ts     # Análise de qualidade de código
+│   │   │   ├── acessibilidade.ts # Análise WCAG
+│   │   │   ├── dependencias.ts  # Análise de deps (CVEs, updates)
+│   │   │   ├── melhorias.ts     # Sugestões de melhorias
+│   │   │   └── relatorio.ts     # Gerador de relatórios
+│   │   │
 │   │
 │   ├── prompts/                 # Prompts dinâmicos
 │   │   ├── index.ts
@@ -94,30 +128,50 @@ mcp-guia-dev-ia/
 │   │
 │   ├── flows/                   # Definição dos fluxos
 │   │   ├── index.ts
-│   │   ├── novo-projeto.ts      # 10 fases
+│   │   ├── types.ts             # Tipos TypeScript
+│   │   ├── simples.ts           # 5 fases (nível 1)
+│   │   ├── medio.ts             # 10 fases (nível 2)
+│   │   ├── complexo.ts          # 14 fases (nível 3)
 │   │   ├── nova-feature.ts      # 6 fases
 │   │   ├── corrigir-bug.ts      # 5 fases
 │   │   └── refatorar.ts         # 6 fases
+│   │
+│   ├── gates/                   # Validadores de Gate
+│   │   ├── index.ts
+│   │   ├── validator.ts         # Motor de validação
+│   │   └── checklists.ts        # Checklists por fase
+│   │
+│   ├── analyzers/               # Motores de Análise
+│   │   ├── index.ts
+│   │   ├── security-analyzer.ts # Detector de vulnerabilidades
+│   │   ├── performance-analyzer.ts # Detector de gargalos
+│   │   ├── quality-analyzer.ts  # Métricas de qualidade
+│   │   ├── a11y-analyzer.ts     # Conformidade WCAG
+│   │   ├── deps-analyzer.ts     # Análise de dependências
+│   │   └── rules/               # Regras de análise
+│   │       ├── owasp.ts         # Regras OWASP Top 10
+│   │       ├── performance.ts   # Regras de performance
+│   │       └── quality.ts       # Regras de qualidade
 │   │
 │   ├── state/                   # Gerenciamento de estado
 │   │   ├── index.ts
 │   │   ├── projeto.ts           # Estado do projeto
 │   │   └── storage.ts           # Persistência em JSON
 │   │
-│   ├── templates/               # Templates de documentos
-│   │   ├── prd.md
-│   │   ├── requisitos.md
-│   │   ├── arquitetura.md
-│   │   └── contexto.md
+│   ├── complexity/              # Classificador de complexidade
+│   │   ├── index.ts
+│   │   └── classifier.ts        # Algoritmo de classificação
 │   │
 │   └── utils/                   # Utilitários
 │       ├── files.ts             # Manipulação de arquivos
-│       └── markdown.ts          # Parser de markdown
+│       ├── markdown.ts          # Parser de markdown
+│       └── code-parser.ts       # Parser de código para análise
 │
 ├── guia/                        # Symlink para Guia-dev-IA
 │
 ├── tests/                       # Testes
 │   ├── tools.test.ts
+│   ├── gates.test.ts
 │   └── flows.test.ts
 │
 ├── package.json
@@ -131,29 +185,68 @@ mcp-guia-dev-ia/
 
 ### 4.1 guia://especialista/{nome}
 
-Retorna conteúdo de um especialista.
+Retorna conteúdo de um especialista (15 disponíveis).
 
 ```typescript
-// URI: guia://especialista/gestao-de-produto
-// Retorna: Conteúdo do arquivo Especialista em Gestão de Produto.md
+// Especialistas Base (12)
+"guia://especialista/gestao-de-produto"
+"guia://especialista/engenharia-de-requisitos"
+"guia://especialista/ux-design"
+"guia://especialista/modelagem-de-dominio"
+"guia://especialista/arquitetura-de-software"
+"guia://especialista/seguranca"
+"guia://especialista/analise-de-testes"
+"guia://especialista/plano-de-execucao"
+"guia://especialista/desenvolvimento"
+"guia://especialista/devops"
+"guia://especialista/dados-e-analytics"
+"guia://especialista/acessibilidade"
+
+// Especialistas Avançados (3) - Para projetos complexos
+"guia://especialista/arquitetura-avancada"      // DDD, CQRS, Microserviços
+"guia://especialista/performance"               // Load test, caching
+"guia://especialista/observabilidade"           // Logs, métricas, tracing
 ```
 
-### 4.2 guia://guia/{nome}
+### 4.2 guia://template/{nome}
 
-Retorna conteúdo de um guia.
+Retorna template de artefato (13 disponíveis).
 
 ```typescript
-// URI: guia://guia/debugging
-// Retorna: Conteúdo do arquivo Guia de Debugging com IA.md
+"guia://template/PRD"                    // Product Requirements Document
+"guia://template/requisitos"             // Requisitos funcionais/não-funcionais
+"guia://template/criterios-aceite"       // Cenários Gherkin
+"guia://template/design-doc"             // Documento de design UX
+"guia://template/modelo-dominio"         // Entidades e relacionamentos (DDD)
+"guia://template/arquitetura"            // Arquitetura C4
+"guia://template/adr"                    // Architecture Decision Record
+"guia://template/checklist-seguranca"    // OWASP, autenticação
+"guia://template/plano-testes"           // Estratégia de testes
+"guia://template/backlog"                // Épicos e histórias
+"guia://template/historia-usuario"       // User story individual
+"guia://template/matriz-rastreabilidade" // RF → US → TC
 ```
 
 ### 4.3 guia://prompt/{area}/{nome}
 
-Retorna template de prompt.
+Retorna template de prompt avançado.
 
 ```typescript
-// URI: guia://prompt/produto/discovery
-// Retorna: Conteúdo de 05-prompts/produto/discovery-inicial.txt
+// Arquitetura
+"guia://prompt/arquitetura/c4-completo"
+"guia://prompt/arquitetura/ddd-bounded-contexts"
+"guia://prompt/arquitetura/modelo-dominio"
+
+// Escalabilidade
+"guia://prompt/escalabilidade/analise-performance"
+
+// Observabilidade
+"guia://prompt/observabilidade/estrategia"
+
+// Por fase
+"guia://prompt/produto/discovery-inicial"
+"guia://prompt/requisitos/refinamento"
+"guia://prompt/testes/plano-completo"
 ```
 
 ### 4.4 guia://projeto/contexto
@@ -161,39 +254,93 @@ Retorna template de prompt.
 Retorna contexto atual do projeto.
 
 ```typescript
-// URI: guia://projeto/contexto
-// Retorna: Conteúdo de .guia/contexto.md do projeto atual
+interface ContextoOutput {
+  resumo: string;
+  stack: string;
+  modelo: string;
+  arquitetura: string;
+  fase_atual: string;
+  nivel_complexidade: "simples" | "medio" | "complexo";
+  gates_validados: number;
+  gates_pendentes: string[];
+}
 ```
 
 ### 4.5 guia://projeto/estado
 
-Retorna estado do fluxo.
+Retorna estado completo do fluxo.
 
 ```typescript
-// URI: guia://projeto/estado
-// Retorna: JSON com fase atual, entregáveis, etc.
+interface EstadoOutput {
+  projeto: ProjetoInfo;
+  fluxo: FluxoInfo;
+  fases: FaseInfo[];
+  entregaveis: EntregavelInfo[];
+  gates: GateInfo[];
+}
+```
+
+### 4.6 guia://guia/{nome}
+
+Retorna conteúdo de um guia prático.
+
+```typescript
+"guia://guia/adicao-funcionalidades"
+"guia://guia/debugging"
+"guia://guia/refatoracao-legado"
+"guia://guia/checklist-mestre"
+"guia://guia/metricas-eficiencia"
 ```
 
 ---
 
 ## 5. Especificação das Tools
 
-### 5.1 iniciar_projeto
+### 5.1 classificar_projeto
 
-Inicia um novo projeto com fluxo de 10 fases.
+Classifica a complexidade do projeto e seleciona fluxo apropriado.
+
+```typescript
+interface ClassificarProjetoInput {
+  tempo_estimado: "menos_2_semanas" | "1_3_meses" | "mais_3_meses";
+  numero_entidades: number;
+  usuarios_simultaneos: number;
+  integracoes_externas: number;
+  requisitos_seguranca: "basico" | "autenticacao" | "compliance";
+  tamanho_equipe: number;
+  disponibilidade: "best_effort" | "99_percent" | "99_9_percent";
+  complexidade_dominio: "simples" | "medio" | "complexo";
+}
+
+interface ClassificarProjetoOutput {
+  nivel: "simples" | "medio" | "complexo";
+  pontuacao: number;
+  fluxo_fases: number;          // 5, 10, ou 14
+  especialistas_extras: string[];
+  recomendacoes: string[];
+}
+```
+
+### 5.2 iniciar_projeto
+
+Inicia um novo projeto com fluxo apropriado ao nível de complexidade.
 
 ```typescript
 interface IniciarProjetoInput {
-  nome: string;           // Nome do projeto
-  descricao: string;      // Descrição da ideia
-  diretorio?: string;     // Diretório do projeto (default: cwd)
+  nome: string;
+  descricao: string;
+  nivel?: "simples" | "medio" | "complexo"; // Auto-detectado se não informado
+  diretorio?: string;
 }
 
 interface IniciarProjetoOutput {
   projeto_id: string;
+  nivel_complexidade: string;
   fase_atual: number;
   total_fases: number;
-  especialista: string;   // Conteúdo do especialista da fase 1
+  especialista: string;
+  template: string;             // Template do artefato esperado
+  gate_checklist: string[];     // Itens do gate de saída
   prompt_sugerido: string;
   entregavel_esperado: string;
 }
@@ -201,106 +348,115 @@ interface IniciarProjetoOutput {
 
 **Ações:**
 1. Cria estrutura `.guia/` e `docs/` no diretório
-2. Inicializa `estado.json` com fase 1
-3. Retorna contexto do Especialista em Gestão de Produto
+2. Classifica complexidade se não informada
+3. Seleciona fluxo apropriado (5, 10 ou 14 fases)
+4. Inicializa `estado.json` com fase 1
+5. Retorna contexto do especialista + template + gate
 
-### 5.2 nova_feature
+### 5.3 validar_gate
 
-Inicia fluxo de nova funcionalidade em projeto existente.
+Valida se o gate de saída da fase atual está completo.
 
 ```typescript
-interface NovaFeatureInput {
-  descricao: string;      // Descrição da feature
+interface ValidarGateInput {
+  fase: number;
+  entregavel_path?: string;
 }
 
-interface NovaFeatureOutput {
-  contexto_projeto: string;  // Resumo do projeto existente
-  analise_impacto: string;   // Entidades/endpoints afetados
-  fase_atual: number;
-  especialista: string;
+interface ValidarGateOutput {
+  valido: boolean;
+  itens_validados: string[];
+  itens_pendentes: string[];
+  sugestoes: string[];
+  pode_avancar: boolean;
 }
 ```
 
-**Ações:**
-1. Lê `.guia/contexto.md` para entender o projeto
-2. Lê `docs/04-modelo/modelo-dominio.md` para entidades
-3. Analisa impacto da feature
-4. Inicia fluxo de 6 fases
+**Validações por fase:**
 
-### 5.3 corrigir_bug
-
-Inicia fluxo de debugging.
-
-```typescript
-interface CorrigirBugInput {
-  descricao: string;      // Descrição do bug
-  stack_trace?: string;   // Stack trace se disponível
-  arquivo?: string;       // Arquivo com problema
-}
-
-interface CorrigirBugOutput {
-  contexto_projeto: string;
-  especialista: string;   // Guia de Debugging
-  prompt_analise: string;
-}
-```
+| Fase | Gate Checklist |
+|---|---|
+| 1. Produto | Problema definido, Personas, MVP, North Star |
+| 2. Requisitos | IDs únicos, Critérios testáveis, RNFs |
+| 3. UX | Jornadas, Wireframes, Acessibilidade |
+| 4. Modelo | Entidades, Relacionamentos, Regras |
+| 5. Arquitetura | C4, Stack justificada, ADRs |
+| 6. Segurança | OWASP, Auth, Dados sensíveis |
+| 7. Testes | Casos de teste, Cobertura, Ferramentas |
+| 8. Backlog | Épicos, Histórias, DoD |
+| 9. Código | Padrões, Testes, Lint, Review |
+| 10. Deploy | Pipeline, Métricas, Rollback |
 
 ### 5.4 proximo
 
-Avança para a próxima fase do fluxo.
+Avança para a próxima fase (com validação de gate).
 
 ```typescript
 interface ProximoInput {
-  entregavel?: string;    // Conteúdo do entregável (opcional, se não salvo)
+  entregavel?: string;
+  forcar?: boolean;    // Ignora gate (não recomendado)
 }
 
 interface ProximoOutput {
+  gate_resultado: GateResultado;
   fase_anterior: number;
   fase_atual: number;
   total_fases: number;
-  especialista: string;   // Novo especialista
+  especialista: string;
+  template: string;
+  gate_checklist: string[];
   prompt_sugerido: string;
   entregavel_esperado: string;
-  contexto_acumulado: string;  // Resumo das fases anteriores
+  contexto_acumulado: string;
 }
 ```
 
 **Ações:**
-1. Valida se fase atual está completa
-2. Salva entregável se fornecido
-3. Atualiza `estado.json`
-4. Atualiza `contexto.md` com resumo
-5. Carrega próximo especialista
+1. Executa `validar_gate` para fase atual
+2. Se gate falhar e `forcar=false`, retorna erro com pendências
+3. Salva entregável se fornecido
+4. Atualiza `estado.json`
+5. Atualiza `contexto.md` com resumo
+6. Carrega próximo especialista + template + gate
 
-### 5.5 status
+### 5.5 salvar
 
-Retorna status atual do projeto.
+Salva entregável da fase atual usando template.
+
+```typescript
+interface SalvarInput {
+  conteudo: string;
+  usar_template?: boolean;  // Aplica template padrão
+  nome_arquivo?: string;
+}
+
+interface SalvarOutput {
+  caminho: string;
+  template_aplicado: boolean;
+  gate_status: GateResultado;
+}
+```
+
+### 5.6 status
+
+Retorna status completo do projeto.
 
 ```typescript
 interface StatusOutput {
   projeto: string;
+  nivel_complexidade: "simples" | "medio" | "complexo";
   tipo_fluxo: "novo_projeto" | "feature" | "bug" | "refatoracao";
   fase_atual: number;
   total_fases: number;
-  fases_completas: number[];
-  entregaveis: Record<string, string>;  // nome -> caminho
+  fases_completas: FaseCompleta[];
+  gates_status: GateStatus[];
+  entregaveis: Record<string, string>;
   proxima_acao: string;
-}
-```
-
-### 5.6 salvar
-
-Salva entregável da fase atual.
-
-```typescript
-interface SalvarInput {
-  conteudo: string;       // Conteúdo do entregável
-  nome_arquivo?: string;  // Nome (usa default da fase se não informado)
-}
-
-interface SalvarOutput {
-  caminho: string;        // Caminho onde foi salvo
-  fase_completa: boolean;
+  metricas: {
+    tempo_por_fase: Record<number, number>;
+    gates_passados: number;
+    gates_forcados: number;
+  };
 }
 ```
 
@@ -310,11 +466,526 @@ Retorna contexto completo para injeção em prompts.
 
 ```typescript
 interface ContextoOutput {
-  resumo: string;         // Resumo do projeto
-  stack: string;          // Stack tecnológica
-  modelo: string;         // Entidades principais
-  arquitetura: string;    // Visão arquitetural
-  fase_atual: string;     // Fase e expectativa
+  resumo: string;
+  stack: string;
+  modelo: string;
+  arquitetura: string;
+  fase_atual: string;
+  nivel_complexidade: string;
+  entregaveis_anteriores: {
+    nome: string;
+    resumo: string;
+  }[];
+}
+```
+
+---
+
+## 5.9 Tools de Análise
+
+### analisar_seguranca
+
+Analisa o projeto em busca de vulnerabilidades e brechas de segurança.
+
+```typescript
+interface AnalisarSegurancaInput {
+  escopo?: "codigo" | "arquitetura" | "dependencias" | "completo";
+  arquivos?: string[];  // Se vazio, analisa todo o projeto
+}
+
+interface AnalisarSegurancaOutput {
+  resumo: {
+    nivel_risco: "baixo" | "medio" | "alto" | "critico";
+    vulnerabilidades_criticas: number;
+    vulnerabilidades_altas: number;
+    vulnerabilidades_medias: number;
+    vulnerabilidades_baixas: number;
+  };
+  vulnerabilidades: Vulnerabilidade[];
+  recomendacoes: Recomendacao[];
+  checklist_owasp: OWASPItem[];
+  proximos_passos: string[];
+}
+
+interface Vulnerabilidade {
+  id: string;
+  severidade: "critica" | "alta" | "media" | "baixa";
+  categoria: string;  // OWASP category
+  titulo: string;
+  descricao: string;
+  arquivo?: string;
+  linha?: number;
+  codigo_afetado?: string;
+  recomendacao: string;
+  referencia: string;  // Link OWASP/CWE
+}
+
+interface OWASPItem {
+  id: string;  // A01, A02, etc
+  nome: string;
+  status: "ok" | "atencao" | "vulneravel" | "nao_verificado";
+  detalhes: string;
+}
+```
+
+**Análises realizadas:**
+- **Código**: SQL Injection, XSS, CSRF, hardcoded secrets, validação de input
+- **Dependências**: Pacotes com CVEs conhecidas
+- **Arquitetura**: Autenticação, autorização, CORS, rate limiting
+- **Configuração**: Headers de segurança, TLS, variáveis de ambiente
+
+**Uso:**
+```
+> analisar_seguranca(escopo: "completo")
+
+📊 ANÁLISE DE SEGURANÇA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Nível de Risco: MÉDIO 🟡
+
+🔴 Críticas: 0
+🟠 Altas: 2
+🟡 Médias: 5
+🟢 Baixas: 3
+
+VULNERABILIDADES ENCONTRADAS:
+
+[ALTA] SEC-001: Possível SQL Injection
+📁 src/repositories/user.repository.ts:45
+💡 Use queries parametrizadas em vez de concatenação
+
+[ALTA] SEC-002: Secret hardcoded
+📁 src/config/jwt.ts:12
+💡 Mova para variável de ambiente
+
+CHECKLIST OWASP TOP 10:
+✅ A01: Broken Access Control - OK
+⚠️ A02: Cryptographic Failures - Atenção
+❌ A03: Injection - Vulnerável
+...
+```
+
+---
+
+### analisar_performance
+
+Analisa o projeto em busca de problemas de performance e oportunidades de otimização.
+
+```typescript
+interface AnalisarPerformanceInput {
+  escopo?: "codigo" | "queries" | "frontend" | "arquitetura" | "completo";
+  arquivos?: string[];
+}
+
+interface AnalisarPerformanceOutput {
+  resumo: {
+    nivel_otimizacao: "otimizado" | "bom" | "necessita_atencao" | "problematico";
+    issues_criticos: number;
+    issues_importantes: number;
+    issues_sugestoes: number;
+  };
+  issues: PerformanceIssue[];
+  metricas_estimadas: MetricasEstimadas;
+  recomendacoes: RecomendacaoPerformance[];
+  proximos_passos: string[];
+}
+
+interface PerformanceIssue {
+  id: string;
+  severidade: "critico" | "importante" | "sugestao";
+  categoria: "database" | "memory" | "cpu" | "network" | "bundle" | "cache";
+  titulo: string;
+  descricao: string;
+  arquivo?: string;
+  linha?: number;
+  codigo_afetado?: string;
+  impacto_estimado: string;
+  solucao: string;
+  exemplo_correcao?: string;
+}
+
+interface MetricasEstimadas {
+  latencia_p95_estimada: string;
+  throughput_estimado: string;
+  memory_footprint: string;
+  pontos_de_gargalo: string[];
+}
+
+interface RecomendacaoPerformance {
+  prioridade: number;
+  categoria: string;
+  descricao: string;
+  ganho_estimado: string;
+  esforco: "baixo" | "medio" | "alto";
+}
+```
+
+**Análises realizadas:**
+- **Database**: N+1 queries, falta de índices, queries não otimizadas
+- **Memory**: Memory leaks, objetos grandes, falta de cleanup
+- **CPU**: Loops ineficientes, cálculos redundantes
+- **Network**: Payloads grandes, muitas requisições, falta de cache
+- **Frontend**: Bundle size, lazy loading, renderização
+- **Cache**: Oportunidades de caching, estratégias
+
+**Uso:**
+```
+> analisar_performance(escopo: "completo")
+
+📊 ANÁLISE DE PERFORMANCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Nível: NECESSITA ATENÇÃO 🟡
+
+🔴 Críticos: 1
+🟠 Importantes: 4
+🟢 Sugestões: 8
+
+ISSUES ENCONTRADOS:
+
+[CRÍTICO] PERF-001: N+1 Query detectada
+📁 src/services/order.service.ts:67
+⚡ Impacto: +500ms por request com muitos itens
+💡 Use eager loading: include: { items: true }
+
+[IMPORTANTE] PERF-002: Falta de índice
+📁 Database: orders.created_at
+⚡ Impacto: Full table scan em listagens
+💡 CREATE INDEX idx_orders_created_at ON orders(created_at);
+
+MÉTRICAS ESTIMADAS:
+- Latência p95: ~800ms (alvo: <200ms)
+- Gargalos: Database queries, falta de cache
+
+RECOMENDAÇÕES PRIORIZADAS:
+1. 🎯 Adicionar Redis cache (ganho: -300ms, esforço: médio)
+2. 🎯 Corrigir N+1 queries (ganho: -400ms, esforço: baixo)
+```
+
+---
+
+### analisar_qualidade
+
+Analisa qualidade do código, arquitetura e boas práticas.
+
+```typescript
+interface AnalisarQualidadeInput {
+  escopo?: "codigo" | "arquitetura" | "testes" | "documentacao" | "completo";
+  arquivos?: string[];
+}
+
+interface AnalisarQualidadeOutput {
+  resumo: {
+    score_geral: number;  // 0-100
+    score_codigo: number;
+    score_arquitetura: number;
+    score_testes: number;
+    score_documentacao: number;
+  };
+  issues: QualidadeIssue[];
+  metricas: MetricasQualidade;
+  divida_tecnica: DebitTecnico[];
+  recomendacoes: string[];
+}
+
+interface QualidadeIssue {
+  id: string;
+  categoria: "complexidade" | "duplicacao" | "naming" | "solid" | "padrao" | "teste" | "doc";
+  severidade: "alta" | "media" | "baixa";
+  titulo: string;
+  descricao: string;
+  arquivo?: string;
+  linhas?: string;
+  sugestao: string;
+}
+
+interface MetricasQualidade {
+  linhas_de_codigo: number;
+  cobertura_testes: number;
+  complexidade_ciclomatica_media: number;
+  duplicacao_percentual: number;
+  arquivos_sem_teste: string[];
+  funcoes_complexas: { nome: string; complexidade: number }[];
+}
+
+interface DebitTecnico {
+  area: string;
+  descricao: string;
+  impacto: "alto" | "medio" | "baixo";
+  esforco_estimado: string;
+  prioridade: number;
+}
+```
+
+**Análises realizadas:**
+- **Código**: Complexidade, duplicação, naming, SOLID
+- **Arquitetura**: Separação de concerns, dependências, padrões
+- **Testes**: Cobertura, qualidade, edge cases
+- **Documentação**: README, comentários, API docs
+
+**Uso:**
+```
+> analisar_qualidade(escopo: "completo")
+
+📊 ANÁLISE DE QUALIDADE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Score Geral: 72/100 🟡
+
+📊 Código: 78/100
+🏗️ Arquitetura: 85/100  
+🧪 Testes: 55/100
+📚 Documentação: 60/100
+
+MÉTRICAS:
+- LOC: 12,450
+- Cobertura: 55% (alvo: >80%)
+- Complexidade média: 8.2 (alvo: <10)
+- Duplicação: 12% (alvo: <5%)
+
+ISSUES ENCONTRADOS:
+
+[ALTA] QUAL-001: Função muito complexa
+📁 src/services/pricing.service.ts:calculateTotal()
+📊 Complexidade: 25 (alvo: <10)
+💡 Extraia em funções menores
+
+[MEDIA] QUAL-002: Código duplicado
+📁 src/controllers/*.ts
+📊 45 linhas duplicadas em 3 arquivos
+💡 Extraia para um helper/decorator
+
+DÉBITO TÉCNICO:
+1. Aumentar cobertura de testes (esforço: 2 dias)
+2. Refatorar pricing.service (esforço: 4h)
+3. Documentar API (esforço: 1 dia)
+```
+
+---
+
+### analisar_acessibilidade
+
+Analisa problemas de acessibilidade no frontend.
+
+```typescript
+interface AnalisarAcessibilidadeInput {
+  arquivos?: string[];  // Arquivos de componentes
+  nivel_wcag?: "A" | "AA" | "AAA";
+}
+
+interface AnalisarAcessibilidadeOutput {
+  resumo: {
+    nivel_conformidade: "nao_conforme" | "parcial" | "conforme";
+    violacoes_nivel_a: number;
+    violacoes_nivel_aa: number;
+    violacoes_nivel_aaa: number;
+  };
+  violacoes: ViolacaoAcessibilidade[];
+  checklist_wcag: WCAGItem[];
+  recomendacoes: string[];
+}
+
+interface ViolacaoAcessibilidade {
+  id: string;
+  nivel: "A" | "AA" | "AAA";
+  criterio: string;  // Ex: "1.1.1 Non-text Content"
+  titulo: string;
+  arquivo: string;
+  elemento?: string;
+  problema: string;
+  solucao: string;
+  impacto_usuario: string;
+}
+```
+
+---
+
+### analisar_dependencias
+
+Analisa dependências do projeto em busca de vulnerabilidades, atualizações e licenças.
+
+```typescript
+interface AnalisarDependenciasInput {
+  tipo?: "seguranca" | "atualizacoes" | "licencas" | "completo";
+}
+
+interface AnalisarDependenciasOutput {
+  resumo: {
+    total_dependencias: number;
+    vulnerabilidades: number;
+    desatualizadas: number;
+    licencas_problematicas: number;
+  };
+  vulnerabilidades: VulnerabilidadeDep[];
+  atualizacoes_disponiveis: Atualizacao[];
+  licencas: LicencaInfo[];
+  dependencias_nao_utilizadas: string[];
+}
+
+interface VulnerabilidadeDep {
+  pacote: string;
+  versao_atual: string;
+  severidade: "critica" | "alta" | "media" | "baixa";
+  cve: string;
+  descricao: string;
+  versao_corrigida: string;
+}
+
+interface Atualizacao {
+  pacote: string;
+  versao_atual: string;
+  versao_mais_recente: string;
+  tipo: "major" | "minor" | "patch";
+  breaking_changes?: boolean;
+}
+```
+
+---
+
+### sugerir_melhorias
+
+Analisa o projeto completo e sugere melhorias priorizadas.
+
+```typescript
+interface SugerirMelhoriasInput {
+  foco?: "seguranca" | "performance" | "qualidade" | "ux" | "devops" | "geral";
+  limite?: number;  // Número máximo de sugestões
+}
+
+interface SugerirMelhoriasOutput {
+  analise_geral: {
+    pontos_fortes: string[];
+    pontos_de_atencao: string[];
+    riscos: string[];
+  };
+  melhorias: Melhoria[];
+  roadmap_sugerido: RoadmapItem[];
+}
+
+interface Melhoria {
+  id: string;
+  categoria: "seguranca" | "performance" | "qualidade" | "ux" | "devops" | "arquitetura";
+  prioridade: number;  // 1-5
+  titulo: string;
+  descricao: string;
+  problema_atual: string;
+  solucao_proposta: string;
+  beneficios: string[];
+  esforco: "baixo" | "medio" | "alto";
+  impacto: "baixo" | "medio" | "alto";
+  arquivos_afetados?: string[];
+  exemplo?: string;
+}
+
+interface RoadmapItem {
+  fase: string;
+  prazo: string;
+  melhorias: string[];  // IDs das melhorias
+  objetivo: string;
+}
+```
+
+**Uso:**
+```
+> sugerir_melhorias(foco: "geral", limite: 10)
+
+📊 ANÁLISE COMPLETA DO PROJETO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ PONTOS FORTES:
+- Arquitetura bem estruturada (hexagonal)
+- Boa separação de concerns
+- CI/CD configurado
+
+⚠️ PONTOS DE ATENÇÃO:
+- Cobertura de testes abaixo do ideal (55%)
+- Falta de caching
+- Documentação incompleta
+
+🔴 RISCOS:
+- 2 vulnerabilidades de segurança não tratadas
+- N+1 queries em fluxos críticos
+
+TOP 10 MELHORIAS RECOMENDADAS:
+
+┌───┬──────────┬───────────────────────────────┬──────────┬─────────┐
+│ # │ Categoria│ Melhoria                      │ Impacto  │ Esforço │
+├───┼──────────┼───────────────────────────────┼──────────┼─────────┤
+│ 1 │ 🔒 Seg   │ Corrigir SQL Injection        │ Alto     │ Baixo   │
+│ 2 │ ⚡ Perf  │ Implementar cache Redis       │ Alto     │ Médio   │
+│ 3 │ 🔒 Seg   │ Remover secrets hardcoded     │ Alto     │ Baixo   │
+│ 4 │ ⚡ Perf  │ Corrigir N+1 queries          │ Alto     │ Baixo   │
+│ 5 │ 🧪 Qual  │ Aumentar cobertura de testes  │ Médio    │ Alto    │
+│ 6 │ 📊 Obs   │ Implementar logging estrutur. │ Médio    │ Médio   │
+│ 7 │ 🏗️ Arq  │ Adicionar rate limiting       │ Médio    │ Baixo   │
+│ 8 │ 📚 Doc   │ Documentar API (OpenAPI)      │ Médio    │ Médio   │
+│ 9 │ ⚡ Perf  │ Lazy loading no frontend      │ Baixo    │ Baixo   │
+│10 │ ♿ A11y  │ Melhorar contraste de cores   │ Baixo    │ Baixo   │
+└───┴──────────┴───────────────────────────────┴──────────┴─────────┘
+
+ROADMAP SUGERIDO:
+
+📅 Semana 1-2: Quick Wins Críticos
+   - Corrigir vulnerabilidades (#1, #3)
+   - Corrigir N+1 queries (#4)
+
+📅 Semana 3-4: Performance
+   - Implementar cache (#2)
+   - Rate limiting (#7)
+
+📅 Semana 5-6: Qualidade
+   - Aumentar cobertura (#5)
+   - Documentação (#8)
+```
+
+---
+
+### gerar_relatorio
+
+Gera um relatório consolidado de todas as análises.
+
+```typescript
+interface GerarRelatorioInput {
+  formato?: "markdown" | "html" | "json";
+  incluir?: ("seguranca" | "performance" | "qualidade" | "acessibilidade" | "dependencias")[];
+  salvar_em?: string;
+}
+
+interface GerarRelatorioOutput {
+  caminho: string;
+  resumo_executivo: string;
+  link: string;
+}
+```
+
+Gera um relatório completo em `docs/analises/relatorio-YYYY-MM-DD.md` contendo:
+- Resumo executivo
+- Métricas consolidadas
+- Issues por categoria
+- Gráficos (em markdown)
+- Roadmap de melhorias
+- Comparação com análise anterior (se houver)
+
+---
+
+```
+
+### 5.8 nova_feature (atualizado)
+
+```typescript
+interface NovaFeatureInput {
+  descricao: string;
+  impacto_estimado?: "baixo" | "medio" | "alto";
+}
+
+interface NovaFeatureOutput {
+  contexto_projeto: string;
+  modelo_atual: string;      // Lê modelo-dominio.md
+  arquitetura_atual: string; // Lê arquitetura.md
+  analise_impacto: {
+    entidades_afetadas: string[];
+    endpoints_novos: string[];
+    endpoints_modificados: string[];
+  };
+  fase_atual: number;
+  especialista: string;
 }
 ```
 
@@ -322,161 +993,335 @@ interface ContextoOutput {
 
 ## 6. Definição dos Fluxos
 
-### 6.1 Fluxo: Novo Projeto (10 fases)
+### 6.1 Fluxo: Projeto Simples (5 fases)
+
+Para projetos com pontuação 8-12.
 
 ```typescript
-const FLUXO_NOVO_PROJETO = [
+const FLUXO_SIMPLES = [
+  {
+    fase: 1,
+    nome: "Produto (Simplificado)",
+    especialista: "Especialista em Gestão de Produto.md",
+    template: "PRD.md",
+    entregavel: "docs/01-produto/PRD.md",
+    gate: ["problema_definido", "mvp_listado"]
+  },
+  {
+    fase: 2,
+    nome: "Requisitos Básicos",
+    especialista: "Especialista em Engenharia de Requisitos com IA.md",
+    template: "requisitos.md",
+    entregavel: "docs/02-requisitos/requisitos.md",
+    contexto_necessario: ["docs/01-produto/PRD.md"],
+    gate: ["requisitos_funcionais", "criterios_aceite"]
+  },
+  {
+    fase: 3,
+    nome: "Arquitetura Simples",
+    especialista: "Especialista em Arquitetura de Software.md",
+    template: "arquitetura.md",
+    entregavel: "docs/05-arquitetura/arquitetura.md",
+    contexto_necessario: ["docs/02-requisitos/requisitos.md"],
+    gate: ["stack_definida", "diagrama_basico"]
+  },
+  {
+    fase: 4,
+    nome: "Implementação",
+    especialista: "Especialista em Desenvolvimento e Vibe Coding Estruturado.md",
+    entregavel: "src/",
+    contexto_necessario: ["docs/05-arquitetura/arquitetura.md"],
+    gate: ["codigo_funcional", "testes_unitarios"]
+  },
+  {
+    fase: 5,
+    nome: "Deploy",
+    especialista: "Especialista em DevOps e Infraestrutura.md",
+    entregavel: ["Dockerfile", ".github/workflows/"],
+    gate: ["pipeline_funcionando", "deploy_staging"]
+  }
+];
+```
+
+### 6.2 Fluxo: Projeto Médio (10 fases)
+
+Para projetos com pontuação 13-18.
+
+```typescript
+const FLUXO_MEDIO = [
   {
     fase: 1,
     nome: "Definição do Produto",
     especialista: "Especialista em Gestão de Produto.md",
+    template: "PRD.md",
     entregavel: "docs/01-produto/PRD.md",
-    template: "templates/prd.md",
-    prompt: "prompts/produto/discovery-inicial.txt"
+    prompt: "prompts/produto/discovery-inicial.txt",
+    gate: ["problema_claro", "personas_2plus", "mvp_priorizado", "north_star"]
   },
   {
     fase: 2,
     nome: "Engenharia de Requisitos",
     especialista: "Especialista em Engenharia de Requisitos com IA.md",
+    template: "requisitos.md",
     entregavel: "docs/02-requisitos/requisitos.md",
-    contexto_necessario: ["docs/01-produto/PRD.md"]
+    contexto_necessario: ["docs/01-produto/PRD.md"],
+    gate: ["ids_unicos", "criterios_testaveis", "rnfs_definidos"]
   },
   {
     fase: 3,
     nome: "Design de UX",
     especialista: "Especialista em UX Design.md",
+    template: "design-doc.md",
     entregavel: "docs/03-ux/design-doc.md",
-    contexto_necessario: ["docs/01-produto/PRD.md", "docs/02-requisitos/requisitos.md"]
+    contexto_necessario: ["docs/01-produto/PRD.md", "docs/02-requisitos/requisitos.md"],
+    gate: ["jornadas_mapeadas", "wireframes", "acessibilidade"]
   },
   {
     fase: 4,
     nome: "Modelagem de Domínio",
     especialista: "Especialista em Modelagem e Arquitetura de Domínio com IA.md",
+    template: "modelo-dominio.md",
     entregavel: "docs/04-modelo/modelo-dominio.md",
-    contexto_necessario: ["docs/02-requisitos/requisitos.md"]
+    contexto_necessario: ["docs/02-requisitos/requisitos.md"],
+    gate: ["entidades_identificadas", "relacionamentos", "regras_negocio"]
   },
   {
     fase: 5,
     nome: "Arquitetura de Software",
     especialista: "Especialista em Arquitetura de Software.md",
+    template: "arquitetura.md",
     entregavel: "docs/05-arquitetura/arquitetura.md",
-    contexto_necessario: ["docs/02-requisitos/requisitos.md", "docs/04-modelo/modelo-dominio.md"]
+    prompt: "prompts/arquitetura/c4-completo.txt",
+    contexto_necessario: ["docs/02-requisitos/requisitos.md", "docs/04-modelo/modelo-dominio.md"],
+    gate: ["c4_nivel_1_2", "stack_justificada", "adrs"]
   },
   {
     fase: 6,
     nome: "Segurança",
     especialista: "Especialista em Segurança da Informação.md",
+    template: "checklist-seguranca.md",
     entregavel: "docs/06-seguranca/checklist-seguranca.md",
-    contexto_necessario: ["docs/05-arquitetura/arquitetura.md"]
+    contexto_necessario: ["docs/05-arquitetura/arquitetura.md"],
+    gate: ["owasp_revisado", "auth_definida", "dados_sensiveis"]
   },
   {
     fase: 7,
     nome: "Plano de Testes",
     especialista: "Especialista em Análise de Testes.md",
+    template: "plano-testes.md",
     entregavel: "docs/07-testes/plano-testes.md",
-    contexto_necessario: ["docs/02-requisitos/requisitos.md"]
+    contexto_necessario: ["docs/02-requisitos/requisitos.md"],
+    gate: ["casos_por_requisito", "piramide_definida", "ferramentas"]
   },
   {
     fase: 8,
     nome: "Plano de Execução",
     especialista: "Especialista em Plano de Execução com IA.md",
+    template: "backlog.md",
     entregavel: "docs/08-backlog/backlog.md",
-    contexto_necessario: ["docs/02-requisitos/requisitos.md", "docs/05-arquitetura/arquitetura.md"]
+    contexto_necessario: ["docs/02-requisitos/requisitos.md", "docs/05-arquitetura/arquitetura.md"],
+    gate: ["epicos_priorizados", "historias_com_ca", "dod_definido"]
   },
   {
     fase: 9,
     nome: "Implementação",
     especialista: "Especialista em Desenvolvimento e Vibe Coding Estruturado.md",
     entregavel: "src/",
-    contexto_necessario: ["docs/04-modelo/modelo-dominio.md", "docs/05-arquitetura/arquitetura.md", "docs/08-backlog/backlog.md"]
+    contexto_necessario: ["docs/04-modelo/modelo-dominio.md", "docs/05-arquitetura/arquitetura.md", "docs/08-backlog/backlog.md"],
+    gate: ["codigo_padroes", "testes_80_percent", "lint_sem_erros", "review_aprovado"]
   },
   {
     fase: 10,
     nome: "DevOps e Deploy",
     especialista: "Especialista em DevOps e Infraestrutura.md",
     entregavel: [".github/workflows/", "Dockerfile", "infra/"],
-    contexto_necessario: ["docs/05-arquitetura/arquitetura.md"]
+    contexto_necessario: ["docs/05-arquitetura/arquitetura.md"],
+    gate: ["dockerfile_otimizado", "pipeline_ci_cd", "metricas_logs", "rollback_testado"]
   }
 ];
 ```
 
-### 6.2 Fluxo: Nova Feature (6 fases)
+### 6.3 Fluxo: Projeto Complexo (14 fases)
+
+Para projetos com pontuação 19-24.
+
+```typescript
+const FLUXO_COMPLEXO = [
+  // Fases 1-10: Mesmo que FLUXO_MEDIO
+  ...FLUXO_MEDIO,
+  
+  // Fases adicionais para projetos complexos
+  {
+    fase: 11,
+    nome: "Arquitetura Avançada",
+    especialista: "Especialista em Arquitetura Avançada.md",
+    entregavel: "docs/05-arquitetura/arquitetura-ddd.md",
+    prompt: "prompts/arquitetura/ddd-bounded-contexts.txt",
+    contexto_necessario: ["docs/04-modelo/modelo-dominio.md", "docs/05-arquitetura/arquitetura.md"],
+    gate: ["bounded_contexts", "aggregates", "domain_events", "context_map"]
+  },
+  {
+    fase: 12,
+    nome: "Performance e Escalabilidade",
+    especialista: "Especialista em Performance e Escalabilidade.md",
+    entregavel: "docs/performance/analise-performance.md",
+    prompt: "prompts/escalabilidade/analise-performance.txt",
+    contexto_necessario: ["docs/05-arquitetura/arquitetura.md"],
+    gate: ["slos_definidos", "garrafas_identificadas", "cache_strategy", "load_test_plan"]
+  },
+  {
+    fase: 13,
+    nome: "Observabilidade",
+    especialista: "Especialista em Observabilidade.md",
+    entregavel: "docs/observability/estrategia.md",
+    prompt: "prompts/observabilidade/estrategia.txt",
+    contexto_necessario: ["docs/05-arquitetura/arquitetura.md"],
+    gate: ["logging_estruturado", "metricas_red", "tracing", "alertas_slos", "runbooks"]
+  },
+  {
+    fase: 14,
+    nome: "Disaster Recovery",
+    especialista: "Especialista em DevOps e Infraestrutura.md",
+    entregavel: "docs/infra/disaster-recovery.md",
+    contexto_necessario: ["docs/05-arquitetura/arquitetura.md", "infra/"],
+    gate: ["backup_strategy", "rto_rpo_definidos", "failover_testado"]
+  }
+];
+```
+
+### 6.4 Fluxos Secundários
 
 ```typescript
 const FLUXO_NOVA_FEATURE = [
-  { fase: 1, nome: "Análise de Impacto", especialista: "Guia de Adição de Novas Funcionalidades.md" },
-  { fase: 2, nome: "Refinamento de Requisitos", especialista: "Especialista em Engenharia de Requisitos com IA.md" },
-  { fase: 3, nome: "Atualização de Modelo", especialista: "Especialista em Modelagem e Arquitetura de Domínio com IA.md" },
-  { fase: 4, nome: "Implementação", especialista: "Especialista em Desenvolvimento e Vibe Coding Estruturado.md" },
+  { fase: 1, nome: "Análise de Impacto", especialista: "Guia de Adição de Novas Funcionalidades.md", contexto: ["modelo", "arquitetura"] },
+  { fase: 2, nome: "Refinamento de Requisitos", especialista: "Especialista em Engenharia de Requisitos.md" },
+  { fase: 3, nome: "Atualização de Modelo", especialista: "Especialista em Modelagem de Domínio.md" },
+  { fase: 4, nome: "Implementação", especialista: "Especialista em Desenvolvimento.md" },
   { fase: 5, nome: "Testes", especialista: "Especialista em Análise de Testes.md" },
-  { fase: 6, nome: "Deploy", especialista: "Especialista em DevOps e Infraestrutura.md" }
+  { fase: 6, nome: "Deploy", especialista: "Especialista em DevOps.md" }
 ];
-```
 
-### 6.3 Fluxo: Correção de Bug (5 fases)
-
-```typescript
 const FLUXO_CORRIGIR_BUG = [
   { fase: 1, nome: "Coleta de Contexto", especialista: "Guia de Debugging com IA.md" },
   { fase: 2, nome: "Análise de Causa", especialista: "Guia de Debugging com IA.md" },
-  { fase: 3, nome: "Implementação do Fix", especialista: "Especialista em Desenvolvimento e Vibe Coding Estruturado.md" },
+  { fase: 3, nome: "Implementação do Fix", especialista: "Especialista em Desenvolvimento.md" },
   { fase: 4, nome: "Teste de Regressão", especialista: "Especialista em Análise de Testes.md" },
-  { fase: 5, nome: "Validação de Segurança", especialista: "Especialista em Segurança da Informação.md" }
+  { fase: 5, nome: "Validação de Segurança", especialista: "Especialista em Segurança.md" }
 ];
-```
 
-### 6.4 Fluxo: Refatoração (6 fases)
-
-```typescript
 const FLUXO_REFATORAR = [
-  { fase: 1, nome: "Análise do Legado", especialista: "Guia de Refatoração de Código Legado com IA.md" },
+  { fase: 1, nome: "Análise do Legado", especialista: "Guia de Refatoração de Código Legado.md" },
   { fase: 2, nome: "Testes de Caracterização", especialista: "Especialista em Análise de Testes.md" },
   { fase: 3, nome: "Arquitetura Alvo", especialista: "Especialista em Arquitetura de Software.md" },
-  { fase: 4, nome: "Refatoração Incremental", especialista: "Especialista em Desenvolvimento e Vibe Coding Estruturado.md" },
-  { fase: 5, nome: "Validação de Segurança", especialista: "Especialista em Segurança da Informação.md" },
-  { fase: 6, nome: "Deploy", especialista: "Especialista em DevOps e Infraestrutura.md" }
+  { fase: 4, nome: "Refatoração Incremental", especialista: "Especialista em Desenvolvimento.md" },
+  { fase: 5, nome: "Validação de Segurança", especialista: "Especialista em Segurança.md" },
+  { fase: 6, nome: "Deploy", especialista: "Especialista em DevOps.md" }
 ];
 ```
 
 ---
 
-## 7. Estado do Projeto
+## 7. Sistema de Gates
 
-### 7.1 Estrutura do estado.json
+### 7.1 Estrutura do Gate
+
+```typescript
+interface Gate {
+  fase: number;
+  nome: string;
+  checklist: GateItem[];
+  obrigatorios: string[];  // IDs que bloqueiam avanço
+  opcionais: string[];     // IDs que geram warning
+}
+
+interface GateItem {
+  id: string;
+  descricao: string;
+  validador: (contexto: Contexto) => boolean | Promise<boolean>;
+  auto_fix?: (contexto: Contexto) => string;  // Sugestão de correção
+}
+```
+
+### 7.2 Exemplo de Validador
+
+```typescript
+const gateProducto: Gate = {
+  fase: 1,
+  nome: "Gate: Definição do Produto",
+  checklist: [
+    {
+      id: "problema_claro",
+      descricao: "Problema claramente definido",
+      validador: (ctx) => ctx.prd.includes("## Problema") && ctx.prd.match(/problema/gi).length > 2
+    },
+    {
+      id: "personas_2plus",
+      descricao: "Pelo menos 2 personas documentadas",
+      validador: (ctx) => (ctx.prd.match(/### Persona/g) || []).length >= 2
+    },
+    {
+      id: "mvp_priorizado",
+      descricao: "MVP com 3-5 funcionalidades priorizadas",
+      validador: (ctx) => ctx.prd.includes("## 5. Escopo do MVP") && ctx.prd.includes("### 5.1 Must-Have")
+    },
+    {
+      id: "north_star",
+      descricao: "North Star Metric definida",
+      validador: (ctx) => ctx.prd.includes("North Star")
+    }
+  ],
+  obrigatorios: ["problema_claro", "mvp_priorizado"],
+  opcionais: ["personas_2plus", "north_star"]
+};
+```
+
+---
+
+## 8. Estado do Projeto
+
+### 8.1 Estrutura do estado.json
 
 ```json
 {
   "projeto_id": "uuid",
   "nome": "meu-saas",
+  "nivel_complexidade": "medio",
   "tipo_fluxo": "novo_projeto",
-  "criado_em": "2024-12-18T17:00:00Z",
-  "atualizado_em": "2024-12-18T18:30:00Z",
+  "criado_em": "2024-12-19T10:00:00Z",
+  "atualizado_em": "2024-12-19T12:30:00Z",
   "fase_atual": 5,
+  "total_fases": 10,
   "fases": [
     {
       "numero": 1,
       "nome": "Definição do Produto",
       "status": "completa",
       "entregavel": "docs/01-produto/PRD.md",
-      "completado_em": "2024-12-18T17:15:00Z"
-    },
-    {
-      "numero": 2,
-      "nome": "Engenharia de Requisitos",
-      "status": "completa",
-      "entregavel": "docs/02-requisitos/requisitos.md",
-      "completado_em": "2024-12-18T17:45:00Z"
+      "template_usado": "PRD.md",
+      "gate": {
+        "validado_em": "2024-12-19T10:15:00Z",
+        "itens_passou": ["problema_claro", "personas_2plus", "mvp_priorizado", "north_star"],
+        "itens_pulados": [],
+        "forcado": false
+      },
+      "completado_em": "2024-12-19T10:15:00Z"
     }
   ],
   "contexto": {
     "stack": "Node.js + NestJS + PostgreSQL",
     "descricao": "Sistema de agendamento para salões de beleza",
     "entidades_principais": ["Usuario", "Agendamento", "Servico", "Profissional"]
+  },
+  "metricas": {
+    "tempo_total_segundos": 9000,
+    "tempo_por_fase": { "1": 900, "2": 1200 },
+    "gates_passados": 4,
+    "gates_forcados": 0
   }
 }
 ```
 
-### 7.2 Estrutura do contexto.md
+### 8.2 Estrutura do contexto.md
 
 ```markdown
 # Contexto: [Nome do Projeto]
@@ -484,57 +1329,122 @@ const FLUXO_REFATORAR = [
 ## Visão Geral
 [Resumo de 2-3 linhas gerado automaticamente do PRD]
 
+## Nível de Complexidade
+**Médio** (10 fases) - Pontuação: 15/24
+
 ## Stack Tecnológica
-- Backend: [ex: NestJS]
-- Frontend: [ex: Next.js]
-- Banco: [ex: PostgreSQL]
-- Infra: [ex: Docker + AWS]
+- Backend: NestJS
+- Frontend: Next.js
+- Banco: PostgreSQL
+- Cache: Redis
+- Infra: Docker + AWS
 
 ## Modelo de Domínio
-| Entidade | Campos Principais |
-|---|---|
-| Usuario | id, nome, email, role |
-| Agendamento | id, usuarioId, servicoId, dataHora, status |
+| Entidade | Campos Principais | Relacionamentos |
+|---|---|---|
+| Usuario | id, nome, email, role | 1:N Agendamento |
+| Agendamento | id, usuarioId, servicoId, dataHora, status | N:1 Usuario, N:1 Servico |
 
 ## Arquitetura
-[Resumo ou link para docs/05-arquitetura/arquitetura.md]
+Hexagonal Architecture com módulos por bounded context.
+Ver: [docs/05-arquitetura/arquitetura.md]
 
 ## Fase Atual
-- Fluxo: Novo Projeto
+- Fluxo: Novo Projeto (Médio)
 - Fase: 5/10 - Arquitetura de Software
-- Última atualização: 2024-12-18
+- Última atualização: 2024-12-19
 
 ## Entregáveis Completos
-- [x] PRD: docs/01-produto/PRD.md
-- [x] Requisitos: docs/02-requisitos/requisitos.md
-- [x] UX: docs/03-ux/design-doc.md
-- [x] Modelo: docs/04-modelo/modelo-dominio.md
-- [ ] Arquitetura: docs/05-arquitetura/arquitetura.md
+| Fase | Artefato | Gate |
+|---|---|---|
+| 1 | [PRD.md](docs/01-produto/PRD.md) | ✅ 4/4 |
+| 2 | [requisitos.md](docs/02-requisitos/requisitos.md) | ✅ 3/3 |
+| 3 | [design-doc.md](docs/03-ux/design-doc.md) | ✅ 3/3 |
+| 4 | [modelo-dominio.md](docs/04-modelo/modelo-dominio.md) | ✅ 3/3 |
+| 5 | arquitetura.md | 🔄 Em andamento |
+
+## Próxima Ação
+Completar arquitetura C4 e definir ADRs para decisões críticas.
 ```
 
 ---
 
-## 8. Implementação
+## 9. Estrutura de Pastas do Projeto Gerado
 
-### 8.1 Dependências
+```
+meu-projeto/
+├── .guia/                          # Metadados do MCP
+│   ├── estado.json                 # Estado do fluxo
+│   └── contexto.md                 # Resumo executivo
+│
+├── docs/                           # Entregáveis por fase
+│   ├── 01-produto/
+│   │   └── PRD.md
+│   ├── 02-requisitos/
+│   │   ├── requisitos.md
+│   │   └── criterios-aceite.md
+│   ├── 03-ux/
+│   │   ├── design-doc.md
+│   │   ├── wireframes/
+│   │   └── fluxos/
+│   ├── 04-modelo/
+│   │   └── modelo-dominio.md
+│   ├── 05-arquitetura/
+│   │   ├── arquitetura.md
+│   │   └── adr/
+│   │       ├── 001-escolha-stack.md
+│   │       └── 002-autenticacao.md
+│   ├── 06-seguranca/
+│   │   └── checklist-seguranca.md
+│   ├── 07-testes/
+│   │   └── plano-testes.md
+│   ├── 08-backlog/
+│   │   ├── backlog.md
+│   │   └── historias/
+│   ├── performance/                # Só em projetos complexos
+│   │   └── analise-performance.md
+│   └── observability/              # Só em projetos complexos
+│       ├── estrategia.md
+│       └── runbooks/
+│
+├── src/                            # Código fonte
+├── tests/                          # Testes
+├── infra/                          # IaC (Terraform, etc)
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+├── Dockerfile
+├── docker-compose.yml
+└── README.md
+```
+
+---
+
+## 10. Implementação
+
+### 10.1 Dependências
 
 ```json
 {
   "name": "mcp-guia-dev-ia",
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "type": "module",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.5.0",
-    "uuid": "^9.0.0"
+    "@modelcontextprotocol/sdk": "^0.6.0",
+    "uuid": "^9.0.0",
+    "glob": "^10.0.0",
+    "gray-matter": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0",
+    "tsx": "^4.0.0"
   }
 }
 ```
 
-### 8.2 Entry Point (index.ts)
+### 10.2 Entry Point (index.ts)
 
 ```typescript
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -544,8 +1454,14 @@ import { registerTools } from "./tools/index.js";
 import { registerPrompts } from "./prompts/index.js";
 
 const server = new Server(
-  { name: "guia-dev-ia", version: "1.0.0" },
-  { capabilities: { resources: {}, tools: {}, prompts: {} } }
+  { name: "guia-dev-ia", version: "2.0.0" },
+  { 
+    capabilities: { 
+      resources: { subscribe: true },
+      tools: {},
+      prompts: {}
+    }
+  }
 );
 
 // Registra handlers
@@ -556,76 +1472,15 @@ registerPrompts(server);
 // Inicia servidor
 const transport = new StdioServerTransport();
 await server.connect(transport);
-```
 
-### 8.3 Exemplo de Tool (iniciar-projeto.ts)
-
-```typescript
-import { CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { v4 as uuid } from "uuid";
-import { createProjectStructure, saveState } from "../state/projeto.js";
-import { loadEspecialista, loadPromptTemplate } from "../utils/files.js";
-import { FLUXO_NOVO_PROJETO } from "../flows/novo-projeto.js";
-
-export async function handleIniciarProjeto(args: {
-  nome: string;
-  descricao: string;
-  diretorio?: string;
-}) {
-  const { nome, descricao, diretorio = process.cwd() } = args;
-  
-  // Cria estrutura de pastas
-  await createProjectStructure(diretorio);
-  
-  // Inicializa estado
-  const estado = {
-    projeto_id: uuid(),
-    nome,
-    tipo_fluxo: "novo_projeto",
-    criado_em: new Date().toISOString(),
-    fase_atual: 1,
-    fases: [],
-    contexto: { descricao }
-  };
-  await saveState(diretorio, estado);
-  
-  // Carrega especialista da fase 1
-  const fase = FLUXO_NOVO_PROJETO[0];
-  const especialista = await loadEspecialista(fase.especialista);
-  const prompt = await loadPromptTemplate(fase.prompt);
-  
-  return {
-    content: [{
-      type: "text",
-      text: `
-📍 PROJETO INICIADO: ${nome}
-
-FASE 1/${FLUXO_NOVO_PROJETO.length}: ${fase.nome}
-${"━".repeat(50)}
-
-📁 Entregável esperado: ${fase.entregavel}
-
-## Contexto do Especialista
-
-${especialista}
-
-## Prompt Sugerido
-
-${prompt.replace("[COLE TEXTO]", descricao)}
-
----
-Use /proximo quando terminar esta fase.
-      `.trim()
-    }]
-  };
-}
+console.error("MCP Guia-dev-IA v2.0 started");
 ```
 
 ---
 
-## 9. Configuração do Cliente
+## 11. Configuração do Cliente
 
-### 9.1 Claude Desktop (claude_desktop_config.json)
+### 11.1 Claude Desktop (claude_desktop_config.json)
 
 ```json
 {
@@ -634,67 +1489,592 @@ Use /proximo quando terminar esta fase.
       "command": "node",
       "args": ["/caminho/para/mcp-guia-dev-ia/dist/index.js"],
       "env": {
-        "GUIA_PATH": "/caminho/para/Guia-dev-IA"
+        "GUIA_PATH": "/caminho/para/Guia-dev-IA",
+        "LOG_LEVEL": "info"
       }
     }
   }
 }
 ```
 
-### 9.2 Variáveis de Ambiente
+### 11.2 Cursor (settings.json)
+
+```json
+{
+  "mcp.servers": {
+    "guia-dev-ia": {
+      "command": "node",
+      "args": ["C:/caminho/para/mcp-guia-dev-ia/dist/index.js"],
+      "env": {
+        "GUIA_PATH": "C:/caminho/para/Guia-dev-IA"
+      }
+    }
+  }
+}
+```
+
+### 11.3 Variáveis de Ambiente
 
 | Variável | Descrição | Default |
 |---|---|---|
 | `GUIA_PATH` | Caminho para o Guia-dev-IA | `./guia` |
 | `PROJETO_PATH` | Caminho do projeto atual | `cwd()` |
+| `LOG_LEVEL` | Nível de log (debug, info, warn, error) | `info` |
+| `GATE_STRICT` | Se true, bloqueia avanço com gate incompleto | `true` |
+| `SYNC_ENABLED` | Habilita sincronização remota | `false` |
+| `SYNC_API_URL` | URL da API de sincronização | - |
+| `SYNC_API_KEY` | Chave de API para autenticação | - |
 
 ---
 
-## 10. Roadmap de Desenvolvimento
+## 12. Persistência Distribuída e Painel Web
 
-| Semana | Tarefa | Entregável |
-|---|---|---|
-| 1 | Setup + Resources | Leitura de especialistas/guias |
-| 1 | Tool: iniciar_projeto | Fluxo novo projeto funcional |
-| 2 | Tools: proximo, status, salvar | Navegação entre fases |
-| 2 | State management | Persistência em JSON |
-| 3 | Tools: nova_feature, corrigir_bug | Fluxos secundários |
-| 3 | Atualização de contexto.md | Auto-update após cada fase |
-| 4 | Testes + refinamento | Cobertura de testes |
-| 4 | Documentação | README completo |
+Para permitir continuidade do trabalho em múltiplas máquinas e visualização via painel web.
 
----
+### 12.1 Arquitetura Distribuída
 
-## 11. Testes
-
-### 11.1 Testes de Tools
-
-```typescript
-import { describe, it, expect } from "vitest";
-import { handleIniciarProjeto } from "../src/tools/iniciar-projeto.js";
-
-describe("iniciar_projeto", () => {
-  it("deve criar estrutura de pastas", async () => {
-    const result = await handleIniciarProjeto({
-      nome: "test-project",
-      descricao: "Projeto de teste",
-      diretorio: "/tmp/test"
-    });
-    
-    expect(result.content[0].text).toContain("FASE 1/10");
-    expect(fs.existsSync("/tmp/test/.guia")).toBe(true);
-    expect(fs.existsSync("/tmp/test/docs")).toBe(true);
-  });
-});
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           CAMADA DE CLIENTES                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐ │
+│  │  Máquina A   │   │  Máquina B   │   │  Máquina C   │   │  Painel Web  │ │
+│  │  (Dev Home)  │   │  (Dev Office)│   │  (CI/CD)     │   │  (Dashboard) │ │
+│  │              │   │              │   │              │   │              │ │
+│  │  Claude +    │   │  Cursor +    │   │  GitHub      │   │  React +     │ │
+│  │  MCP Server  │   │  MCP Server  │   │  Actions     │   │  Next.js     │ │
+│  └──────┬───────┘   └──────┬───────┘   └──────┬───────┘   └──────┬───────┘ │
+│         │                  │                  │                  │         │
+│         └──────────────────┼──────────────────┼──────────────────┘         │
+│                            │                  │                            │
+│                            ▼                  ▼                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                         CAMADA DE SINCRONIZAÇÃO                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐ │
+│  │                        SYNC API (REST/GraphQL)                        │ │
+│  │                                                                       │ │
+│  │  POST /api/projects/{id}/sync    - Sincronizar estado                 │ │
+│  │  GET  /api/projects/{id}/state   - Obter estado atual                 │ │
+│  │  POST /api/projects/{id}/events  - Registrar eventos                  │ │
+│  │  GET  /api/projects              - Listar projetos                    │ │
+│  │  WS   /ws/projects/{id}          - Atualizações em tempo real         │ │
+│  └───────────────────────────────────────────────────────────────────────┘ │
+│                                    │                                       │
+│                                    ▼                                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                         CAMADA DE PERSISTÊNCIA                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐             │
+│  │   PostgreSQL    │  │     Redis       │  │   S3/MinIO      │             │
+│  │                 │  │                 │  │                 │             │
+│  │  • Projetos     │  │  • Cache        │  │  • Artefatos    │             │
+│  │  • Estados      │  │  • Sessões      │  │  • Anexos       │             │
+│  │  • Features     │  │  • Pub/Sub      │  │  • Relatórios   │             │
+│  │  • Histórico    │  │  • Rate limit   │  │  • Backups      │             │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘             │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
+### 12.2 Modelo de Dados Persistido
+
+```typescript
+// Projeto principal
+interface Projeto {
+  id: string;
+  nome: string;
+  descricao: string;
+  repositorio_git?: string;
+  nivel_complexidade: "simples" | "medio" | "complexo";
+  criado_em: Date;
+  atualizado_em: Date;
+  criado_por: string;
+  equipe: string[];
+}
+
+// Estado do fluxo de desenvolvimento
+interface EstadoProjeto {
+  projeto_id: string;
+  tipo_fluxo: "novo_projeto" | "feature" | "bug" | "refatoracao";
+  fase_atual: number;
+  total_fases: number;
+  fases: FaseCompleta[];
+  contexto: ContextoProjeto;
+  sincronizado_em: Date;
+  versao: number;  // Para conflict resolution
+}
+
+// Cada fase completada
+interface FaseCompleta {
+  numero: number;
+  nome: string;
+  status: "pendente" | "em_andamento" | "completa" | "pulada";
+  especialista_usado: string;
+  template_usado?: string;
+  entregavel_path?: string;
+  entregavel_hash?: string;  // Para detectar mudanças
+  gate: GateResultado;
+  iniciado_em?: Date;
+  completado_em?: Date;
+  completado_por?: string;
+  maquina_id?: string;
+}
+
+// Features implementadas
+interface Feature {
+  id: string;
+  projeto_id: string;
+  titulo: string;
+  descricao: string;
+  status: "backlog" | "em_desenvolvimento" | "em_review" | "concluida";
+  requisitos_ids: string[];     // RF001, RF002...
+  historias_ids: string[];      // US001, US002...
+  arquivos_afetados: string[];
+  commits: CommitInfo[];
+  criado_em: Date;
+  concluido_em?: Date;
+}
+
+// Histórico de eventos
+interface Evento {
+  id: string;
+  projeto_id: string;
+  tipo: "fase_iniciada" | "fase_concluida" | "gate_validado" | "artefato_salvo" | 
+        "analise_executada" | "feature_criada" | "bug_resolvido";
+  dados: Record<string, any>;
+  usuario: string;
+  maquina_id: string;
+  timestamp: Date;
+}
+
+// Análises executadas
+interface AnaliseHistorico {
+  id: string;
+  projeto_id: string;
+  tipo: "seguranca" | "performance" | "qualidade" | "acessibilidade" | "dependencias";
+  resultado: Record<string, any>;
+  score?: number;
+  issues_total: number;
+  executado_em: Date;
+  executado_por: string;
+}
+```
+
+### 12.3 Sincronização entre Máquinas
+
+#### Estratégia de Sync
+
+```typescript
+// Sync Manager - roda no MCP Server local
+class SyncManager {
+  private localState: EstadoProjeto;
+  private remoteVersion: number;
+  private pendingChanges: Change[] = [];
+  
+  // Sincroniza ao iniciar
+  async onStart() {
+    const remote = await this.api.getState(this.projectId);
+    
+    if (remote.versao > this.localState.versao) {
+      // Servidor tem versão mais nova - fazer pull
+      await this.pullRemoteState(remote);
+    } else if (this.hasPendingChanges()) {
+      // Temos mudanças locais - fazer push
+      await this.pushLocalChanges();
+    }
+  }
+  
+  // Sincroniza após cada ação
+  async onAction(acao: string, dados: any) {
+    // Salva localmente primeiro (offline-first)
+    await this.saveLocal(acao, dados);
+    
+    // Tenta sincronizar
+    if (this.isOnline()) {
+      await this.syncWithServer();
+    } else {
+      this.pendingChanges.push({ acao, dados, timestamp: Date.now() });
+    }
+  }
+  
+  // Resolve conflitos
+  async resolveConflict(local: Change, remote: Change): Promise<Change> {
+    // Estratégia: Last-Write-Wins com merge de artefatos
+    if (local.timestamp > remote.timestamp) {
+      return local;
+    }
+    
+    // Se são mudanças em arquivos diferentes, merge
+    if (local.arquivo !== remote.arquivo) {
+      return this.mergeChanges(local, remote);
+    }
+    
+    // Conflito real - notifica usuário
+    return this.notifyConflict(local, remote);
+  }
+}
+```
+
+#### API de Sincronização
+
+```typescript
+// Endpoints da Sync API
+
+// Registrar/atualizar projeto
+POST /api/projects
+{
+  nome: string;
+  repositorio_git?: string;
+  estado_inicial: EstadoProjeto;
+}
+
+// Sincronizar estado
+POST /api/projects/{id}/sync
+{
+  estado_local: EstadoProjeto;
+  versao_local: number;
+  mudancas: Change[];
+}
+Response: {
+  estado_merged: EstadoProjeto;
+  versao_nova: number;
+  conflitos?: Conflict[];
+}
+
+// Registrar evento
+POST /api/projects/{id}/events
+{
+  tipo: string;
+  dados: any;
+  maquina_id: string;
+}
+
+// WebSocket para atualizações em tempo real
+WS /ws/projects/{id}
+// Recebe: { tipo: "estado_atualizado", dados: EstadoProjeto }
+// Recebe: { tipo: "evento_novo", dados: Evento }
+```
+
+### 12.4 Painel Web (Dashboard)
+
+#### Funcionalidades
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  🏠 Guia-dev-IA Dashboard                           👤 user@email.com  🔔   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────────┐│
+│  │  📊 Visão Geral                                                          ││
+│  │                                                                          ││
+│  │  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐            ││
+│  │  │     5     │  │     3     │  │    82%    │  │    12     │            ││
+│  │  │  Projetos │  │ Em Andamento│ │ Gates OK  │  │ Features  │            ││
+│  │  └───────────┘  └───────────┘  └───────────┘  └───────────┘            ││
+│  └─────────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────────┐│
+│  │  📁 Meus Projetos                                              [+ Novo] ││
+│  │                                                                          ││
+│  │  ┌─────────────────────────────────────────────────────────────────────┐││
+│  │  │ 📦 meu-saas                                              🟢 Ativo   │││
+│  │  │ Fase 7/10 - Plano de Testes                                         │││
+│  │  │ ████████████████████░░░░░░░░░░ 70%                                  │││
+│  │  │ Última atividade: há 2 horas (Máquina: desktop-home)                │││
+│  │  │ [Ver detalhes] [Continuar] [Análises] [Histórico]                   │││
+│  │  └─────────────────────────────────────────────────────────────────────┘││
+│  │                                                                          ││
+│  │  ┌─────────────────────────────────────────────────────────────────────┐││
+│  │  │ 📦 e-commerce-api                                        🟡 Pausado │││
+│  │  │ Fase 4/10 - Modelagem de Domínio                                    │││
+│  │  │ ████████░░░░░░░░░░░░░░░░░░░░░░ 40%                                  │││
+│  │  │ Última atividade: há 3 dias (Máquina: laptop-office)                │││
+│  │  └─────────────────────────────────────────────────────────────────────┘││
+│  └─────────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────────┐│
+│  │  📈 Atividade Recente                                                   ││
+│  │                                                                          ││
+│  │  🕐 10:30  ✅ Gate "Arquitetura" validado (meu-saas)                    ││
+│  │  🕐 10:15  📄 Artefato "arquitetura.md" salvo                           ││
+│  │  🕐 09:45  🔒 Análise de segurança executada - 2 issues                 ││
+│  │  🕐 09:00  ▶️  Sessão iniciada (desktop-home)                            ││
+│  └─────────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Página de Detalhes do Projeto
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ← Voltar    📦 meu-saas                                    [⚙️] [📥 Export]│
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Tabs: [Visão Geral] [Fases] [Features] [Análises] [Artefatos] [Histórico] │
+│                                                                             │
+│  ═══════════════════════════════════════════════════════════════════════   │
+│                                                                             │
+│  📊 VISÃO GERAL                                                             │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│                                                                             │
+│  Complexidade: Médio (10 fases)    Stack: NestJS + Next.js + PostgreSQL    │
+│  Repositório: github.com/user/meu-saas                                      │
+│  Equipe: user@email.com, dev2@email.com                                     │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────────┐│
+│  │  PROGRESSO DAS FASES                                                    ││
+│  │                                                                          ││
+│  │  1. Produto        ████████████████████ ✅ Completo                     ││
+│  │  2. Requisitos     ████████████████████ ✅ Completo                     ││
+│  │  3. UX Design      ████████████████████ ✅ Completo                     ││
+│  │  4. Modelagem      ████████████████████ ✅ Completo                     ││
+│  │  5. Arquitetura    ████████████████████ ✅ Completo                     ││
+│  │  6. Segurança      ████████████████████ ✅ Completo                     ││
+│  │  7. Testes         ████████████░░░░░░░░ 🔄 Em andamento (60%)           ││
+│  │  8. Plano Exec.    ░░░░░░░░░░░░░░░░░░░░ ⏳ Pendente                      ││
+│  │  9. Implementação  ░░░░░░░░░░░░░░░░░░░░ ⏳ Pendente                      ││
+│  │ 10. DevOps         ░░░░░░░░░░░░░░░░░░░░ ⏳ Pendente                      ││
+│  └─────────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+│  ┌──────────────────────────────┐  ┌──────────────────────────────────────┐│
+│  │  📊 MÉTRICAS DE QUALIDADE    │  │  🔒 ÚLTIMA ANÁLISE DE SEGURANÇA     ││
+│  │                              │  │                                      ││
+│  │  Score Geral: 78/100         │  │  Nível de Risco: Baixo 🟢           ││
+│  │  Cobertura: 72%              │  │  Vulnerabilidades: 0                ││
+│  │  Gates: 6/6 OK               │  │  Executado: há 1 dia                ││
+│  │                              │  │                                      ││
+│  │  [Ver detalhes]              │  │  [Executar nova análise]            ││
+│  └──────────────────────────────┘  └──────────────────────────────────────┘│
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────────┐│
+│  │  📋 FEATURES RECENTES                                                   ││
+│  │                                                                          ││
+│  │  │ ID      │ Título                         │ Status       │ Criado    │││
+│  │  ├─────────┼────────────────────────────────┼──────────────┼───────────┤││
+│  │  │ FEAT-01 │ Autenticação de usuários       │ ✅ Concluída │ 10/12     │││
+│  │  │ FEAT-02 │ Dashboard principal            │ 🔄 Em dev    │ 15/12     │││
+│  │  │ FEAT-03 │ Gestão de configurações        │ 📋 Backlog   │ 18/12     │││
+│  └─────────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Stack do Painel Web
+
+```typescript
+// Frontend
+const dashboardStack = {
+  framework: "Next.js 14 (App Router)",
+  ui: "shadcn/ui + Tailwind CSS",
+  estado: "Zustand + TanStack Query",
+  graficos: "Recharts",
+  realtime: "Socket.io client",
+  auth: "NextAuth.js"
+};
+
+// Backend (API)
+const apiStack = {
+  runtime: "Node.js 20",
+  framework: "NestJS ou Fastify",
+  database: "PostgreSQL + Prisma",
+  cache: "Redis",
+  storage: "S3 ou MinIO",
+  realtime: "Socket.io",
+  auth: "JWT + API Keys"
+};
+```
+
+### 12.5 Modo Offline e Sincronização
+
+```typescript
+// Configuração do MCP para modo híbrido
+interface SyncConfig {
+  enabled: boolean;
+  mode: "online" | "offline-first" | "offline-only";
+  
+  // Offline-first (recomendado)
+  offlineFirst: {
+    // Sempre salva localmente primeiro
+    localStoragePath: ".guia/";
+    
+    // Tenta sync em background
+    syncInterval: 30000;  // 30 segundos
+    
+    // Mantém fila de mudanças pendentes
+    pendingQueuePath: ".guia/sync-queue.json";
+    
+    // Resolve conflitos automaticamente quando possível
+    conflictResolution: "last-write-wins" | "ask-user" | "custom";
+  };
+  
+  // Identificação da máquina
+  machineId: string;  // UUID gerado na primeira execução
+}
+```
+
+### 12.6 Como Continuar em Outra Máquina
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  FLUXO: CONTINUAR TRABALHO EM OUTRA MÁQUINA                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    MÁQUINA A (Casa)                              MÁQUINA B (Escritório)
+    ═══════════════                               ═════════════════════
+         │                                              │
+         │  1. Trabalha no projeto                      │
+         │     - Completa Fase 5                        │
+         │     - Salva artefatos                        │
+         │                                              │
+         │  2. MCP sincroniza automaticamente           │
+         │     → POST /api/projects/xxx/sync            │
+         │                                              │
+         ▼                                              │
+    ┌─────────┐                                         │
+    │  CLOUD  │ ◄────── Estado persistido ──────────────┤
+    └─────────┘                                         │
+         │                                              │
+         │                                              │  3. Inicia Claude/Cursor
+         │                                              │     com MCP configurado
+         │                                              │
+         │                                              │  4. MCP detecta projeto
+         │                                              │     - Lê .guia/projeto.json
+         │                                              │     - GET /api/projects/xxx
+         │                                              │
+         └──────────────────────────────────────────────┤
+                                                        │
+                                                        │  5. MCP baixa estado mais recente
+                                                        │     - Fase: 6/10
+                                                        │     - Contexto completo
+                                                        │     - Artefatos disponíveis
+                                                        │
+                                                        │  6. Continua de onde parou
+                                                        │     "Você está na Fase 6: Segurança"
+                                                        │     "Último trabalho: há 2 horas"
+                                                        ▼
+```
+
+### 12.7 Comandos de Sincronização
+
+```typescript
+// Novos Tools do MCP para sincronização
+
+// Vincular projeto local a conta cloud
+interface VincularProjetoInput {
+  projeto_local_path: string;
+  criar_novo?: boolean;      // Se true, cria no cloud
+  projeto_cloud_id?: string; // Se informado, vincula a existente
+}
+
+// Forçar sincronização
+interface SincronizarInput {
+  direcao?: "push" | "pull" | "bidirecional";
+  forcar?: boolean;  // Sobrescreve conflitos
+}
+
+// Ver status de sincronização
+interface StatusSyncOutput {
+  sincronizado: boolean;
+  ultima_sync: Date;
+  pendentes: number;
+  conflitos: Conflito[];
+  maquinas_ativas: MaquinaInfo[];
+}
+
+// Resolver conflito manualmente
+interface ResolverConflitoInput {
+  conflito_id: string;
+  resolucao: "manter_local" | "manter_remoto" | "merge";
+}
+```
+
+### 12.8 Variáveis de Ambiente Adicionais
+
+| Variável | Descrição | Default |
+|---|---|---|
+| `SYNC_ENABLED` | Habilita sincronização | `false` |
+| `SYNC_API_URL` | URL da API (ex: https://api.guia-dev-ia.com) | - |
+| `SYNC_API_KEY` | API Key para autenticação | - |
+| `SYNC_MODE` | Modo: `online`, `offline-first`, `offline-only` | `offline-first` |
+| `SYNC_INTERVAL` | Intervalo de sync em ms | `30000` |
+| `MACHINE_ID` | ID único da máquina (auto-gerado se não informado) | UUID auto |
+
 ---
 
-## 12. Próximos Passos
+## 12. Roadmap de Desenvolvimento
+
+| Semana | Tarefa | Entregável | Prioridade |
+|---|---|---|---|
+| 1 | Setup + Resources básicos | Leitura de especialistas/templates | P0 |
+| 1 | Tool: classificar_projeto | Detecção de complexidade | P0 |
+| 1 | Tool: iniciar_projeto | Fluxo adaptativo | P0 |
+| 2 | Sistema de Gates | Validação entre fases | P0 |
+| 2 | Tools: proximo, validar_gate | Navegação com validação | P0 |
+| 2 | Tool: salvar | Persistência com template | P0 |
+| 3 | Tools: status, contexto | Visibilidade do estado | P1 |
+| 3 | Fluxos secundários | Feature, bug, refatoração | P1 |
+| 3 | Resources: prompts avançados | C4, DDD, observabilidade | P1 |
+| 4 | **Tools de Análise** | Segurança, performance, qualidade | P1 |
+| 4 | analisar_seguranca | Detecção OWASP, CVEs | P1 |
+| 4 | analisar_performance | N+1, cache, gargalos | P1 |
+| 5 | analisar_qualidade | Complexidade, cobertura, SOLID | P1 |
+| 5 | sugerir_melhorias | Roadmap consolidado | P1 |
+| 5 | gerar_relatorio | Relatórios em markdown | P2 |
+| 6 | Testes automatizados | Cobertura > 80% | P1 |
+| 6 | Documentação | README, exemplos | P1 |
+| 7 | Refinamento | Feedback loop, ajustes | P2 |
+
+**Total estimado: 7 semanas**
+
+---
+
+## 13. Melhorias Futuras
+
+### 13.1 Curto Prazo (v2.1)
+- [ ] Integração com Git (auto-commit após salvar)
+- [ ] Suporte a múltiplos projetos simultâneos
+- [ ] Dashboard web para visualizar progresso
+- [ ] Histórico de análises com comparação temporal
+
+### 13.2 Médio Prazo (v2.5)
+- [ ] IA para sugestão de próximos passos
+- [ ] Análise automática de código para gates
+- [ ] Integração com Jira/Linear para backlog
+- [ ] Integração com SonarQube/CodeClimate
+- [ ] Análise de custo de infraestrutura
+
+### 13.3 Longo Prazo (v3.0)
+- [ ] Editor visual de fluxos customizados
+- [ ] Marketplace de templates e especialistas
+- [ ] Multi-tenant para times
+- [ ] Análise com IA generativa (code review automático)
+- [ ] Previsão de riscos com ML
+
+---
+
+## 14. Próximos Passos
 
 1. Criar repositório `mcp-guia-dev-ia`
 2. Configurar projeto TypeScript
-3. Implementar Resources básicos
-4. Implementar Tool `iniciar_projeto`
-5. Testar com Claude Desktop
-6. Iterar e expandir
+3. Implementar Resources básicos (especialistas, templates)
+4. Implementar classificador de complexidade
+5. Implementar Tool `iniciar_projeto` com fluxo adaptativo
+6. Implementar sistema de Gates
+7. **Implementar Tools de Análise (segurança, performance, qualidade)**
+8. Testar com Claude Desktop
+9. Documentar e publicar
+
+---
+
+## Changelog
+
+| Versão | Data | Mudanças |
+|---|---|---|
+| 2.1 | 2024-12-19 | Adicionadas Tools de Análise: `analisar_seguranca`, `analisar_performance`, `analisar_qualidade`, `analisar_acessibilidade`, `analisar_dependencias`, `sugerir_melhorias`, `gerar_relatorio` |
+| 2.0 | 2024-12-19 | Sistema de gates, templates, classificador de complexidade, especialistas avançados, prompts avançados |
+| 1.0 | 2024-12-18 | Versão inicial |

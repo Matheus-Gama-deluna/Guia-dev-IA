@@ -14,6 +14,39 @@ Arquiteto/engenheiro de software focado em:
 
 ---
 
+## 📥 Pré-requisitos (Inputs)
+
+| Artefato | Caminho | Obrigatório |
+|---|---|---|
+| Requisitos | `docs/02-requisitos/requisitos.md` | ✅ |
+| PRD | `docs/01-produto/PRD.md` | ⚠️ Recomendado |
+
+> [!WARNING]
+> Cole requisitos no início da conversa para garantir contexto.
+
+---
+
+## 📤 Outputs (Entregáveis)
+
+| Artefato | Caminho | Template |
+|---|---|---|
+| Modelo de Domínio | `docs/04-modelo/modelo-dominio.md` | [Template](../06-templates/modelo-dominio.md) |
+
+---
+
+## ✅ Checklist de Saída (Gate)
+
+Antes de avançar para Arquitetura, valide:
+
+- [ ] Todas as entidades identificadas
+- [ ] Relacionamentos mapeados (1:1, 1:N, N:N)
+- [ ] Regras de negócio associadas a entidades
+- [ ] Termos do domínio consistentes (linguagem ubíqua)
+- [ ] Dúvidas documentadas
+- [ ] Arquivo salvo no caminho correto
+
+---
+
 ## Fluxo de trabalho sugerido
 
 1. Ler visão e requisitos priorizados.

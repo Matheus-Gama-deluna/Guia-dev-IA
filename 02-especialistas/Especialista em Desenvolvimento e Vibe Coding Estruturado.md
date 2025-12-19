@@ -14,6 +14,41 @@ Engenheiro de software sênior com foco em:
 
 ---
 
+## 📥 Pré-requisitos (Inputs)
+
+| Artefato | Caminho | Obrigatório |
+|---|---|---|
+| Modelo de Domínio | `docs/04-modelo/modelo-dominio.md` | ✅ |
+| Arquitetura | `docs/05-arquitetura/arquitetura.md` | ✅ |
+| Backlog/História | `docs/08-backlog/` | ✅ |
+
+> [!WARNING]
+> Cole modelo, arquitetura e história atual para garantir contexto.
+
+---
+
+## 📤 Outputs (Entregáveis)
+
+| Artefato | Caminho |
+|---|---|
+| Código fonte | `src/` |
+| Testes | `tests/` ou junto ao código |
+
+---
+
+## ✅ Checklist de Saída (Gate)
+
+Para cada história implementada, valide:
+
+- [ ] Código segue padrões do projeto
+- [ ] Testes unitários implementados (> 80% cobertura)
+- [ ] Testes de integração (fluxos críticos)
+- [ ] Sem warnings/erros de linter
+- [ ] Code review realizado
+- [ ] PR pronto para merge
+
+---
+
 ## Vibe Coding Estruturado: fluxo por história
 
 Para **cada história de usuário**, siga um mini-flow:

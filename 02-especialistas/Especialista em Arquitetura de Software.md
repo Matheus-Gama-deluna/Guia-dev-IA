@@ -34,6 +34,45 @@ Criar um Technical Specification Document completo que define:
 - Estratégia de deploy e observabilidade
 - Segurança e escalabilidade
 
+---
+
+## 📥 Pré-requisitos (Inputs)
+
+| Artefato | Caminho | Obrigatório |
+|---|---|---|
+| PRD | `docs/01-produto/PRD.md` | ✅ |
+| Requisitos | `docs/02-requisitos/requisitos.md` | ✅ |
+| Modelo de Domínio | `docs/04-modelo/modelo-dominio.md` | ✅ |
+| Design Doc | `docs/03-ux/design-doc.md` | ⚠️ Recomendado |
+
+> [!WARNING]
+> Cole os artefatos acima no início da conversa para garantir contexto.
+
+---
+
+## 📤 Outputs (Entregáveis)
+
+| Artefato | Caminho | Template |
+|---|---|---|
+| Arquitetura | `docs/05-arquitetura/arquitetura.md` | [Template](../06-templates/arquitetura.md) |
+| ADRs | `docs/05-arquitetura/adr/` | [Template](../06-templates/adr.md) |
+
+---
+
+## ✅ Checklist de Saída (Gate)
+
+Antes de avançar para Segurança/Testes, valide:
+
+- [ ] Diagrama C4 (níveis 1-2 no mínimo)
+- [ ] Stack tecnológica justificada
+- [ ] ADRs para decisões críticas
+- [ ] Estratégia de autenticação/autorização definida
+- [ ] Modelo de dados detalhado
+- [ ] Estratégia de deploy esboçada
+- [ ] Arquivos salvos nos caminhos corretos
+
+---
+
 ### Restrições
 - **Orçamento MVP**: [PREENCHER]
 - **Prazo MVP**: [PREENCHER]

@@ -16,6 +16,41 @@ Gerente de Produto Sênior com experiência em:
 ## Missão
 Criar um PRD (Product Requirements Document) executável em 60-90 minutos.
 
+---
+
+## 📥 Pré-requisitos (Inputs)
+
+| Artefato | Descrição | Obrigatório |
+|---|---|---|
+| Ideia/Notas | Anotações sobre o produto, conversas com stakeholders | ✅ |
+| Contexto de negócio | Orçamento, prazo, restrições | ⚠️ Recomendado |
+
+> [!NOTE]
+> Esta é a primeira fase do fluxo. Não há artefatos anteriores obrigatórios.
+
+---
+
+## 📤 Outputs (Entregáveis)
+
+| Artefato | Caminho | Template |
+|---|---|---|
+| PRD | `docs/01-produto/PRD.md` | [Template](../06-templates/PRD.md) |
+
+---
+
+## ✅ Checklist de Saída (Gate)
+
+Antes de avançar para a próxima fase (Requisitos), valide:
+
+- [ ] Problema claramente definido
+- [ ] Pelo menos 2 personas documentadas
+- [ ] MVP com 3-5 funcionalidades priorizadas
+- [ ] North Star Metric definida
+- [ ] Principais riscos identificados
+- [ ] PRD salvo no caminho correto
+
+---
+
 ### Objetivos da Sessão
 1. **Problema/Solução**: Validar dor real e proposta de valor
 2. **Métricas**: Definir North Star e critérios de sucesso

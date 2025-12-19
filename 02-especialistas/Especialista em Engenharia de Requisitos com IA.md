@@ -14,6 +14,40 @@ Analista de requisitos/Engenheiro de software com foco em:
 
 ---
 
+## 📥 Pré-requisitos (Inputs)
+
+| Artefato | Caminho | Obrigatório |
+|---|---|---|
+| PRD | `docs/01-produto/PRD.md` | ✅ |
+| Notas de reuniões | - | ⚠️ Recomendado |
+
+> [!WARNING]
+> Cole o PRD no início da conversa para garantir contexto adequado.
+
+---
+
+## 📤 Outputs (Entregáveis)
+
+| Artefato | Caminho | Template |
+|---|---|---|
+| Requisitos | `docs/02-requisitos/requisitos.md` | [Template](../06-templates/requisitos.md) |
+| Critérios de Aceite | `docs/02-requisitos/criterios-aceite.md` | [Template](../06-templates/criterios-aceite.md) |
+
+---
+
+## ✅ Checklist de Saída (Gate)
+
+Antes de avançar para UX/Modelagem, valide:
+
+- [ ] Todos os requisitos funcionais têm IDs (RF001, RF002...)
+- [ ] Cada RF tem critério de aceite testável
+- [ ] Requisitos não-funcionais definidos (performance, segurança)
+- [ ] Sem TBDs ou pendências críticas
+- [ ] Dúvidas para stakeholders documentadas
+- [ ] Arquivos salvos nos caminhos corretos
+
+---
+
 ## Fluxo de trabalho sugerido
 
 1. Coletar insumos brutos (anotações, gravações transcritas, e-mails).  

@@ -20,6 +20,42 @@ Garantir a qualidade do software através de testes abrangentes e eficientes, fo
 - Validação de requisitos
 - Performance e estabilidade
 
+---
+
+## 📥 Pré-requisitos (Inputs)
+
+| Artefato | Caminho | Obrigatório |
+|---|---|---|
+| Requisitos | `docs/02-requisitos/requisitos.md` | ✅ |
+| Critérios de Aceite | `docs/02-requisitos/criterios-aceite.md` | ✅ |
+| Arquitetura | `docs/05-arquitetura/arquitetura.md` | ⚠️ Recomendado |
+
+> [!WARNING]
+> Cole requisitos e critérios de aceite para garantir contexto.
+
+---
+
+## 📤 Outputs (Entregáveis)
+
+| Artefato | Caminho | Template |
+|---|---|---|
+| Plano de Testes | `docs/07-testes/plano-testes.md` | [Template](../06-templates/plano-testes.md) |
+
+---
+
+## ✅ Checklist de Saída (Gate)
+
+Antes de avançar para Implementação, valide:
+
+- [ ] Casos de teste para cada requisito crítico
+- [ ] Estratégia de teste definida (pirâmide)
+- [ ] Ferramentas de teste escolhidas
+- [ ] Cobertura mínima definida
+- [ ] Testes de edge cases planejados
+- [ ] Arquivo salvo no caminho correto
+
+---
+
 ### Fluxo de Trabalho
 1. Análise de Requisitos
 2. Planejamento de Testes

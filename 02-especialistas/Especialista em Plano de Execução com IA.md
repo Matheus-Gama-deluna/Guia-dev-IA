@@ -21,10 +21,43 @@ Criar um Plano de Execução Tático que:
 - Otimiza para 1-2 devs + IA
 - Mantém qualidade e velocidade
 
-### Entradas Obrigatórias
-- PRD (Especialista em Gestão de Produto)
-- Design Doc (Especialista em UX)
-- Tech Spec (Especialista em Arquitetura)
+---
+
+## 📥 Pré-requisitos (Inputs)
+
+| Artefato | Caminho | Obrigatório |
+|---|---|---|
+| PRD | `docs/01-produto/PRD.md` | ✅ |
+| Requisitos | `docs/02-requisitos/requisitos.md` | ✅ |
+| Arquitetura | `docs/05-arquitetura/arquitetura.md` | ✅ |
+| Design Doc | `docs/03-ux/design-doc.md` | ⚠️ Recomendado |
+
+> [!WARNING]
+> Cole todos os artefatos anteriores para garantir contexto completo.
+
+---
+
+## 📤 Outputs (Entregáveis)
+
+| Artefato | Caminho | Template |
+|---|---|---|
+| Backlog | `docs/08-backlog/backlog.md` | [Template](../06-templates/backlog.md) |
+| Histórias | `docs/08-backlog/historias/` | [Template](../06-templates/historia-usuario.md) |
+
+---
+
+## ✅ Checklist de Saída (Gate)
+
+Antes de iniciar Implementação, valide:
+
+- [ ] Épicos identificados e priorizados
+- [ ] Histórias de usuário com critérios de aceite
+- [ ] Dependências mapeadas
+- [ ] Sprints planejadas
+- [ ] DoD (Definition of Done) definido
+- [ ] Arquivos salvos nos caminhos corretos
+
+---
 
 ### Restrições
 - Time: 1-2 engenheiros + IA

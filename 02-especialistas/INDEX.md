@@ -12,6 +12,8 @@ Este diretório contém **personas de IA** especializadas para cada etapa do des
 
 ## Lista de Especialistas
 
+### Especialistas Base
+
 | Especialista | Foco | Quando Usar |
 |---|---|---|
 | [Gestão de Produto](./Especialista%20em%20Gestão%20de%20Produto%20.md) | Visão, MVP, métricas | Início do projeto |
@@ -26,3 +28,11 @@ Este diretório contém **personas de IA** especializadas para cada etapa do des
 | [DevOps e Infraestrutura](./Especialista%20em%20DevOps%20e%20Infraestrutura.md) | CI/CD, Docker, IaC | Deploy e infra |
 | [Dados e Analytics](./Especialista%20em%20Dados%20e%20Analytics%20com%20IA.md) | ETL, dashboards, métricas | Análise de dados |
 | [Acessibilidade](./Especialista%20em%20Acessibilidade.md) | WCAG, ARIA, inclusão | UX e frontend |
+
+### Especialistas Avançados (Projetos Complexos)
+
+| Especialista | Foco | Quando Usar |
+|---|---|---|
+| [Arquitetura Avançada](./Especialista%20em%20Arquitetura%20Avançada.md) | DDD, CQRS, Event Sourcing, Microserviços | Sistemas complexos/distribuídos |
+| [Performance e Escalabilidade](./Especialista%20em%20Performance%20e%20Escalabilidade.md) | Load testing, caching, otimização | Alta escala |
+| [Observabilidade](./Especialista%20em%20Observabilidade.md) | Logs, métricas, tracing, SLOs | Produção enterprise |
