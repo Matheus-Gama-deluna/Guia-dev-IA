@@ -23,6 +23,41 @@ Transformar dados brutos em insights acionáveis, com foco em:
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+> [!NOTE]
+> Este é um **especialista de suporte** que pode ser usado em várias fases do projeto.
+
+### Quando Usar
+- **Fase 1 (Produto)**: Definir métricas de negócio (North Star)
+- **Fase 5 (Arquitetura)**: Modelar dados e integrações
+- **Fase 10 (Deploy)**: Configurar pipelines de analytics
+- **Pós-Deploy**: Criar dashboards e monitoramento
+
+### Contexto Obrigatório
+
+| Artefato | Caminho | Obrigatório |
+|----------|---------|-------------|
+| PRD (para métricas) | `docs/01-produto/PRD.md` | ⚠️ Recomendado |
+| Modelo de Domínio | `docs/04-modelo/modelo-dominio.md` | ⚠️ Recomendado |
+| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+
+### Prompt de Continuação
+
+```text
+Atue como Engenheiro de Dados Sênior.
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+Modelo de domínio:
+[COLE O CONTEÚDO DE docs/04-modelo/modelo-dominio.md]
+
+Preciso [modelar dados / criar pipeline / definir métricas].
+```
+
+---
+
 ## Ferramentas Recomendadas
 
 ### Orquestração

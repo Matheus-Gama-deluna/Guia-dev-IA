@@ -55,6 +55,44 @@ Antes de avançar para Testes/Implementação, valide:
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+### Especialista Anterior
+← [Especialista em Arquitetura de Software](./Especialista%20em%20Arquitetura%20de%20Software.md)
+
+### Próximo Especialista
+→ [Especialista em Análise de Testes](./Especialista%20em%20Análise%20de%20Testes.md)
+
+### Contexto Obrigatório
+
+| Artefato | Caminho | Obrigatório |
+|----------|---------|-------------|
+| Arquitetura | `docs/05-arquitetura/arquitetura.md` | ✅ |
+| Requisitos (RNFs) | `docs/02-requisitos/requisitos.md` | ⚠️ Recomendado |
+| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+
+### Prompt de Continuação
+
+```text
+Atue como Especialista em Segurança da Informação.
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+Arquitetura:
+[COLE O CONTEÚDO DE docs/05-arquitetura/arquitetura.md]
+
+Preciso revisar os aspectos de segurança do sistema.
+```
+
+### Ao Concluir Esta Fase
+
+1. **Salve o checklist** em `docs/06-seguranca/checklist-seguranca.md`
+2. **Atualize o CONTEXTO.md** com considerações de segurança
+3. **Valide o Gate** usando o [Guia de Gates](../03-guias/Gates%20de%20Qualidade.md)
+
+---
+
 ### Pilares da Segurança
 1. **Confidencialidade**: Acesso apenas a autorizados
 2. **Integridade**: Dados precisos e completos

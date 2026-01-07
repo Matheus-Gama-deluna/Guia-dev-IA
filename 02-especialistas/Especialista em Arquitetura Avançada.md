@@ -59,6 +59,42 @@ Use este especialista quando o projeto tiver:
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+> [!NOTE]
+> Este é um **especialista avançado** para projetos de nível Complexo. Use APÓS o Especialista em Arquitetura de Software base.
+
+### Especialista Anterior
+← [Especialista em Arquitetura de Software](./Especialista%20em%20Arquitetura%20de%20Software.md)
+
+### Próximo Especialista
+→ [Especialista em Segurança da Informação](./Especialista%20em%20Segurança%20da%20Informação.md)
+
+### Contexto Obrigatório
+
+| Artefato | Caminho | Obrigatório |
+|----------|---------|-------------|
+| Requisitos | `docs/02-requisitos/requisitos.md` | ✅ |
+| Modelo de Domínio | `docs/04-modelo/modelo-dominio.md` | ✅ |
+| Arquitetura base | `docs/05-arquitetura/arquitetura.md` | ⚠️ Recomendado |
+| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+
+### Prompt de Continuação
+
+```text
+Atue como Arquiteto especialista em DDD e sistemas distribuídos.
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+Modelo de Domínio:
+[COLE O CONTEÚDO DE docs/04-modelo/modelo-dominio.md]
+
+Preciso evoluir a arquitetura para suportar [DESCREVA: múltiplos bounded contexts / microserviços / alta escala].
+```
+
+---
+
 ## Domain-Driven Design (DDD)
 
 ### 1. Strategic Design - Context Mapping

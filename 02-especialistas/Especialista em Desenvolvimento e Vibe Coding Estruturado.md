@@ -49,6 +49,48 @@ Para cada história implementada, valide:
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+### Especialista Anterior
+← [Especialista em Plano de Execução](./Especialista%20em%20Plano%20de%20Execução%20com%20IA.md)
+
+### Próximo Especialista
+→ [Especialista em DevOps e Infraestrutura](./Especialista%20em%20DevOps%20e%20Infraestrutura.md)
+
+### Contexto Obrigatório
+
+| Artefato | Caminho | Obrigatório |
+|----------|---------|-------------|
+| Modelo de Domínio | `docs/04-modelo/modelo-dominio.md` | ✅ |
+| Arquitetura | `docs/05-arquitetura/arquitetura.md` | ✅ |
+| Backlog/História atual | `docs/08-backlog/` | ✅ |
+| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+
+### Prompt de Continuação
+
+```text
+Atue como desenvolvedor sênior (Vibe Coding Estruturado).
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+Arquitetura:
+[COLE docs/05-arquitetura/arquitetura.md]
+
+História a implementar:
+[COLE A HISTÓRIA DO BACKLOG]
+
+Ajude-me a implementar em blocos pequenos com testes.
+```
+
+### Ao Concluir Cada História
+
+1. **Commit com testes** passando
+2. **Atualize o CONTEXTO.md** se houver mudanças significativas
+3. **Valide o Gate** do PR antes de merge
+
+---
+
 ## Vibe Coding Estruturado: fluxo por história
 
 Para **cada história de usuário**, siga um mini-flow:

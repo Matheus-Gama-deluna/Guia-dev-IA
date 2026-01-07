@@ -73,6 +73,56 @@ Antes de avançar para Segurança/Testes, valide:
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+### Especialista Anterior
+← [Especialista em Modelagem de Domínio](./Especialista%20em%20Modelagem%20e%20Arquitetura%20de%20Domínio%20com%20IA.md)
+
+### Próximo Especialista
+→ [Especialista em Segurança da Informação](./Especialista%20em%20Segurança%20da%20Informação.md)
+
+### Contexto Obrigatório
+
+Antes de iniciar, cole os seguintes artefatos COMPLETOS:
+
+| Artefato | Caminho | Obrigatório |
+|----------|---------|-------------|
+| PRD | `docs/01-produto/PRD.md` | ✅ |
+| Requisitos | `docs/02-requisitos/requisitos.md` | ✅ |
+| Modelo de Domínio | `docs/04-modelo/modelo-dominio.md` | ✅ |
+| Design Doc | `docs/03-ux/design-doc.md` | ⚠️ Recomendado |
+| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+
+### Prompt de Continuação
+
+```text
+Atue como Arquiteto de Software Sênior.
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+Modelo de Domínio:
+[COLE O CONTEÚDO DE docs/04-modelo/modelo-dominio.md]
+
+Requisitos Não-Funcionais:
+[COLE APENAS OS RNFs DE docs/02-requisitos/requisitos.md]
+
+Preciso de uma arquitetura que suporte esses requisitos.
+Stack preferencial: [DESCREVA]
+```
+
+### Ao Concluir Esta Fase
+
+1. **Salve os artefatos** nos caminhos corretos
+2. **Atualize o CONTEXTO.md** com decisões arquiteturais
+3. **Valide o Gate** usando o [Guia de Gates](../03-guias/Gates%20de%20Qualidade.md)
+4. **Passe para Segurança** com o contexto atualizado
+
+> [!IMPORTANT]
+> Sem os artefatos anteriores, a arquitetura será genérica e desconectada do domínio.
+
+---
+
 ### Restrições
 - **Orçamento MVP**: [PREENCHER]
 - **Prazo MVP**: [PREENCHER]

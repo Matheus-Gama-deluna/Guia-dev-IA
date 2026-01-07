@@ -42,6 +42,41 @@ Implementar visibilidade completa do sistema em produção para:
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+> [!NOTE]
+> Este é um **especialista avançado** para projetos de nível Complexo. Use APÓS DevOps.
+
+### Especialista Anterior
+← [Especialista em DevOps e Infraestrutura](./Especialista%20em%20DevOps%20e%20Infraestrutura.md)
+
+### Próximo Especialista
+→ *(Fase final para projetos complexos)*
+
+### Contexto Obrigatório
+
+| Artefato | Caminho | Obrigatório |
+|----------|---------|-------------|
+| Arquitetura | `docs/05-arquitetura/arquitetura.md` | ✅ |
+| Requisitos NF | Seção de RNF | ✅ |
+| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+
+### Prompt de Continuação
+
+```text
+Atue como SRE Sênior especialista em Observabilidade.
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+Arquitetura:
+[COLE O CONTEÚDO DE docs/05-arquitetura/arquitetura.md]
+
+Preciso [definir SLOs / configurar logging / implementar tracing / criar dashboards].
+```
+
+---
+
 ## Os Três Pilares
 
 ```mermaid

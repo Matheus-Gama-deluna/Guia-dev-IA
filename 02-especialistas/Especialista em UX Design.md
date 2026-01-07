@@ -61,6 +61,47 @@ Antes de avançar para Modelagem/Arquitetura, valide:
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+### Especialista Anterior
+← [Especialista em Prototipagem com Stitch](./Especialista%20em%20Prototipagem%20Rápida%20com%20Google%20Stitch.md) *(ou Requisitos se pular prototipagem)*
+
+### Próximo Especialista
+→ [Especialista em Modelagem de Domínio](./Especialista%20em%20Modelagem%20e%20Arquitetura%20de%20Domínio%20com%20IA.md)
+
+### Contexto Obrigatório
+
+| Artefato | Caminho | Obrigatório |
+|----------|---------|-------------|
+| PRD | `docs/01-produto/PRD.md` | ✅ |
+| Requisitos | `docs/02-requisitos/requisitos.md` | ✅ |
+| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+
+### Prompt de Continuação
+
+```text
+Atue como UX Designer Sênior.
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+Requisitos:
+[COLE O CONTEÚDO DE docs/02-requisitos/requisitos.md]
+
+Preciso mapear a experiência do usuário e definir os fluxos principais.
+```
+
+### Ao Concluir Esta Fase
+
+1. **Salve os artefatos** nos caminhos corretos
+2. **Atualize o CONTEXTO.md** com informações de UX
+3. **Valide o Gate** usando o [Guia de Gates](../03-guias/Gates%20de%20Qualidade.md)
+
+> [!IMPORTANT]
+> Sem os requisitos, os fluxos serão baseados em suposições.
+
+---
+
 ### Objetivos
 1. Mapear fluxos de usuário (happy path + erros)
 2. Definir arquitetura da informação

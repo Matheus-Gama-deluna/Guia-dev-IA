@@ -16,6 +16,11 @@ Esta pasta contém templates padronizados para cada entregável do Guia-dev-IA.
 |---|---|
 | [PRD.md](./PRD.md) | Product Requirements Document |
 
+### Contexto (Todas as Fases)
+| Template | Descrição |
+|---|---|
+| [contexto.md](./contexto.md) | **NOVO** - Mantém contexto entre sessões |
+
 ### Fase 2: Requisitos
 | Template | Descrição |
 |---|---|

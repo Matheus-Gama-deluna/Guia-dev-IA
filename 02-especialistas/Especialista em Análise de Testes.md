@@ -56,6 +56,45 @@ Antes de avançar para Implementação, valide:
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+### Especialista Anterior
+← [Especialista em Segurança da Informação](./Especialista%20em%20Segurança%20da%20Informação.md)
+
+### Próximo Especialista
+→ [Especialista em Plano de Execução](./Especialista%20em%20Plano%20de%20Execução%20com%20IA.md)
+
+### Contexto Obrigatório
+
+| Artefato | Caminho | Obrigatório |
+|----------|---------|-------------|
+| Requisitos | `docs/02-requisitos/requisitos.md` | ✅ |
+| Critérios de Aceite | `docs/02-requisitos/criterios-aceite.md` | ✅ |
+| Arquitetura | `docs/05-arquitetura/arquitetura.md` | ⚠️ Recomendado |
+| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+
+### Prompt de Continuação
+
+```text
+Atue como Engenheiro de QA Sênior.
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+Requisitos e critérios de aceite:
+[COLE docs/02-requisitos/requisitos.md E criterios-aceite.md]
+
+Preciso definir a estratégia de testes e plano de cobertura.
+```
+
+### Ao Concluir Esta Fase
+
+1. **Salve o plano** em `docs/07-testes/plano-testes.md`
+2. **Atualize o CONTEXTO.md** com estratégia de testes
+3. **Valide o Gate** usando o [Guia de Gates](../03-guias/Gates%20de%20Qualidade.md)
+
+---
+
 ### Fluxo de Trabalho
 1. Análise de Requisitos
 2. Planejamento de Testes

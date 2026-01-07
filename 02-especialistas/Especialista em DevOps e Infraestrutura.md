@@ -59,6 +59,44 @@ Antes de considerar o deploy pronto, valide:
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+### Especialista Anterior
+← [Especialista em Desenvolvimento](./Especialista%20em%20Desenvolvimento%20e%20Vibe%20Coding%20Estruturado.md)
+
+### Próximo Especialista
+→ *(Fase final do fluxo principal)* ou [Especialista em Observabilidade](./Especialista%20em%20Observabilidade.md) (projetos complexos)
+
+### Contexto Obrigatório
+
+| Artefato | Caminho | Obrigatório |
+|----------|---------|-------------|
+| Arquitetura | `docs/05-arquitetura/arquitetura.md` | ✅ |
+| Código fonte | `src/` | ✅ |
+| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+
+### Prompt de Continuação
+
+```text
+Atue como Engenheiro DevOps Sênior.
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+Arquitetura:
+[COLE O CONTEÚDO DE docs/05-arquitetura/arquitetura.md]
+
+Preciso configurar CI/CD, containerização e deploy.
+```
+
+### Ao Concluir Esta Fase
+
+1. Configure pipelines e Dockerfiles
+2. Atualize o CONTEXTO.md com informações de deploy
+3. Documente runbooks para operação
+
+---
+
 ## Ferramentas Recomendadas
 
 ### CI/CD

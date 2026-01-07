@@ -48,6 +48,43 @@ Garantir que o sistema suporte a carga esperada com performance adequada, identi
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+> [!NOTE]
+> Este é um **especialista avançado** para projetos de nível Complexo ou quando há problemas de performance.
+
+### Quando Usar
+- **Fase 5 (Arquitetura)**: Definir requisitos de performance e cache
+- **Fase 9 (Desenvolvimento)**: Otimizar código e queries
+- **Pós-Deploy**: Tuning baseado em métricas reais
+
+### Contexto Obrigatório
+
+| Artefato | Caminho | Obrigatório |
+|----------|---------|-------------|
+| Requisitos NF | `docs/02-requisitos/requisitos.md` (seção RNF) | ✅ |
+| Arquitetura | `docs/05-arquitetura/arquitetura.md` | ✅ |
+| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+
+### Prompt de Continuação
+
+```text
+Atue como Engenheiro de Performance Sênior.
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+Arquitetura:
+[COLE O CONTEÚDO DE docs/05-arquitetura/arquitetura.md]
+
+Requisitos de performance:
+[COLE RNFs DE docs/02-requisitos/requisitos.md]
+
+Preciso [definir SLOs / identificar gargalos / otimizar queries / planejar load test].
+```
+
+---
+
 ## Análise de Performance
 
 ### 1. Identificar requisitos de performance

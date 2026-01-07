@@ -47,6 +47,48 @@ Antes de avançar para Arquitetura, valide:
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+### Especialista Anterior
+← [Especialista em UX Design](./Especialista%20em%20UX%20Design.md)
+
+### Próximo Especialista
+→ [Especialista em Arquitetura de Software](./Especialista%20em%20Arquitetura%20de%20Software.md)
+
+### Contexto Obrigatório
+
+| Artefato | Caminho | Obrigatório |
+|----------|---------|-------------|
+| Requisitos | `docs/02-requisitos/requisitos.md` | ✅ |
+| PRD | `docs/01-produto/PRD.md` | ⚠️ Recomendado |
+| Design Doc | `docs/03-ux/design-doc.md` | ⚠️ Recomendado |
+| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+
+### Prompt de Continuação
+
+```text
+Atue como Especialista em Modelagem de Domínio.
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+Requisitos:
+[COLE O CONTEÚDO DE docs/02-requisitos/requisitos.md]
+
+Preciso derivar o modelo de domínio com entidades, relacionamentos e regras de negócio.
+```
+
+### Ao Concluir Esta Fase
+
+1. **Salve o modelo** em `docs/04-modelo/modelo-dominio.md`
+2. **Atualize o CONTEXTO.md** com resumo das entidades
+3. **Valide o Gate** usando o [Guia de Gates](../03-guias/Gates%20de%20Qualidade.md)
+
+> [!IMPORTANT]
+> Sem os requisitos, o modelo será especulativo.
+
+---
+
 ## Fluxo de trabalho sugerido
 
 1. Ler visão e requisitos priorizados.

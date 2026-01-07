@@ -18,7 +18,8 @@ Este diretório contém **personas de IA** especializadas para cada etapa do des
 |---|---|---|
 | [Gestão de Produto](./Especialista%20em%20Gestão%20de%20Produto%20.md) | Visão, MVP, métricas | Início do projeto |
 | [Engenharia de Requisitos](./Especialista%20em%20Engenharia%20de%20Requisitos%20com%20IA.md) | Requisitos funcionais/não-funcionais | Após definir visão |
-| [UX Design](./Especialista%20em%20UX%20Design.md) | Fluxos, arquitetura de informação | Após requisitos |
+| [**🆕 Prototipagem com Stitch**](./Especialista%20em%20Prototipagem%20Rápida%20com%20Google%20Stitch.md) | UI rápida com IA | Após requisitos |
+| [UX Design](./Especialista%20em%20UX%20Design.md) | Fluxos, arquitetura de informação | Após protótipo |
 | [Modelagem de Domínio](./Especialista%20em%20Modelagem%20e%20Arquitetura%20de%20Domínio%20com%20IA.md) | Entidades, relacionamentos | Após UX |
 | [Arquitetura de Software](./Especialista%20em%20Arquitetura%20de%20Software.md) | Stack, C4, padrões | Antes de codar |
 | [Segurança da Informação](./Especialista%20em%20Segurança%20da%20Informação.md) | OWASP, criptografia, LGPD | Durante e pós-dev |
@@ -36,3 +37,4 @@ Este diretório contém **personas de IA** especializadas para cada etapa do des
 | [Arquitetura Avançada](./Especialista%20em%20Arquitetura%20Avançada.md) | DDD, CQRS, Event Sourcing, Microserviços | Sistemas complexos/distribuídos |
 | [Performance e Escalabilidade](./Especialista%20em%20Performance%20e%20Escalabilidade.md) | Load testing, caching, otimização | Alta escala |
 | [Observabilidade](./Especialista%20em%20Observabilidade.md) | Logs, métricas, tracing, SLOs | Produção enterprise |
+| [**🆕 Migração e Modernização**](./Especialista%20em%20Migração%20e%20Modernização.md) | Strangler Fig, migração de dados, rollback | Modernização de legados |

@@ -51,6 +51,38 @@ Antes de avançar para a próxima fase (Requisitos), valide:
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+### Especialista Anterior
+← *(Esta é a primeira fase do fluxo)*
+
+### Próximo Especialista
+→ [Especialista em Engenharia de Requisitos](./Especialista%20em%20Engenharia%20de%20Requisitos%20com%20IA.md)
+
+### Ao Concluir Esta Fase
+
+1. **Salve o PRD** em `docs/01-produto/PRD.md`
+2. **Atualize o CONTEXTO.md** do projeto (use [template](../06-templates/contexto.md))
+3. **Valide o Gate** usando o [Guia de Gates](../03-guias/Gates%20de%20Qualidade.md)
+4. **Passe o contexto** para o próximo especialista:
+
+```text
+Atue como Engenheiro de Requisitos.
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+PRD:
+[COLE O CONTEÚDO DE docs/01-produto/PRD.md]
+
+Agora preciso transformar esta visão em requisitos claros e testáveis.
+```
+
+> [!IMPORTANT]
+> Sem o PRD, a fase de Requisitos produzirá resultados genéricos e desconectados.
+
+---
+
 ### Objetivos da Sessão
 1. **Problema/Solução**: Validar dor real e proposta de valor
 2. **Métricas**: Definir North Star e critérios de sucesso

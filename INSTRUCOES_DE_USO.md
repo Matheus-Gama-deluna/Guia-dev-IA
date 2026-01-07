@@ -4,6 +4,45 @@ Como utilizar o Guia-dev-IA em diferentes cenários de desenvolvimento.
 
 ---
 
+## ⚠️ ANTES DE COMEÇAR
+
+### 1. Classifique seu Projeto
+
+Use o [Sistema de Classificação](./CLASSIFICACAO_PROJETO.md) para determinar o nível:
+
+| Nível | Fases | Especialistas | Quando Usar |
+|-------|-------|---------------|-------------|
+| **Simples** | 5 | Base (reduzido) | Landing pages, POCs, < 2 semanas |
+| **Médio** | 10 | Base (completo) | SaaS simples, apps, 1-3 meses |
+| **Complexo** | 14 | Base + Avançados | Multi-tenant, fintech, 3+ meses |
+
+> [!IMPORTANT]
+> Não use todos os especialistas em projetos simples.
+> Não pule especialistas avançados em projetos complexos.
+
+### 2. Mantenha o Contexto Entre Sessões
+
+O maior problema ao usar IA para desenvolvimento é **perder contexto entre sessões**.
+
+**Solução**: Use o template [CONTEXTO.md](./06-templates/contexto.md)
+
+1. Copie o template para `docs/CONTEXTO.md` no seu projeto
+2. Atualize após cada fase concluída
+3. No início de cada sessão, cole o CONTEXTO.md como primeiro input
+
+```text
+Aqui está o contexto do meu projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+Continuando da fase [X], preciso [TAREFA].
+```
+
+### 3. Use os Gates de Qualidade
+
+Antes de avançar entre fases, valide usando o [Guia de Gates](./03-guias/Gates%20de%20Qualidade.md).
+
+---
+
 ## Mapa de Relações entre Arquivos
 
 ```mermaid
@@ -18,6 +57,7 @@ flowchart TD
     subgraph Specialists["🧠 Especialistas"]
         PM[Gestão de Produto]
         REQ[Engenharia de Requisitos]
+        STITCH[🆕 Prototipagem Stitch]
         UX[UX Design]
         MODEL[Modelagem de Domínio]
         ARCH[Arquitetura de Software]
@@ -41,7 +81,7 @@ flowchart TD
     README --> QUICK
     QUICK --> PLAYBOOK
     PLAYBOOK --> PM
-    PM --> REQ --> UX --> MODEL --> ARCH
+    PM --> REQ --> STITCH --> UX --> MODEL --> ARCH
     ARCH --> SEC & TEST
     SEC & TEST --> PLAN --> DEV
     DEV --> ADD
@@ -57,15 +97,17 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[Ideia] --> B[Produto] --> C[Requisitos] --> D[UX]
-    D --> E[Modelagem] --> F[Arquitetura] --> G[Segurança]
-    G --> H[Plano] --> I[Implementação] --> J[Testes] --> K[Deploy]
+    A[Ideia] --> B[Produto] --> C[Requisitos] --> S[🆕 Stitch]
+    S --> D[UX] --> E[Modelagem] --> F[Arquitetura]
+    F --> G[Segurança] --> H[Plano] --> I[Implementação]
+    I --> J[Testes] --> K[Deploy]
 ```
 
 | Fase | Arquivo | Artefato Gerado |
 |---|---|---|
 | 1. Visão | `Especialista em Gestão de Produto` | PRD |
 | 2. Requisitos | `Especialista em Engenharia de Requisitos` | RF/RNF + Gherkin |
+| **2.5 🆕 UI Rápida** | `Especialista em Prototipagem com Stitch` | Prompts + código UI |
 | 3. UX | `Especialista em UX Design` | Fluxos, wireframes |
 | 4. Modelagem | `Especialista em Modelagem de Domínio` | Entidades |
 | 5. Arquitetura | `Especialista em Arquitetura de Software` | C4, ADRs |

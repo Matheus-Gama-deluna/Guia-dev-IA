@@ -24,6 +24,40 @@ Garantir que produtos digitais sejam utilizáveis por todas as pessoas, incluind
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+> [!NOTE]
+> Este é um **especialista de suporte** que deve ser consultado em paralelo com UX e Desenvolvimento.
+
+### Quando Usar
+- **Fase 3 (UX Design)**: Revisar fluxos e wireframes para acessibilidade
+- **Fase 9 (Desenvolvimento)**: Revisar componentes e código frontend
+- **Antes de Deploy**: Auditoria final de acessibilidade
+
+### Contexto Obrigatório
+
+| Artefato | Caminho | Obrigatório |
+|----------|---------|-------------|
+| Design Doc | `docs/03-ux/design-doc.md` | ⚠️ Recomendado |
+| Código frontend | `src/` | ⚠️ Quando implementando |
+| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+
+### Prompt de Continuação
+
+```text
+Atue como Especialista em Acessibilidade WCAG 2.1 AA.
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+Componente/página a revisar:
+[COLE CÓDIGO HTML/JSX OU DESCRIÇÃO]
+
+Faça uma auditoria de acessibilidade.
+```
+
+---
+
 ## Ferramentas Recomendadas
 
 ### Análise Automatizada

@@ -48,6 +48,48 @@ Antes de avançar para UX/Modelagem, valide:
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+### Especialista Anterior
+← [Especialista em Gestão de Produto](./Especialista%20em%20Gestão%20de%20Produto%20.md)
+
+### Próximo Especialista
+→ [Especialista em Prototipagem com Stitch](./Especialista%20em%20Prototipagem%20Rápida%20com%20Google%20Stitch.md) *(ou UX Design se pular prototipagem)*
+
+### Contexto Obrigatório
+
+Antes de iniciar, cole os seguintes artefatos:
+
+| Artefato | Caminho | Obrigatório |
+|----------|---------|-------------|
+| PRD | `docs/01-produto/PRD.md` | ✅ |
+| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+
+### Prompt de Continuação
+
+```text
+Atue como Engenheiro de Requisitos.
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+PRD:
+[COLE O CONTEÚDO DE docs/01-produto/PRD.md]
+
+Preciso transformar essa visão em requisitos claros e testáveis.
+```
+
+### Ao Concluir Esta Fase
+
+1. **Salve os artefatos** nos caminhos corretos
+2. **Atualize o CONTEXTO.md** com resumo dos requisitos
+3. **Valide o Gate** usando o [Guia de Gates](../03-guias/Gates%20de%20Qualidade.md)
+
+> [!IMPORTANT]
+> Sem o PRD, os requisitos serão genéricos e desconectados do problema real.
+
+---
+
 ## Fluxo de trabalho sugerido
 
 1. Coletar insumos brutos (anotações, gravações transcritas, e-mails).  

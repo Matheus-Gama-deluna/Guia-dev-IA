@@ -59,6 +59,46 @@ Antes de iniciar Implementação, valide:
 
 ---
 
+## 🔗 Fluxo de Contexto
+
+### Especialista Anterior
+← [Especialista em Análise de Testes](./Especialista%20em%20Análise%20de%20Testes.md)
+
+### Próximo Especialista
+→ [Especialista em Desenvolvimento](./Especialista%20em%20Desenvolvimento%20e%20Vibe%20Coding%20Estruturado.md)
+
+### Contexto Obrigatório
+
+| Artefato | Caminho | Obrigatório |
+|----------|---------|-------------|
+| PRD | `docs/01-produto/PRD.md` | ✅ |
+| Requisitos | `docs/02-requisitos/requisitos.md` | ✅ |
+| Arquitetura | `docs/05-arquitetura/arquitetura.md` | ✅ |
+| Design Doc | `docs/03-ux/design-doc.md` | ⚠️ Recomendado |
+| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+
+### Prompt de Continuação
+
+```text
+Atue como Tech Lead especializado em planejamento.
+
+Contexto do projeto:
+[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+
+Arquitetura:
+[COLE O CONTEÚDO DE docs/05-arquitetura/arquitetura.md]
+
+Preciso decompor em épicos, histórias e definir sprints para o MVP.
+```
+
+### Ao Concluir Esta Fase
+
+1. **Salve o backlog** em `docs/08-backlog/backlog.md`
+2. **Atualize o CONTEXTO.md** com resumo do planejamento
+3. **Valide o Gate** usando o [Guia de Gates](../03-guias/Gates%20de%20Qualidade.md)
+
+---
+
 ### Restrições
 - Time: 1-2 engenheiros + IA
 - Prazo: Respeitar cronograma do MVP
