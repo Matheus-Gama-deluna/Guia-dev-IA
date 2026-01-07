@@ -1,7 +1,7 @@
 # Prompt: Gerar Testes Unitários
 
 > **Quando usar**: Após implementar uma classe/função, para criar testes
-> **Especialista**: [Qualidade e Testes](file:///c:/Users/gamam/OneDrive/Documentos/1-%20TramposTec/Guia%20Dev/Guia-dev-IA/02-especialistas/Qualidade%20e%20Testes.md)
+> **Especialista**: [Análise de Testes](../../02-especialistas/Especialista%20em%20Análise%20de%20Testes.md)
 > **Nível**: Simples a Médio
 
 ---

@@ -6,6 +6,39 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [2.2.0] - 2026-01-07
+
+### 🎼 Renomeação do Projeto
+- Projeto renomeado de "Guia-dev-IA" para **Maestro**
+- URIs atualizadas de `guia://` para `maestro://`
+- Pasta de estado atualizada de `.guia/` para `.maestro/`
+
+### Adicionado
+- **RULES_TEMPLATE.md**: Template de regras para configurar IAs (Cursor, Claude, Copilot)
+- **Resource `maestro://system-prompt`**: Injeção automática de rules no MCP
+- **Especialista em Contrato de API**: Padrão Contract First
+- **Especialista em Desenvolvimento Frontend**: Fluxo Frontend First
+- Fluxo Frontend First: Contrato → FE/BE paralelo → Integração
+- Templates de histórias (frontend, backend, integração)
+- Instrução de Avanço Automático em todos os especialistas
+
+### Corrigido
+- Links absolutos antigos em prompts convertidos para paths relativos
+
+---
+
+## [2.0.0] - 2024-12-19
+
+### Adicionado
+- Sistema de Gates de qualidade entre fases
+- Classificador de complexidade (Simples/Médio/Complexo)
+- 3 Especialistas Avançados: Arquitetura Avançada, Performance, Observabilidade
+- MCP_ESPECIFICACAO.md com design completo do MCP Server
+- 16 Templates de artefatos
+- Prompts avançados para arquitetura C4, DDD, escalabilidade
+
+---
+
 ## [1.0.0] - 2024-12-18
 
 ### Adicionado

@@ -1,7 +1,7 @@
 # Prompt: Otimização de Queries e Banco de Dados
 
 > **Quando usar**: Ao identificar queries lentas ou planejar schema de banco
-> **Especialista**: DBA / [Performance e Escalabilidade](file:///c:/Users/gamam/OneDrive/Documentos/1-%20TramposTec/Guia%20Dev/Guia-dev-IA/02-especialistas/Performance%20e%20Escalabilidade.md)
+> **Especialista**: DBA / [Performance e Escalabilidade](../../02-especialistas/Especialista%20em%20Performance%20e%20Escalabilidade.md)
 > **Nível**: Médio a Complexo
 
 ---

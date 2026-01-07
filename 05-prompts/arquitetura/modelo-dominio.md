@@ -1,7 +1,7 @@
 # Prompt: Modelo de Domínio
 
 > **Quando usar**: Início do projeto, após refinar requisitos
-> **Especialista**: [Análise de Requisitos](file:///c:/Users/gamam/OneDrive/Documentos/1-%20TramposTec/Guia%20Dev/Guia-dev-IA/02-especialistas/Análise%20de%20Requisitos.md) ou [Arquitetura de Software](file:///c:/Users/gamam/OneDrive/Documentos/1-%20TramposTec/Guia%20Dev/Guia-dev-IA/02-especialistas/Arquitetura%20de%20Software.md)
+> **Especialista**: [Engenharia de Requisitos](../../02-especialistas/Especialista%20em%20Engenharia%20de%20Requisitos%20com%20IA.md) ou [Arquitetura de Software](../../02-especialistas/Especialista%20em%20Arquitetura%20de%20Software.md)
 > **Nível**: Simples a Médio
 
 ---

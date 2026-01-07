@@ -1,7 +1,7 @@
 # Prompt: Discovery Inicial de Produto
 
 > **Quando usar**: Início de projeto, quando há apenas uma ideia ou anotações soltas
-> **Especialista**: [Discovery de Produto](file:///c:/Users/gamam/OneDrive/Documentos/1-%20TramposTec/Guia%20Dev/Guia-dev-IA/02-especialistas/Discovery%20de%20Produto.md)
+> **Especialista**: [Gestão de Produto](../../02-especialistas/Especialista%20em%20Gestão%20de%20Produto%20.md)
 > **Nível**: Simples
 
 ---

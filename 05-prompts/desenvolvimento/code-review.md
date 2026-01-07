@@ -1,7 +1,7 @@
 # Prompt: Code Review Automatizado
 
 > **Quando usar**: Durante Pull Requests ou revisão de código
-> **Especialista**: [Implementação Backend](file:///c:/Users/gamam/OneDrive/Documentos/1-%20TramposTec/Guia%20Dev/Guia-dev-IA/02-especialistas/Implementação%20Backend.md) ou Tech Lead
+> **Especialista**: [Desenvolvimento Backend](../../02-especialistas/Especialista%20em%20Desenvolvimento%20e%20Vibe%20Coding%20Estruturado.md) ou Tech Lead
 > **Nível**: Médio
 
 ---

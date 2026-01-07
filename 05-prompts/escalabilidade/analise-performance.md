@@ -1,7 +1,7 @@
 # Prompt: Análise de Performance e Escalabilidade
 
 > **Quando usar**: Após implementação inicial, antes de ir para produção, ou ao identificar gargalos
-> **Especialista**: [Performance e Escalabilidade](file:///c:/Users/gamam/OneDrive/Documentos/1-%20TramposTec/Guia%20Dev/Guia-dev-IA/02-especialistas/Performance%20e%20Escalabilidade.md)
+> **Especialista**: [Performance e Escalabilidade](../../02-especialistas/Especialista%20em%20Performance%20e%20Escalabilidade.md)
 > **Nível**: Médio a Complexo
 
 ---

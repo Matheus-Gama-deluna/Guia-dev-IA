@@ -1,7 +1,7 @@
 # Prompt: Estratégia de Observabilidade
 
 > **Quando usar**: Fase de arquitetura ou antes de ir para produção
-> **Especialista**: [Observabilidade](file:///c:/Users/gamam/OneDrive/Documentos/1-%20TramposTec/Guia%20Dev/Guia-dev-IA/02-especialistas/Observabilidade.md) ou [DevOps](file:///c:/Users/gamam/OneDrive/Documentos/1-%20TramposTec/Guia%20Dev/Guia-dev-IA/02-especialistas/DevOps.md)
+> **Especialista**: [Observabilidade](../../02-especialistas/Especialista%20em%20Observabilidade.md) ou [DevOps](../../02-especialistas/Especialista%20em%20DevOps%20e%20Infraestrutura.md)
 > **Nível**: Médio a Complexo
 
 ---

@@ -1,7 +1,7 @@
 # Prompt: Design de API REST
 
 > **Quando usar**: Fase de arquitetura, antes de implementar endpoints
-> **Especialista**: [Arquitetura de Software](file:///c:/Users/gamam/OneDrive/Documentos/1-%20TramposTec/Guia%20Dev/Guia-dev-IA/02-especialistas/Arquitetura%20de%20Software.md)
+> **Especialista**: [Arquitetura de Software](../../02-especialistas/Especialista%20em%20Arquitetura%20de%20Software.md)
 > **Nível**: Médio
 
 ---

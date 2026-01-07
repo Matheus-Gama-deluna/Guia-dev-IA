@@ -1,7 +1,7 @@
 # Prompt: Refinar Requisitos
 
 > **Quando usar**: Após discovery inicial, para estruturar requisitos formais
-> **Especialista**: [Engenharia de Requisitos](file:///c:/Users/gamam/OneDrive/Documentos/1-%20TramposTec/Guia%20Dev/Guia-dev-IA/02-especialistas/Especialista%20em%20Engenharia%20de%20Requisitos%20com%20IA.md)
+> **Especialista**: [Engenharia de Requisitos](../../02-especialistas/Especialista%20em%20Engenharia%20de%20Requisitos%20com%20IA.md)
 > **Nível**: Simples a Médio
 
 ---
