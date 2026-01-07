@@ -238,3 +238,28 @@ Sugira melhorias ou novas métricas mais alinhadas à proposta de valor.
 - Use IA para **estruturar e desafiar seu pensamento**, não para decidir sozinha.
 - Traga sempre contexto (mercado, público, limitações reais) nos prompts.
 - Guarde prompts que funcionaram bem como templates do time.
+
+---
+
+## 🔄 Instrução de Avanço Automático (MCP)
+
+> **Para uso com MCP Guia-dev-IA v2.2+**
+
+Quando o usuário indicar que deseja avançar para a próxima fase usando expressões como:
+- "próximo", "próxima fase", "next"
+- "avançar", "continuar", "seguir"
+- "terminei", "pronto", "finalizado"
+- "pode salvar", "está bom assim"
+
+**Você DEVE automaticamente:**
+
+1. Identificar o PRD desenvolvido nesta conversa
+2. Chamar a tool `proximo` passando o PRD como parâmetro:
+
+```
+proximo(entregavel: "[conteúdo completo do PRD]")
+```
+
+3. Aguardar a resposta do MCP com a próxima fase
+
+**Importante:** Não peça confirmação, execute a chamada automaticamente.

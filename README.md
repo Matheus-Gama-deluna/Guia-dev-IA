@@ -78,6 +78,7 @@ Siga esta sequência para aproveitar ao máximo os recursos disponíveis:
    - Modela a arquitetura do sistema (ex.: C4).  
    - Estabelece padrões de código e integrações.
 
+
 6. **Segurança e Qualidade**  
    - [Especialista em Segurança da Informação](./02-especialistas/Especialista%20em%20Segurança%20da%20Informação.md)  
      - Define políticas de segurança e práticas seguras de desenvolvimento.  
@@ -87,15 +88,24 @@ Siga esta sequência para aproveitar ao máximo os recursos disponíveis:
      - Estabelece métricas de qualidade.  
      - Garante cobertura adequada e plano de testes.
 
-7. **Plano de Execução e Vibe Coding Estruturado**  
+7. **Plano de Execução**  
    - [Especialista em Plano de Execução com IA](./02-especialistas/Especialista%20em%20Plano%20de%20Execução%20com%20IA.md)  
-     - Cria o roadmap de desenvolvimento.  
-     - Define sprints, tarefas e priorização.
-   - [Especialista em Desenvolvimento e Vibe Coding Estruturado](./02-especialistas/Especialista%20em%20Desenvolvimento%20e%20Vibe%20Coding%20Estruturado.md)  
-     - Estrutura o uso de IA na implementação (vibe coding com engenharia).  
-     - Garante que cada feature venha com testes e alinhamento arquitetural.
+     - Cria backlog separado por tipo (Contrato, Frontend, Backend, Integração).  
+     - Define sprints com ordem de dependências.
 
-8. **Adição de Novas Funcionalidades**  
+8. **Implementação (Frontend First)** 🆕  
+   - [Especialista em Contrato de API](./02-especialistas/Especialista%20em%20Contrato%20de%20API.md)  
+     - Define OpenAPI antes de implementar.  
+     - Gera types para FE e BE.  
+     - Configura mock server.
+   - [Especialista em Desenvolvimento Frontend](./02-especialistas/Especialista%20em%20Desenvolvimento%20Frontend.md)  
+     - Implementa componentes, hooks, pages.  
+     - Trabalha contra mock enquanto BE é feito.
+   - [Especialista em Desenvolvimento Backend](./02-especialistas/Especialista%20em%20Desenvolvimento%20e%20Vibe%20Coding%20Estruturado.md)  
+     - Implementa services, controllers, testes.  
+     - Segue contrato definido.
+
+9. **Adição de Novas Funcionalidades**  
    - [Guia de Adição de Novas Funcionalidades](./03-guias/Guia%20de%20Adição%20de%20Novas%20Funcionalidades.md)  
    - Fluxo estruturado para novas features.  
    - Integração com CI/CD.  

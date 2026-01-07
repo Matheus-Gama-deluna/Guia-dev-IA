@@ -64,7 +64,9 @@ flowchart TD
         SEC[Segurança]
         TEST[Análise de Testes]
         PLAN[Plano de Execução]
-        DEV[Desenvolvimento/Vibe Coding]
+        CONTRACT[🆕 Contrato de API]
+        FE[🆕 Desenvolvimento Frontend]
+        BE[Desenvolvimento Backend]
         DEVOPS[DevOps e Infraestrutura]
         DATA[Dados e Analytics]
         A11Y[Acessibilidade]
@@ -83,10 +85,9 @@ flowchart TD
     PLAYBOOK --> PM
     PM --> REQ --> STITCH --> UX --> MODEL --> ARCH
     ARCH --> SEC & TEST
-    SEC & TEST --> PLAN --> DEV
-    DEV --> ADD
-    DEV --> DEBUG
-    DEV --> REFACTOR
+    SEC & TEST --> PLAN --> CONTRACT
+    CONTRACT --> FE & BE
+    FE & BE --> DEVOPS
 ```
 
 ---
@@ -99,23 +100,26 @@ flowchart TD
 flowchart LR
     A[Ideia] --> B[Produto] --> C[Requisitos] --> S[🆕 Stitch]
     S --> D[UX] --> E[Modelagem] --> F[Arquitetura]
-    F --> G[Segurança] --> H[Plano] --> I[Implementação]
-    I --> J[Testes] --> K[Deploy]
+    F --> G[Segurança] --> H[Testes] --> I[Backlog]
+    I --> J[Contrato] --> K[Frontend] --> L[Backend] --> M[Integração]
+    M --> N[Deploy]
 ```
 
 | Fase | Arquivo | Artefato Gerado |
 |---|---|---|
 | 1. Visão | `Especialista em Gestão de Produto` | PRD |
 | 2. Requisitos | `Especialista em Engenharia de Requisitos` | RF/RNF + Gherkin |
-| **2.5 🆕 UI Rápida** | `Especialista em Prototipagem com Stitch` | Prompts + código UI |
+| 2.5 🆕 UI Rápida | `Especialista em Prototipagem com Stitch` | Prompts + código UI |
 | 3. UX | `Especialista em UX Design` | Fluxos, wireframes |
 | 4. Modelagem | `Especialista em Modelagem de Domínio` | Entidades |
 | 5. Arquitetura | `Especialista em Arquitetura de Software` | C4, ADRs |
-| 6. Segurança | `Especialista em Segurança` | Checklist |
+| 6. Segurança | `Especialista em Segurança` | Checklist OWASP |
 | 7. Testes | `Especialista em Análise de Testes` | Plano de testes |
-| 8. Plano | `Especialista em Plano de Execução` | Backlog |
-| 9. Código | `Especialista em Desenvolvimento` | Código + testes |
-| 10. Deploy | `Especialista em DevOps` | Pipeline |
+| 8. Backlog | `Especialista em Plano de Execução` | Features separadas (FE/BE) |
+| **9. Contrato** 🆕 | `Especialista em Contrato de API` | OpenAPI + mocks |
+| **10. Frontend** 🆕 | `Especialista em Desenvolvimento Frontend` | Componentes + pages |
+| **11. Backend** 🆕 | `Especialista em Desenvolvimento Backend` | Services + controllers |
+| 12. Deploy | `Especialista em DevOps` | Pipeline |
 
 **Como começar:**
 1. Copie o conteúdo do `Especialista em Gestão de Produto`

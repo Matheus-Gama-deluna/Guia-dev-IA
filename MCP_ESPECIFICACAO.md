@@ -2,8 +2,8 @@
 
 Documento detalhado para criação do MCP Server que automatiza o uso do Guia-dev-IA.
 
-**Versão:** 2.0  
-**Atualizado:** 2024-12-19  
+**Versão:** 2.1  
+**Atualizado:** 2026-01-07  
 **Status:** Especificação completa
 
 ---
@@ -24,12 +24,15 @@ Criar um servidor MCP que:
 5. **Valida gates** entre fases garantindo qualidade
 6. **Classifica complexidade** e adapta fluxo automaticamente
 
-### Novidades na v2.0
+### Novidades na v2.2
 
+- ✅ **Coleta automática**: IA chama `proximo()` automaticamente quando dev sinaliza avanço
+- ✅ **Classificação automática**: Baseada no PRD, não em questionário
+- ✅ **Persistência integrada**: `proximo()` salva automaticamente
+- ✅ **Fluxo simplificado**: Menos comandos, mais produtividade
 - ✅ **Sistema de Gates**: Validação entre fases
-- ✅ **Templates integrados**: 13 templates de artefatos
+- ✅ **Templates integrados**: 16 templates de artefatos
 - ✅ **Especialistas avançados**: DDD, Performance, Observabilidade
-- ✅ **Classificador de complexidade**: Fluxos adaptativos
 - ✅ **Prompts avançados**: Arquitetura C4, DDD, escalabilidade
 
 ---
@@ -181,6 +184,75 @@ mcp-guia-dev-ia/
 
 ---
 
+## 3.1 Coleta Automática de Entregáveis
+
+O MCP utiliza **instruções embutidas nos especialistas** para que a IA automaticamente chame `proximo()` quando o desenvolvedor sinaliza que quer avançar.
+
+### Como Funciona
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│   FLUXO AUTOMÁTICO                                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   👤 Dev: "Próximo" / "Avançar" / "Terminei"                   │
+│                    │                                            │
+│                    ▼                                            │
+│   🤖 IA identifica entregável da conversa                      │
+│                    │                                            │
+│                    ▼                                            │
+│   🤖 IA chama: proximo(entregavel: "[conteúdo]")               │
+│                    │                                            │
+│                    ▼                                            │
+│   ✅ MCP salva, valida gate, carrega próxima fase              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Instrução nos Especialistas
+
+Cada especialista contém uma instrução especial no final:
+
+```markdown
+---
+
+## 🔄 Instrução de Avanço Automático
+
+Quando o usuário indicar que deseja avançar para a próxima fase usando 
+expressões como "próximo", "avançar", "terminei", "pronto", "continuar":
+
+1. Identifique o entregável principal desenvolvido nesta conversa
+2. Chame a tool `proximo` passando o entregável como parâmetro:
+   
+   proximo(entregavel: "[conteúdo completo do artefato]")
+
+3. Aguarde a resposta do MCP com a próxima fase
+
+**Importante:** Não peça confirmação, apenas execute a chamada automaticamente.
+```
+
+### Gatilhos Reconhecidos
+
+A IA reconhece os seguintes gatilhos para avançar automaticamente:
+
+| Gatilho | Exemplos |
+|---------|----------|
+| **Próximo** | "próximo passo", "próxima fase", "next" |
+| **Avançar** | "avançar", "seguir em frente", "continuar" |
+| **Conclusão** | "terminei", "pronto", "finalizado" |
+| **Implícito** | "pode salvar", "está bom assim" |
+
+### Benefícios
+
+| Aspecto | Antes (Manual) | Agora (Automático) |
+|---------|---------------|-------------------|
+| Passos | 2 (colar + chamar) | 1 (só falar) |
+| Erro humano | Pode esquecer de salvar | Impossível esquecer |
+| Fluidez | Interrompe conversa | Fluxo contínuo |
+| UX | Técnico | Natural |
+
+---
+
 ## 4. Especificação das Resources
 
 ### 4.1 guia://especialista/{nome}
@@ -296,51 +368,24 @@ Retorna conteúdo de um guia prático.
 
 ## 5. Especificação das Tools
 
-### 5.1 classificar_projeto
+### 5.1 iniciar_projeto
 
-Classifica a complexidade do projeto e seleciona fluxo apropriado.
-
-```typescript
-interface ClassificarProjetoInput {
-  tempo_estimado: "menos_2_semanas" | "1_3_meses" | "mais_3_meses";
-  numero_entidades: number;
-  usuarios_simultaneos: number;
-  integracoes_externas: number;
-  requisitos_seguranca: "basico" | "autenticacao" | "compliance";
-  tamanho_equipe: number;
-  disponibilidade: "best_effort" | "99_percent" | "99_9_percent";
-  complexidade_dominio: "simples" | "medio" | "complexo";
-}
-
-interface ClassificarProjetoOutput {
-  nivel: "simples" | "medio" | "complexo";
-  pontuacao: number;
-  fluxo_fases: number;          // 5, 10, ou 14
-  especialistas_extras: string[];
-  recomendacoes: string[];
-}
-```
-
-### 5.2 iniciar_projeto
-
-Inicia um novo projeto com fluxo apropriado ao nível de complexidade.
+Inicia um novo projeto. A classificação de complexidade é feita automaticamente após a fase 1 (PRD).
 
 ```typescript
 interface IniciarProjetoInput {
   nome: string;
-  descricao: string;
-  nivel?: "simples" | "medio" | "complexo"; // Auto-detectado se não informado
-  diretorio?: string;
+  descricao?: string;  // Opcional - será definido no PRD
+  diretorio?: string;  // Default: cwd()
 }
 
 interface IniciarProjetoOutput {
   projeto_id: string;
-  nivel_complexidade: string;
-  fase_atual: number;
-  total_fases: number;
+  fase_atual: 1;       // Sempre começa na fase 1
+  fluxo_status: "a_definir";  // Será definido após PRD
   especialista: string;
-  template: string;             // Template do artefato esperado
-  gate_checklist: string[];     // Itens do gate de saída
+  template: string;
+  gate_checklist: string[];
   prompt_sugerido: string;
   entregavel_esperado: string;
 }
@@ -348,10 +393,94 @@ interface IniciarProjetoOutput {
 
 **Ações:**
 1. Cria estrutura `.guia/` e `docs/` no diretório
-2. Classifica complexidade se não informada
-3. Seleciona fluxo apropriado (5, 10 ou 14 fases)
-4. Inicializa `estado.json` com fase 1
-5. Retorna contexto do especialista + template + gate
+2. Inicializa `estado.json` com fase 1 e fluxo pendente
+3. Carrega especialista de Gestão de Produto + template PRD
+4. Retorna prompt para elaboração do PRD
+
+> **Nota:** A classificação de complexidade acontece automaticamente quando o dev avança da fase 1 para 2, baseada na análise do PRD.
+
+---
+
+### 5.2 proximo (com persistência automática)
+
+Avança para a próxima fase. **Salva automaticamente** o entregável, valida o gate e carrega a próxima fase.
+
+```typescript
+interface ProximoInput {
+  entregavel: string;     // OBRIGATÓRIO: conteúdo a salvar
+  forcar?: boolean;       // Ignora gate (não recomendado)
+  nome_arquivo?: string;  // Opcional: sobrescreve nome padrão
+}
+
+interface ProximoOutput {
+  // Persistência automática
+  arquivo_salvo: string;           // Caminho onde foi salvo
+  template_aplicado: boolean;      // Se usou template
+  
+  // Classificação (apenas na transição fase 1→2)
+  classificacao?: {
+    nivel: "simples" | "medio" | "complexo";
+    pontuacao: number;
+    criterios_detectados: string[];
+  };
+  
+  // Gate
+  gate_resultado: {
+    valido: boolean;
+    itens_validados: string[];
+    itens_pendentes: string[];
+    sugestoes: string[];
+  };
+  
+  // Próxima fase
+  fase_anterior: number;
+  fase_atual: number;
+  total_fases: number;  // Definido após classificação
+  especialista: string;
+  template: string;
+  gate_checklist: string[];
+  prompt_sugerido: string;
+  contexto_acumulado: string;
+}
+```
+
+**Fluxo de execução:**
+
+```
+proximo(entregavel)
+    │
+    ├─► 1. Salva entregável em docs/{fase}/
+    │
+    ├─► 2. Se fase == 1 (PRD):
+    │       ├─► Analisa PRD automaticamente
+    │       ├─► Extrai: entidades, integrações, segurança, escala
+    │       ├─► Calcula pontuação de complexidade
+    │       └─► Define fluxo (5, 10 ou 14 fases)
+    │
+    ├─► 3. Valida gate da fase atual
+    │       ├─► Se inválido e forcar=false: retorna erro
+    │       └─► Se válido: continua
+    │
+    ├─► 4. Atualiza estado.json e contexto.md
+    │
+    └─► 5. Carrega próxima fase (especialista + template + gate)
+```
+
+**Critérios de classificação automática (extraídos do PRD):**
+
+| Critério | Como Extrai | Pontos |
+|----------|-------------|--------|
+| Entidades | Conta substantivos em Funcionalidades | 1-3 |
+| Integrações | Busca menções a APIs/sistemas externos | 1-3 |
+| Segurança | Palavras-chave: auth, LGPD, compliance | 1-3 |
+| Escala | Números de usuários mencionados | 1-3 |
+| Tempo | Cronograma mencionado | 1-3 |
+| Complexidade | Regras de negócio descritas | 1-3 |
+
+**Resultado:**
+- 8-12 pontos → Simples (5 fases)
+- 13-18 pontos → Médio (10 fases)
+- 19-24 pontos → Complexo (14 fases)
 
 ### 5.3 validar_gate
 
@@ -387,55 +516,29 @@ interface ValidarGateOutput {
 | 9. Código | Padrões, Testes, Lint, Review |
 | 10. Deploy | Pipeline, Métricas, Rollback |
 
-### 5.4 proximo
+### 5.3 salvar (opcional)
 
-Avança para a próxima fase (com validação de gate).
-
-```typescript
-interface ProximoInput {
-  entregavel?: string;
-  forcar?: boolean;    // Ignora gate (não recomendado)
-}
-
-interface ProximoOutput {
-  gate_resultado: GateResultado;
-  fase_anterior: number;
-  fase_atual: number;
-  total_fases: number;
-  especialista: string;
-  template: string;
-  gate_checklist: string[];
-  prompt_sugerido: string;
-  entregavel_esperado: string;
-  contexto_acumulado: string;
-}
-```
-
-**Ações:**
-1. Executa `validar_gate` para fase atual
-2. Se gate falhar e `forcar=false`, retorna erro com pendências
-3. Salva entregável se fornecido
-4. Atualiza `estado.json`
-5. Atualiza `contexto.md` com resumo
-6. Carrega próximo especialista + template + gate
-
-### 5.5 salvar
-
-Salva entregável da fase atual usando template.
+Salva conteúdo adicional sem avançar de fase. Usado para rascunhos ou anexos.
 
 ```typescript
 interface SalvarInput {
   conteudo: string;
-  usar_template?: boolean;  // Aplica template padrão
+  tipo: "rascunho" | "anexo" | "entregavel";
   nome_arquivo?: string;
 }
 
 interface SalvarOutput {
   caminho: string;
-  template_aplicado: boolean;
-  gate_status: GateResultado;
+  tipo: string;
 }
 ```
+
+**Uso:**
+- `salvar(conteudo, tipo: "rascunho")` → Salva em `.guia/rascunhos/`
+- `salvar(conteudo, tipo: "anexo")` → Salva em `docs/{fase}/anexos/`
+- `salvar(conteudo, tipo: "entregavel")` → Salva como entregável (sem validar gate)
+
+> **Nota:** Para o fluxo normal, use `proximo()` que já inclui persistência automática.
 
 ### 5.6 status
 
@@ -481,7 +584,271 @@ interface ContextoOutput {
 
 ---
 
-## 5.9 Tools de Análise
+## 5.8 Implementação por Blocos
+
+### implementar_historia
+
+Orquestra a implementação de uma história de usuário em blocos ordenados, carregando contexto automaticamente.
+
+**Suporta padrão Frontend First:**
+- Detecta tipo da história (contrato, frontend, backend, integração)
+- Valida dependências antes de iniciar
+- Carrega especialista correto por tipo
+
+```typescript
+interface ImplementarHistoriaInput {
+  historia_id?: string;           // Se vazio, seleciona próxima do backlog
+  modo?: "analisar" | "iniciar" | "proximo_bloco";
+}
+
+interface ImplementarHistoriaOutput {
+  // Progresso do backlog
+  progresso: {
+    features_concluidas: number;
+    features_pendentes: number;
+    sprint_atual: number;
+  };
+  
+  // Feature pai
+  feature: {
+    id: string;
+    titulo: string;
+    fase_atual: "contrato" | "frontend" | "backend" | "integracao";
+  };
+  
+  // História selecionada
+  historia: {
+    id: string;
+    titulo: string;
+    tipo: "contrato" | "frontend" | "backend" | "integracao";
+    descricao: string;
+    criterios_aceite: string[];
+  };
+  
+  // Dependências
+  dependencias: {
+    historia_id: string;
+    tipo: string;
+    status: "concluido" | "pendente";
+    bloqueante: boolean;
+  }[];
+  dependencias_ok: boolean;
+  
+  // Contrato (se tipo != contrato)
+  contrato?: {
+    path: string;
+    endpoints: string[];
+    types_gerados: boolean;
+  };
+  
+  // Contexto carregado
+  contexto: {
+    modelo_dominio: string;
+    arquitetura: string;
+    design_doc: string;      // Para frontend
+    stack_frontend: string;
+    stack_backend: string;
+  };
+  
+  // Especialista carregado pelo tipo
+  especialista: string;
+  
+  // Plano de blocos (varia por tipo)
+  blocos: BlocoImplementacao[];
+  bloco_atual: number;
+  
+  // Prompt gerado para IA
+  prompt_sugerido: string;
+}
+
+interface BlocoImplementacao {
+  ordem: number;
+  tipo: TipoBloco;
+  nome: string;
+  descricao: string;
+  arquivos_afetados: string[];
+  prompt_especifico: string;
+  status: "pendente" | "em_andamento" | "validando" | "concluido";
+  validacao?: ValidacaoBloco;
+}
+
+type TipoBloco = 
+  // Contrato
+  | "schema" | "types_frontend" | "types_backend" | "mock_server"
+  // Frontend
+  | "component" | "hook" | "store" | "page" | "teste_componente" | "teste_e2e_frontend"
+  // Backend
+  | "dto" | "entity" | "repository" | "service" | "controller" | "teste_unitario" | "teste_integracao";
+```
+
+**Fluxo Frontend First:**
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│   FLUXO FRONTEND FIRST                                                  │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   FEAT-001: Criar Pedido                                                │
+│                                                                         │
+│   ┌─────────────┐                                                       │
+│   │ 1. CONTRATO │  CONT-001                                             │
+│   │   [schema]  │  → gera types FE + types BE + mock                   │
+│   └──────┬──────┘                                                       │
+│          │                                                              │
+│     ┌────┴────┐                                                         │
+│     ▼         ▼                                                         │
+│ ┌──────────────┐  ┌──────────────┐                                     │
+│ │ 2. FRONTEND  │  │ 3. BACKEND   │  (podem ser paralelos)              │
+│ │  US-001-FE   │  │  US-001-BE   │                                     │
+│ │  [component] │  │  [dto]       │                                     │
+│ │  [hook]      │  │  [entity]    │                                     │
+│ │  [page]      │  │  [service]   │                                     │
+│ │  [teste]     │  │  [controller]│                                     │
+│ └──────┬───────┘  └──────┬───────┘                                     │
+│        │                 │                                              │
+│        └────────┬────────┘                                              │
+│                 ▼                                                       │
+│   ┌─────────────────────┐                                               │
+│   │ 4. INTEGRAÇÃO       │  INT-001                                      │
+│   │   [remover mocks]   │  → conecta frontend com backend real         │
+│   │   [teste e2e]       │                                               │
+│   └─────────────────────┘                                               │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+**Blocos por tipo de história:**
+
+| Tipo | Blocos | Especialista |
+|------|--------|--------------|
+| `contrato` | schema, types_frontend, types_backend, mock_server | Contrato de API |
+| `frontend` | component, hook/store, page, teste | Desenvolvimento Frontend |
+| `backend` | dto, entity, repository, service, controller, teste | Desenvolvimento Backend |
+| `integracao` | remover_mock, teste_e2e | DevOps |
+
+**Validação de dependências:**
+
+```
+👤 "Implementar US-001-FE"
+
+🤖 MCP verifica:
+   CONT-001 (contrato) → ✅ Concluído
+   └── Dependência OK, pode iniciar US-001-FE
+
+👤 "Implementar US-001-BE"
+
+🤖 MCP verifica:
+   CONT-001 (contrato) → ✅ Concluído
+   └── Dependência OK, pode iniciar US-001-BE
+
+👤 "Implementar INT-001"
+
+🤖 MCP verifica:
+   US-001-FE (frontend) → 🔄 Em andamento
+   US-001-BE (backend) → ⬜ Pendente
+   └── ⛔ BLOQUEADO: dependências não concluídas
+```
+
+---
+
+### validar_bloco
+
+Valida automaticamente um bloco de código antes de avançar para o próximo.
+
+```typescript
+interface ValidarBlocoInput {
+  bloco_id: number;
+  caminho_arquivo?: string;       // Caminho do arquivo a validar
+  executar_testes?: boolean;      // Default: true
+  executar_lint?: boolean;        // Default: true
+  verificar_coverage?: boolean;   // Default: true
+}
+
+interface ValidarBlocoOutput {
+  valido: boolean;
+  pode_avancar: boolean;
+  
+  // Resultados de validação
+  testes: {
+    executados: boolean;
+    passaram: boolean;
+    total: number;
+    falhas: number;
+    detalhes?: string[];
+  };
+  
+  lint: {
+    executado: boolean;
+    passou: boolean;
+    erros: number;
+    warnings: number;
+    detalhes?: string[];
+  };
+  
+  coverage: {
+    verificado: boolean;
+    percentual: number;
+    minimo_requerido: number;
+    passou: boolean;
+  };
+  
+  // Próximas ações
+  bloqueios: string[];
+  sugestoes: string[];
+  comando_correcao?: string;
+}
+```
+
+**Validações executadas:**
+
+| Validação | Comando (exemplo) | Critério de Aprovação |
+|-----------|-------------------|----------------------|
+| Testes | `npm test -- --coverage` | 0 falhas |
+| Lint | `npm run lint` | 0 erros (warnings ok) |
+| Coverage | Extraído do teste | ≥ 80% no arquivo |
+| TypeCheck | `npm run typecheck` | 0 erros |
+
+**Uso:**
+
+```
+👤 Dev: "Bloco service implementado, pode validar"
+
+🤖 MCP: validar_bloco(bloco_id: 4)
+
+📊 VALIDAÇÃO DO BLOCO: OrderService
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧪 Testes: ✅ 5/5 passaram
+📝 Lint: ✅ 0 erros, 2 warnings
+📈 Coverage: ✅ 87% (mínimo: 80%)
+🔍 TypeCheck: ✅ OK
+
+✅ PODE AVANÇAR para bloco 5 (controller)
+```
+
+**Se falhar:**
+
+```
+📊 VALIDAÇÃO DO BLOCO: OrderService
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧪 Testes: ❌ 3/5 passaram
+   - calculateTotal: Expected 100, got 90
+   - validateOrder: TypeError null
+📝 Lint: ✅ OK
+📈 Coverage: ⚠️ 65% (mínimo: 80%)
+
+❌ NÃO PODE AVANÇAR
+
+📋 Correções necessárias:
+1. Corrigir teste calculateTotal
+2. Tratar null em validateOrder
+3. Adicionar testes para aumentar coverage
+
+💡 Comando sugerido: npm test -- --watch src/services/order.service.spec.ts
+```
+
+---
+
+## 5.10 Tools de Análise
 
 ### analisar_seguranca
 

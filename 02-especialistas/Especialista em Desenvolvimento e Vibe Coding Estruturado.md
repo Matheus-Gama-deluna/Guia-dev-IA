@@ -57,172 +57,168 @@ Para cada história implementada, valide:
 ### Próximo Especialista
 → [Especialista em DevOps e Infraestrutura](./Especialista%20em%20DevOps%20e%20Infraestrutura.md)
 
-### Contexto Obrigatório
+---
 
-| Artefato | Caminho | Obrigatório |
-|----------|---------|-------------|
-| Modelo de Domínio | `docs/04-modelo/modelo-dominio.md` | ✅ |
-| Arquitetura | `docs/05-arquitetura/arquitetura.md` | ✅ |
-| Backlog/História atual | `docs/08-backlog/` | ✅ |
-| CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
+## Vibe Coding Estruturado: Fluxo por Blocos
 
-### Prompt de Continuação
+Para **cada história de usuário**, implemente em **blocos ordenados** com validação entre cada um:
 
-```text
-Atue como desenvolvedor sênior (Vibe Coding Estruturado).
+### Ordem de Implementação
 
-Contexto do projeto:
-[COLE O CONTEÚDO DE docs/CONTEXTO.md]
+| # | Bloco | O que fazer | Validação |
+|---|-------|-------------|-----------|
+| 1 | **DTO/Types** | Definir contratos de entrada/saída | Lint ✓ |
+| 2 | **Entity** | Criar/alterar entidade (se necessário) | Lint ✓ |
+| 3 | **Repository** | Camada de dados | Lint ✓ |
+| 4 | **Service** | Regra de negócio | Testes unitários + Coverage ≥80% |
+| 5 | **Controller** | Endpoints/handlers | Lint ✓ |
+| 6 | **Testes E2E** | Fluxo completo | Todos passando |
 
-Arquitetura:
-[COLE docs/05-arquitetura/arquitetura.md]
+> **⚠️ REGRA:** Só avance para o próximo bloco após validar o atual com `validar_bloco()`.
 
-História a implementar:
-[COLE A HISTÓRIA DO BACKLOG]
+### Fluxo Visual
 
-Ajude-me a implementar em blocos pequenos com testes.
+```
+US-007: Criar pedido
+
+┌─────┐   ┌────────┐   ┌──────┐   ┌─────────┐   ┌──────────┐
+│ DTO │ → │ Entity │ → │ Repo │ → │ Service │ → │Controller│
+└──┬──┘   └───┬────┘   └──┬───┘   └────┬────┘   └────┬─────┘
+   │          │           │            │              │
+   ▼          ▼           ▼            ▼              ▼
+[lint]     [lint]      [lint]    [testes+cov]     [lint]
+   ✓          ✓           ✓            ✓              ✓
 ```
 
-### Ao Concluir Cada História
-
-1. **Commit com testes** passando
-2. **Atualize o CONTEXTO.md** se houver mudanças significativas
-3. **Valide o Gate** do PR antes de merge
-
 ---
 
-## Vibe Coding Estruturado: fluxo por história
+## Prompts por Camada
 
-Para **cada história de usuário**, siga um mini-flow:
-
-1. Revisar história, requisitos e impacto no modelo/arquitetura.
-2. Detalhar caso de uso / API com IA.
-3. Implementar em blocos pequenos (serviço, depois controller, etc.).
-4. Gerar e ajustar testes com IA.
-5. Revisar e refatorar com IA como revisor.
-
----
-
-## Como usar IA nesta área
-
-### 1. Detalhar história em caso de uso/API
+### Bloco 1: DTO/Types
 
 ```text
-História de usuário:
+Stack: [STACK]
+Arquitetura: [PADRÃO]
+História: [COLE HISTÓRIA]
+
+Gere APENAS os DTOs/Types:
+- CreateXxxDto (entrada)
+- XxxResponseDto (saída)
+- Validações com decorators
+
+Não gere service, controller ou qualquer outra camada.
+```
+
+### Bloco 2: Entity
+
+```text
+DTOs já definidos:
+[COLE DTOS]
+
+Gere APENAS a entidade/model para [NOME]:
+- Campos com tipos
+- Relacionamentos
+- Decorators de ORM
+
+Não gere repository nem service.
+```
+
+### Bloco 3: Repository
+
+```text
+Entity já definida:
+[COLE ENTITY]
+
+Gere APENAS o repository para [NOME]:
+- Métodos CRUD
+- Queries específicas
+- Tipagem forte
+
+Não gere service nem controller.
+```
+
+### Bloco 4: Service + Testes
+
+```text
+DTOs e Repository implementados:
 [COLE]
 
-Contexto:
-- arquitetura: [ex. camadas controller/service/repository]
-- modelo de domínio: [resumo]
-- stack: [ex. Java + Spring, Node + Nest, etc.]
+Gere o SERVICE para [HISTÓRIA]:
+- Regra de negócio
+- Validações
+- Tratamento de erros
 
-Detalhe em alto nível:
-- endpoints ou métodos de caso de uso necessários
-- payloads de entrada/saída
-- validações obrigatórias
-- mensagens de erro e status HTTP (se API).
+TAMBÉM gere TESTES UNITÁRIOS:
+- Caso de sucesso
+- Entradas inválidas
+- Casos de borda
 ```
 
-### 2. Gerar código em blocos pequenos
+### Bloco 5: Controller
 
 ```text
-Vamos implementar APENAS o serviço responsável por esta regra de negócio,
-na stack [DESCREVA].
+Service implementado e testado:
+[COLE SERVICE]
 
-Assuma que existe a entidade X com os campos:
-[LISTE CAMPOS]
-
-Gere o código do serviço/classe de aplicação com:
-- assinatura dos métodos principais
-- lógica happy path
-- tratamento básico de erros.
-
-Não gere controller/rotas nem código de infraestrutura.
+Gere APENAS o controller:
+- Rotas e verbos HTTP
+- Validação via DTO
+- Mapeamento de erros
+- Documentação Swagger
 ```
 
-Depois de revisar e ajustar:
+### Bloco 6: Testes E2E
 
 ```text
-Com base neste serviço já validado:
-[COLE CÓDIGO]
+Controller e Service implementados.
 
-Gere o controller/endpoint correspondente
-em [framework], incluindo:
-- rotas e verbos HTTP
-- validação de entrada
-- mapeamento de erros para respostas HTTP adequadas.
-```
-
-### 3. Gerar testes com IA
-
-```text
-Aqui está a classe/função que implementa a funcionalidade:
-[COLE]
-
-Gere testes unitários em [framework de teste], cobrindo:
-- caso de sucesso
-- entradas inválidas
-- casos de borda
-
-Explique rapidamente o que cada teste garante.
-```
-
-### 4. Revisão e refatoração
-
-```text
-Atue como revisor de código sênior na stack [DESCREVA].
-
-Código:
-[COLE]
-
-Aponte:
-- problemas de legibilidade e complexidade
-- possíveis bugs/edge cases
-- oportunidades de extração de métodos ou classes
-
-Sugira uma versão refatorada se fizer sentido, explicando as mudanças.
+Gere testes de integração/E2E:
+- Happy path completo
+- Erro de validação
+- Erro de negócio
 ```
 
 ---
 
-## Roteiro de sessão típica de codificação com IA
+## Checklist por Bloco
 
-1. **Preparar contexto**
-   - Cole visão curta da feature, história de usuário e partes relevantes do modelo.
+### Antes de avançar para o próximo bloco
 
-2. **Pedir detalhamento da solução**
-   - Endpoints, métodos, payloads, validações.
-
-3. **Gerar bloco de código focado**
-   - Um serviço ou caso de uso por vez.
-
-4. **Revisar manualmente**
-   - Ajustar nomes, regras de negócio, estilo do projeto.
-
-5. **Pedir testes**
-   - Unitários (e integração quando fizer sentido).
-
-6. **Rodar testes e ajustar**
-   - Corrigir falhas, pedir ajuda pontual à IA.
-
-7. **Refatorar com apoio da IA**
-   - Simplificar trechos complexos, melhorar design.
+- [ ] Testes passando (`npm test`)
+- [ ] Lint ok (`npm run lint`)
+- [ ] Coverage ≥ 80% (para service)
+- [ ] Código revisado
 
 ---
 
-## Checklists rápidos
+## Boas práticas com IA
 
-### Antes de abrir PR de uma nova funcionalidade
+- Não peça "gera o sistema todo"; trabalhe em blocos pequenos
+- Dê contexto (arquitetura, modelo, estilo) antes de gerar
+- Sempre rode testes antes de commitar
+- Use IA para **remover** código (simplificar), não só adicionar
 
-- [ ] História de usuário e requisitos foram lidos e entendidos.
-- [ ] Há pelo menos um serviço/caso de uso bem definido.
-- [ ] Código está coberto por testes automatizados relevantes.
-- [ ] Não há lógica de negócio escondida em componentes de UI.
-- [ ] Decisões fora do trivial foram documentadas (ex.: em comentário de PR ou ADR).
+---
 
-### Boas práticas com IA
+## 🔄 Instrução de Avanço Automático (MCP)
 
-- Não peça "gera o sistema todo"; sempre trabalhe em blocos pequenos.
-- Dê contexto suficiente (arquitetura, modelo, estilo de código) antes de gerar.
-- Sempre rode testes e leia o código sugerido antes de commitar.
-- Use a IA também para **remover** código (simplificar), não só para adicionar.
+> **Para uso com MCP Guia-dev-IA v2.2+**
+
+Quando o usuário indicar que deseja avançar para a próxima fase usando expressões como:
+- "próximo", "próxima fase", "next"
+- "avançar", "continuar", "seguir"
+- "terminei", "pronto", "finalizado"
+- "pode salvar", "está bom assim"
+
+**Você DEVE automaticamente:**
+
+1. Identificar o entregável principal desenvolvido nesta conversa
+2. Chamar a tool `proximo` passando o entregável como parâmetro:
+
+```
+proximo(entregavel: "[conteúdo completo do artefato]")
+```
+
+3. Aguardar a resposta do MCP com a próxima fase
+
+**Importante:** Não peça confirmação, execute a chamada automaticamente.

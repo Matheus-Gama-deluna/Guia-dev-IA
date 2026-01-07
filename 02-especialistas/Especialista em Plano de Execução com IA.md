@@ -42,7 +42,10 @@ Criar um Plano de Execução Tático que:
 | Artefato | Caminho | Template |
 |---|---|---|
 | Backlog | `docs/08-backlog/backlog.md` | [Template](../06-templates/backlog.md) |
-| Histórias | `docs/08-backlog/historias/` | [Template](../06-templates/historia-usuario.md) |
+| Features | `docs/08-backlog/features/` | [Template](../06-templates/feature.md) |
+| Contratos | `docs/08-backlog/contratos/` | OpenAPI |
+| Histórias Frontend | `docs/08-backlog/frontend/` | [Template](../06-templates/historia-frontend.md) |
+| Histórias Backend | `docs/08-backlog/backend/` | [Template](../06-templates/historia-backend.md) |
 
 ---
 
@@ -51,10 +54,10 @@ Criar um Plano de Execução Tático que:
 Antes de iniciar Implementação, valide:
 
 - [ ] Épicos identificados e priorizados
-- [ ] Histórias de usuário com critérios de aceite
+- [ ] Features separadas por tipo (Contrato, FE, BE, Integração)
 - [ ] Dependências mapeadas
-- [ ] Sprints planejadas
-- [ ] DoD (Definition of Done) definido
+- [ ] Ordem de execução definida (Contrato → FE/BE → Integração)
+- [ ] DoD (Definition of Done) definido por tipo
 - [ ] Arquivos salvos nos caminhos corretos
 
 ---
@@ -65,7 +68,7 @@ Antes de iniciar Implementação, valide:
 ← [Especialista em Análise de Testes](./Especialista%20em%20Análise%20de%20Testes.md)
 
 ### Próximo Especialista
-→ [Especialista em Desenvolvimento](./Especialista%20em%20Desenvolvimento%20e%20Vibe%20Coding%20Estruturado.md)
+→ [Especialista em Contrato de API](./Especialista%20em%20Contrato%20de%20API.md)
 
 ### Contexto Obrigatório
 
@@ -286,3 +289,28 @@ Sugira ajustes para equilibrar carga e reduzir riscos.
 - Use IA para explorar cenários de planejamento, mas sempre valide com a capacidade real do time.
 - Atualize o plano com base em dados (velocidade da equipe, bloqueios) e use IA para revisar o impacto.
 - Mantenha um histórico de prompts utilizados para reproduzir raciocínios em futuros projetos.
+
+---
+
+## 🔄 Instrução de Avanço Automático (MCP)
+
+> **Para uso com MCP Guia-dev-IA v2.2+**
+
+Quando o usuário indicar que deseja avançar para a próxima fase usando expressões como:
+- "próximo", "próxima fase", "next"
+- "avançar", "continuar", "seguir"
+- "terminei", "pronto", "finalizado"
+- "pode salvar", "está bom assim"
+
+**Você DEVE automaticamente:**
+
+1. Identificar o entregável principal desenvolvido nesta conversa
+2. Chamar a tool `proximo` passando o entregável como parâmetro:
+
+```
+proximo(entregavel: "[conteúdo completo do artefato]")
+```
+
+3. Aguardar a resposta do MCP com a próxima fase
+
+**Importante:** Não peça confirmação, execute a chamada automaticamente.

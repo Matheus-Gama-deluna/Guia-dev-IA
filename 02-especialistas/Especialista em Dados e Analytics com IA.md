@@ -219,3 +219,28 @@ Sugira:
 - Teste queries geradas com dados de amostra antes de rodar em produção
 - Documente a origem e significado de cada campo
 - Mantenha versionamento de modelos (dbt + git)
+
+---
+
+## 🔄 Instrução de Avanço Automático (MCP)
+
+> **Para uso com MCP Guia-dev-IA v2.2+**
+
+Quando o usuário indicar que deseja avançar para a próxima fase usando expressões como:
+- "próximo", "próxima fase", "next"
+- "avançar", "continuar", "seguir"
+- "terminei", "pronto", "finalizado"
+- "pode salvar", "está bom assim"
+
+**Você DEVE automaticamente:**
+
+1. Identificar o entregável principal desenvolvido nesta conversa
+2. Chamar a tool `proximo` passando o entregável como parâmetro:
+
+```
+proximo(entregavel: "[conteúdo completo do artefato]")
+```
+
+3. Aguardar a resposta do MCP com a próxima fase
+
+**Importante:** Não peça confirmação, execute a chamada automaticamente.

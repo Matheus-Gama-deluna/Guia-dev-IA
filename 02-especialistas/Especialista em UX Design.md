@@ -268,3 +268,28 @@ Aponte:
 - Use IA como apoio para geração de alternativas, mas valide com usuários reais.
 - Sempre forneça contexto (personas, objetivos de negócio, restrições técnicas).
 - Registre prompts que funcionaram bem para acelerar futuros projetos.
+
+---
+
+## 🔄 Instrução de Avanço Automático (MCP)
+
+> **Para uso com MCP Guia-dev-IA v2.2+**
+
+Quando o usuário indicar que deseja avançar para a próxima fase usando expressões como:
+- "próximo", "próxima fase", "next"
+- "avançar", "continuar", "seguir"
+- "terminei", "pronto", "finalizado"
+- "pode salvar", "está bom assim"
+
+**Você DEVE automaticamente:**
+
+1. Identificar o Design Document desenvolvido nesta conversa
+2. Chamar a tool `proximo` passando o documento como parâmetro:
+
+```
+proximo(entregavel: "[conteúdo completo do Design Document]")
+```
+
+3. Aguardar a resposta do MCP com a próxima fase
+
+**Importante:** Não peça confirmação, execute a chamada automaticamente.

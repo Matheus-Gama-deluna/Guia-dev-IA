@@ -24,8 +24,10 @@ Este diretório contém **personas de IA** especializadas para cada etapa do des
 | [Arquitetura de Software](./Especialista%20em%20Arquitetura%20de%20Software.md) | Stack, C4, padrões | Antes de codar |
 | [Segurança da Informação](./Especialista%20em%20Segurança%20da%20Informação.md) | OWASP, criptografia, LGPD | Durante e pós-dev |
 | [Análise de Testes](./Especialista%20em%20Análise%20de%20Testes.md) | Plano de testes, cobertura | Durante e pós-dev |
-| [Plano de Execução](./Especialista%20em%20Plano%20de%20Execução%20com%20IA.md) | Backlog, sprints | Antes de implementar |
-| [Desenvolvimento/Vibe Coding](./Especialista%20em%20Desenvolvimento%20e%20Vibe%20Coding%20Estruturado.md) | Implementação com IA | Durante desenvolvimento |
+| [Plano de Execução](./Especialista%20em%20Plano%20de%20Execução%20com%20IA.md) | Backlog separado FE/BE | Antes de implementar |
+| [**🆕 Contrato de API**](./Especialista%20em%20Contrato%20de%20API.md) | OpenAPI, mocks, types | Antes de FE e BE |
+| [**🆕 Desenvolvimento Frontend**](./Especialista%20em%20Desenvolvimento%20Frontend.md) | Componentes, hooks, pages | Frontend First |
+| [Desenvolvimento Backend](./Especialista%20em%20Desenvolvimento%20e%20Vibe%20Coding%20Estruturado.md) | Services, controllers, testes | Após contrato |
 | [DevOps e Infraestrutura](./Especialista%20em%20DevOps%20e%20Infraestrutura.md) | CI/CD, Docker, IaC | Deploy e infra |
 | [Dados e Analytics](./Especialista%20em%20Dados%20e%20Analytics%20com%20IA.md) | ETL, dashboards, métricas | Análise de dados |
 | [Acessibilidade](./Especialista%20em%20Acessibilidade.md) | WCAG, ARIA, inclusão | UX e frontend |

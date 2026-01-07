@@ -254,3 +254,28 @@ Liste:
 - Use a IA para **organizar e sugerir**, mas valide sempre com pessoas.
 - Prefira colar **contexto completo** (visão + requisitos já existentes) do que perguntar no vazio.
 - Guarde prompts que funcionaram bem como **templates reutilizáveis** no projeto.
+
+---
+
+## 🔄 Instrução de Avanço Automático (MCP)
+
+> **Para uso com MCP Guia-dev-IA v2.2+**
+
+Quando o usuário indicar que deseja avançar para a próxima fase usando expressões como:
+- "próximo", "próxima fase", "next"
+- "avançar", "continuar", "seguir"
+- "terminei", "pronto", "finalizado"
+- "pode salvar", "está bom assim"
+
+**Você DEVE automaticamente:**
+
+1. Identificar os requisitos desenvolvidos nesta conversa
+2. Chamar a tool `proximo` passando os requisitos como parâmetro:
+
+```
+proximo(entregavel: "[conteúdo completo dos requisitos e critérios de aceite]")
+```
+
+3. Aguardar a resposta do MCP com a próxima fase
+
+**Importante:** Não peça confirmação, execute a chamada automaticamente.

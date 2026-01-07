@@ -223,3 +223,28 @@ Create a checkout page for an e-commerce store:
 - Não se prenda a detalhes - é um protótipo rápido
 - Use o código gerado como **ponto de partida**, não final
 - Documente decisões de UI para o UX Designer
+
+---
+
+## 🔄 Instrução de Avanço Automático (MCP)
+
+> **Para uso com MCP Guia-dev-IA v2.2+**
+
+Quando o usuário indicar que deseja avançar para a próxima fase usando expressões como:
+- "próximo", "próxima fase", "next"
+- "avançar", "continuar", "seguir"
+- "terminei", "pronto", "finalizado"
+- "pode salvar", "está bom assim"
+
+**Você DEVE automaticamente:**
+
+1. Identificar o entregável principal desenvolvido nesta conversa
+2. Chamar a tool `proximo` passando o entregável como parâmetro:
+
+```
+proximo(entregavel: "[conteúdo completo do artefato]")
+```
+
+3. Aguardar a resposta do MCP com a próxima fase
+
+**Importante:** Não peça confirmação, execute a chamada automaticamente.
