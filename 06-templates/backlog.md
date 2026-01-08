@@ -141,6 +141,43 @@ Toda história deve atender:
 
 ---
 
+## Diagrama de Dependências
+
+### Visão Geral
+
+```mermaid
+flowchart TD
+    subgraph E001["🔹 Épico: [Nome do Épico 1]"]
+        US001[US001: Título]
+        US002[US002: Título]
+        US001 --> US002
+    end
+    
+    subgraph E002["🔹 Épico: [Nome do Épico 2]"]
+        US003[US003: Título]
+        US004[US004: Título]
+        US003 --> US004
+    end
+    
+    US002 --> US003
+```
+
+### Tabela de Dependências
+
+| História | Depende de | Bloqueia | Prioridade |
+|----------|------------|----------|------------|
+| US001 | - | US002 | Alta |
+| US002 | US001 | US003 | Alta |
+| US003 | US002 | US004 | Média |
+
+### Legenda
+- ⬜ Pendente
+- 🔄 Em andamento
+- ✅ Concluído
+- ⏸️ Bloqueado
+
+---
+
 ## Changelog
 
 | Versão | Data | Autor | Mudanças |

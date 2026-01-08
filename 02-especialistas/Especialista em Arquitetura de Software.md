@@ -43,6 +43,7 @@ Criar um Technical Specification Document completo que define:
 | PRD | `docs/01-produto/PRD.md` | ✅ |
 | Requisitos | `docs/02-requisitos/requisitos.md` | ✅ |
 | Modelo de Domínio | `docs/04-modelo/modelo-dominio.md` | ✅ |
+| Design de Banco | `docs/05-banco/design-banco.md` | ✅ |
 | Design Doc | `docs/03-ux/design-doc.md` | ⚠️ Recomendado |
 
 > [!WARNING]
@@ -54,8 +55,8 @@ Criar um Technical Specification Document completo que define:
 
 | Artefato | Caminho | Template |
 |---|---|---|
-| Arquitetura | `docs/05-arquitetura/arquitetura.md` | [Template](../06-templates/arquitetura.md) |
-| ADRs | `docs/05-arquitetura/adr/` | [Template](../06-templates/adr.md) |
+| Arquitetura | `docs/06-arquitetura/arquitetura.md` | [Template](../06-templates/arquitetura.md) |
+| ADRs | `docs/06-arquitetura/adr/` | [Template](../06-templates/adr.md) |
 
 ---
 
@@ -76,7 +77,7 @@ Antes de avançar para Segurança/Testes, valide:
 ## 🔗 Fluxo de Contexto
 
 ### Especialista Anterior
-← [Especialista em Modelagem de Domínio](./Especialista%20em%20Modelagem%20e%20Arquitetura%20de%20Domínio%20com%20IA.md)
+← [Especialista em Banco de Dados](./Especialista%20em%20Banco%20de%20Dados.md)
 
 ### Próximo Especialista
 → [Especialista em Segurança da Informação](./Especialista%20em%20Segurança%20da%20Informação.md)

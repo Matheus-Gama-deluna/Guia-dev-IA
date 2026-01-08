@@ -53,7 +53,7 @@ Antes de avançar para Arquitetura, valide:
 ← [Especialista em UX Design](./Especialista%20em%20UX%20Design.md)
 
 ### Próximo Especialista
-→ [Especialista em Arquitetura de Software](./Especialista%20em%20Arquitetura%20de%20Software.md)
+→ [Especialista em Banco de Dados](./Especialista%20em%20Banco%20de%20Dados.md)
 
 ### Contexto Obrigatório
 

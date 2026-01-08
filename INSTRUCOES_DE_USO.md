@@ -111,12 +111,19 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[Ideia] --> B[Produto] --> C[Requisitos] --> S[🆕 Stitch]
-    S --> D[UX] --> E[Modelagem] --> F[Arquitetura]
-    F --> G[Segurança] --> H[Testes] --> I[Backlog]
-    I --> J[Contrato] --> K[Frontend] --> L[Backend] --> M[Integração]
-    M --> N[Deploy]
+    A[Ideia] --> B[Produto] --> C[Requisitos]
+    C --> D{Prototipar UI?}
+    D -->|🎨 Sim| S[Stitch] --> E[UX]
+    D -->|⏩ Não| E
+    E --> F[Modelagem] --> G[Arquitetura]
+    G --> H[Segurança] --> I[Testes] --> J[Backlog]
+    J --> K[Contrato] --> L[Frontend] --> M[Backend] --> N[Integração]
+    N --> O[Deploy]
 ```
+
+> [!TIP]
+> **Stitch é opcional:** Use se precisar validar UI com stakeholders. Pule se for gerar frontend direto na fase de Desenvolvimento.
+
 
 | Fase | Arquivo | Artefato Gerado |
 |---|---|---|

@@ -54,7 +54,17 @@ Antes de avançar para UX/Modelagem, valide:
 ← [Especialista em Gestão de Produto](./Especialista%20em%20Gestão%20de%20Produto%20.md)
 
 ### Próximo Especialista
-→ [Especialista em Prototipagem com Stitch](./Especialista%20em%20Prototipagem%20Rápida%20com%20Google%20Stitch.md) *(ou UX Design se pular prototipagem)*
+
+**Escolha como prosseguir após os requisitos:**
+
+| Opção | Quando Usar | Próximo Especialista |
+|-------|-------------|---------------------|
+| **🎨 Usar Stitch** | Validar UI com stakeholders antes de desenvolver | [Especialista em Prototipagem](./Especialista%20em%20Prototipagem%20Rápida%20com%20Google%20Stitch.md) |
+| **⏩ Pular Stitch** | Gerar frontend direto na fase de Desenvolvimento | [Especialista em UX Design](./Especialista%20em%20UX%20Design.md) |
+
+> [!TIP]
+> **Use Stitch** se precisar validar direção visual rapidamente. **Pule** se já sabe o que quer ou se não há UI (API only).
+
 
 ### Contexto Obrigatório
 

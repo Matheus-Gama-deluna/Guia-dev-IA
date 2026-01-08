@@ -43,6 +43,7 @@
 - [ ] Todos os RFs são testáveis (têm critério de aceite)
 - [ ] RNFs definidos (performance, segurança, disponibilidade)
 - [ ] Critérios de aceite em Gherkin para features críticas
+- [ ] **Matriz RF × Telas preenchida**
 
 ### Critérios de Qualidade
 - [ ] Cada RF mapeia para pelo menos um objetivo do PRD
@@ -61,6 +62,7 @@
 - [ ] Wireframes/fluxos dos fluxos principais
 - [ ] Arquitetura de informação definida
 - [ ] Considerações de acessibilidade básicas
+- [ ] **Mapa de navegação em Mermaid**
 
 ### Critérios de Qualidade
 - [ ] Fluxos cobrem pelo menos 80% dos RFs
@@ -154,6 +156,8 @@
 - [ ] Critérios de aceite por história
 - [ ] Definition of Done clara
 - [ ] Estimativas (pelo menos T-shirt sizing)
+- [ ] **Diagrama de dependências visual**
+- [ ] **Telas afetadas mapeadas por feature**
 
 ### Critérios de Qualidade
 - [ ] Histórias são pequenas (cabem em 1-2 dias)

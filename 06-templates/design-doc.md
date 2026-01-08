@@ -68,7 +68,40 @@ journey
 
 ---
 
-## 4. Fluxos de Usuário
+## 5. Mapa de Navegação
+
+### 5.1 Diagrama de Navegação
+
+```mermaid
+flowchart LR
+    subgraph Public["🌐 Área Pública"]
+        HOME[Home]
+        LOGIN[Login]
+    end
+    
+    subgraph Auth["🔐 Área Autenticada"]
+        DASH[Dashboard]
+        MODULE[Módulo Principal]
+    end
+    
+    HOME --> LOGIN
+    LOGIN --> DASH
+    DASH --> MODULE
+```
+
+### 5.2 Inventário de Telas
+
+| ID | Tela | URL | Acesso | RFs |
+|----|------|-----|--------|-----|
+| T01 | Home | `/` | Público | - |
+| T02 | Login | `/login` | Público | RF-001 |
+| T03 | Dashboard | `/dashboard` | Auth | RF-002 |
+
+> Para detalhamento completo, veja o [Mapa de Navegação](./mapa-navegacao.md) usando o [template](../06-templates/mapa-navegacao.md).
+
+---
+
+## 6. Fluxos de Usuário
 
 ### 4.1 Fluxo: [Nome do Fluxo Principal]
 

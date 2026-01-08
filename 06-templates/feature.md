@@ -57,3 +57,32 @@
 - 🔄 Em andamento
 - ✅ Concluído
 - ⏸️ Bloqueado
+
+---
+
+## Telas Afetadas
+
+### Mapa de Impacto
+
+```mermaid
+flowchart LR
+    FEAT[FEAT-XXX] --> T1[Tela 1]
+    FEAT --> T2[Tela 2]
+    FEAT --> T3[Tela 3 - Nova]
+    T1 --> C1[Componente A]
+    T2 --> C2[Componente B]
+```
+
+### Tabela de Impacto
+
+| Tela | Ação | Detalhes | Componentes |
+|------|------|----------|-------------|
+| [Nome Tela 1] | Modifica | [O que muda] | [Componentes afetados] |
+| [Nome Tela 2] | Nova | [Descrição] | [Novos componentes] |
+| [Nome Tela 3] | Remove | [Justificativa] | - |
+
+### Legenda de Ações
+- **Nova**: Tela criada por esta feature
+- **Modifica**: Tela existente que será alterada
+- **Remove**: Tela que será descontinuada
+

@@ -21,6 +21,7 @@ Este diretório contém **personas de IA** especializadas para cada etapa do des
 | [**🆕 Prototipagem com Stitch**](./Especialista%20em%20Prototipagem%20Rápida%20com%20Google%20Stitch.md) | UI rápida com IA | Após requisitos |
 | [UX Design](./Especialista%20em%20UX%20Design.md) | Fluxos, arquitetura de informação | Após protótipo |
 | [Modelagem de Domínio](./Especialista%20em%20Modelagem%20e%20Arquitetura%20de%20Domínio%20com%20IA.md) | Entidades, relacionamentos | Após UX |
+| [**🆕 Banco de Dados**](./Especialista%20em%20Banco%20de%20Dados.md) | Schema, índices, migrações | Após modelo de domínio |
 | [Arquitetura de Software](./Especialista%20em%20Arquitetura%20de%20Software.md) | Stack, C4, padrões | Antes de codar |
 | [Segurança da Informação](./Especialista%20em%20Segurança%20da%20Informação.md) | OWASP, criptografia, LGPD | Durante e pós-dev |
 | [Análise de Testes](./Especialista%20em%20Análise%20de%20Testes.md) | Plano de testes, cobertura | Durante e pós-dev |

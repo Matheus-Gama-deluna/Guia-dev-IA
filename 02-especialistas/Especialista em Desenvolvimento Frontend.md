@@ -23,9 +23,14 @@ Engenheiro frontend sênior com foco em:
 | Contrato API | `docs/08-backlog/contratos/*.yaml` | ✅ |
 | Types Gerados | `src/frontend/types/api.ts` | ✅ |
 | História Frontend | `docs/08-backlog/frontend/*.md` | ✅ |
+| **Código Stitch** | `docs/03-ux/stitch-output/` | ⚠️ Se usou Stitch |
+
+> [!TIP]
+> **Se usou Stitch:** Use o código exportado em `docs/03-ux/stitch-output/` como base para os componentes. Isso acelera o desenvolvimento.
 
 > [!WARNING]
 > O contrato e types devem estar prontos antes de iniciar frontend.
+
 
 ---
 

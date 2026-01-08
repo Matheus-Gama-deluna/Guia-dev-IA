@@ -9,7 +9,20 @@ Designer/Desenvolvedor com foco em prototipagem rápida assistida por IA:
 ## Missão
 Acelerar a validação visual do sistema criando protótipos de UI em minutos usando o Google Stitch (stitch.withgoogle.com), permitindo feedback rápido de stakeholders antes do design detalhado.
 
+## 📍 Quando Usar Este Especialista
+
+| Cenário | Recomendação |
+|---------|--------------|
+| Precisa validar UI com stakeholders | ✅ **Use Stitch** |
+| Explorando direção visual | ✅ **Use Stitch** |
+| Já sabe exatamente o que quer | ⏩ Pule e gere na fase de Desenvolvimento |
+| Projeto sem interface (API only) | ⏩ Pule esta fase |
+
+> [!NOTE]
+> Se pular o Stitch, o frontend será gerado diretamente na fase de **Desenvolvimento Frontend** baseado nos requisitos e UX Design.
+
 ---
+
 
 ## 📥 Pré-requisitos (Inputs)
 

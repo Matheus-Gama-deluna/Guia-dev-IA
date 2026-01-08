@@ -135,6 +135,26 @@
 
 ---
 
+## 8. Matriz Requisitos × Telas
+
+> [!NOTE]
+> Mapeie quais telas serão afetadas por cada requisito. Telas são estimativas iniciais que serão refinadas na fase de UX.
+
+| RF ID | Descrição Resumida | Telas Estimadas | Componentes Prováveis |
+|-------|-------------------|-----------------|----------------------|
+| RF001 | [Descrição curta] | [Tela1, Tela2] | [Componente1] |
+| RF002 | [Descrição curta] | [Tela1] | [Componente1, Componente2] |
+| RF003 | [Descrição curta] | [Tela2, Tela3] | [Componente2] |
+
+### Legenda de Telas
+
+| ID | Nome da Tela | Tipo | Área |
+|----|-------------|------|------|
+| T01 | [Nome] | [Lista/Detalhe/Form] | [Pública/Auth] |
+| T02 | [Nome] | | |
+
+---
+
 ## Changelog
 
 | Versão | Data | Autor | Mudanças |

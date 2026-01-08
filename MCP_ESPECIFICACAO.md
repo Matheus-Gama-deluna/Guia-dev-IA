@@ -556,13 +556,13 @@ interface ValidarGateOutput {
 | Fase | Gate Checklist |
 |---|---|
 | 1. Produto | Problema definido, Personas, MVP, North Star |
-| 2. Requisitos | IDs únicos, Critérios testáveis, RNFs |
-| 3. UX | Jornadas, Wireframes, Acessibilidade |
+| 2. Requisitos | IDs únicos, Critérios testáveis, RNFs, **Matriz RF × Telas** |
+| 3. UX | Jornadas, Wireframes, Acessibilidade, **Mapa de Navegação** |
 | 4. Modelo | Entidades, Relacionamentos, Regras |
 | 5. Arquitetura | C4, Stack justificada, ADRs |
 | 6. Segurança | OWASP, Auth, Dados sensíveis |
 | 7. Testes | Casos de teste, Cobertura, Ferramentas |
-| 8. Backlog | Épicos, Histórias, DoD |
+| 8. Backlog | Épicos, Histórias, DoD, **Diagrama Dependências**, **Telas por Feature** |
 | 9. Código | Padrões, Testes, Lint, Review |
 | 10. Deploy | Pipeline, Métricas, Rollback |
 
@@ -1656,7 +1656,7 @@ const FLUXO_SIMPLES = [
 ];
 ```
 
-### 6.2 Fluxo: Projeto Médio (10 fases)
+### 6.2 Fluxo: Projeto Médio (11 fases)
 
 Para projetos com pontuação 13-18.
 
@@ -1700,105 +1700,115 @@ const FLUXO_MEDIO = [
   },
   {
     fase: 5,
-    nome: "Arquitetura de Software",
-    especialista: "Especialista em Arquitetura de Software.md",
-    template: "arquitetura.md",
-    entregavel: "docs/05-arquitetura/arquitetura.md",
-    prompt: "prompts/arquitetura/c4-completo.txt",
-    contexto_necessario: ["docs/02-requisitos/requisitos.md", "docs/04-modelo/modelo-dominio.md"],
-    gate: ["c4_nivel_1_2", "stack_justificada", "adrs"]
+    nome: "Design de Banco de Dados",
+    especialista: "Especialista em Banco de Dados.md",
+    template: "design-banco.md",
+    entregavel: "docs/05-banco/design-banco.md",
+    contexto_necessario: ["docs/04-modelo/modelo-dominio.md", "docs/02-requisitos/requisitos.md"],
+    gate: ["banco_escolhido", "schema_fisico", "indices_planejados", "migracao_definida"]
   },
   {
     fase: 6,
-    nome: "Segurança",
-    especialista: "Especialista em Segurança da Informação.md",
-    template: "checklist-seguranca.md",
-    entregavel: "docs/06-seguranca/checklist-seguranca.md",
-    contexto_necessario: ["docs/05-arquitetura/arquitetura.md"],
-    gate: ["owasp_revisado", "auth_definida", "dados_sensiveis"]
+    nome: "Arquitetura de Software",
+    especialista: "Especialista em Arquitetura de Software.md",
+    template: "arquitetura.md",
+    entregavel: "docs/06-arquitetura/arquitetura.md",
+    prompt: "prompts/arquitetura/c4-completo.txt",
+    contexto_necessario: ["docs/02-requisitos/requisitos.md", "docs/04-modelo/modelo-dominio.md", "docs/05-banco/design-banco.md"],
+    gate: ["c4_nivel_1_2", "stack_justificada", "adrs"]
   },
   {
     fase: 7,
+    nome: "Segurança",
+    especialista: "Especialista em Segurança da Informação.md",
+    template: "checklist-seguranca.md",
+    entregavel: "docs/07-seguranca/checklist-seguranca.md",
+    contexto_necessario: ["docs/06-arquitetura/arquitetura.md"],
+    gate: ["owasp_revisado", "auth_definida", "dados_sensiveis"]
+  },
+  {
+    fase: 8,
     nome: "Plano de Testes",
     especialista: "Especialista em Análise de Testes.md",
     template: "plano-testes.md",
-    entregavel: "docs/07-testes/plano-testes.md",
+    entregavel: "docs/08-testes/plano-testes.md",
     contexto_necessario: ["docs/02-requisitos/requisitos.md"],
     gate: ["casos_por_requisito", "piramide_definida", "ferramentas"]
   },
   {
-    fase: 8,
+    fase: 9,
     nome: "Plano de Execução",
     especialista: "Especialista em Plano de Execução com IA.md",
     template: "backlog.md",
-    entregavel: "docs/08-backlog/backlog.md",
-    contexto_necessario: ["docs/02-requisitos/requisitos.md", "docs/05-arquitetura/arquitetura.md"],
+    entregavel: "docs/09-backlog/backlog.md",
+    contexto_necessario: ["docs/02-requisitos/requisitos.md", "docs/06-arquitetura/arquitetura.md"],
     gate: ["epicos_priorizados", "historias_com_ca", "dod_definido"]
   },
   {
-    fase: 9,
+    fase: 10,
     nome: "Implementação",
     especialista: "Especialista em Desenvolvimento e Vibe Coding Estruturado.md",
     entregavel: "src/",
-    contexto_necessario: ["docs/04-modelo/modelo-dominio.md", "docs/05-arquitetura/arquitetura.md", "docs/08-backlog/backlog.md"],
+    contexto_necessario: ["docs/04-modelo/modelo-dominio.md", "docs/06-arquitetura/arquitetura.md", "docs/09-backlog/backlog.md"],
     gate: ["codigo_padroes", "testes_80_percent", "lint_sem_erros", "review_aprovado"]
   },
   {
-    fase: 10,
+    fase: 11,
     nome: "DevOps e Deploy",
     especialista: "Especialista em DevOps e Infraestrutura.md",
     entregavel: [".github/workflows/", "Dockerfile", "infra/"],
-    contexto_necessario: ["docs/05-arquitetura/arquitetura.md"],
+    contexto_necessario: ["docs/06-arquitetura/arquitetura.md"],
     gate: ["dockerfile_otimizado", "pipeline_ci_cd", "metricas_logs", "rollback_testado"]
   }
 ];
 ```
 
-### 6.3 Fluxo: Projeto Complexo (14 fases)
+### 6.3 Fluxo: Projeto Complexo (15 fases)
 
 Para projetos com pontuação 19-24.
 
 ```typescript
 const FLUXO_COMPLEXO = [
-  // Fases 1-10: Mesmo que FLUXO_MEDIO
+  // Fases 1-11: Mesmo que FLUXO_MEDIO
   ...FLUXO_MEDIO,
   
   // Fases adicionais para projetos complexos
   {
-    fase: 11,
+    fase: 12,
     nome: "Arquitetura Avançada",
     especialista: "Especialista em Arquitetura Avançada.md",
-    entregavel: "docs/05-arquitetura/arquitetura-ddd.md",
+    entregavel: "docs/06-arquitetura/arquitetura-ddd.md",
     prompt: "prompts/arquitetura/ddd-bounded-contexts.txt",
-    contexto_necessario: ["docs/04-modelo/modelo-dominio.md", "docs/05-arquitetura/arquitetura.md"],
+    contexto_necessario: ["docs/04-modelo/modelo-dominio.md", "docs/06-arquitetura/arquitetura.md"],
     gate: ["bounded_contexts", "aggregates", "domain_events", "context_map"]
   },
   {
-    fase: 12,
+    fase: 13,
     nome: "Performance e Escalabilidade",
     especialista: "Especialista em Performance e Escalabilidade.md",
     entregavel: "docs/performance/analise-performance.md",
     prompt: "prompts/escalabilidade/analise-performance.txt",
-    contexto_necessario: ["docs/05-arquitetura/arquitetura.md"],
+    contexto_necessario: ["docs/06-arquitetura/arquitetura.md"],
     gate: ["slos_definidos", "garrafas_identificadas", "cache_strategy", "load_test_plan"]
   },
   {
-    fase: 13,
+    fase: 14,
     nome: "Observabilidade",
     especialista: "Especialista em Observabilidade.md",
     entregavel: "docs/observability/estrategia.md",
     prompt: "prompts/observabilidade/estrategia.txt",
-    contexto_necessario: ["docs/05-arquitetura/arquitetura.md"],
+    contexto_necessario: ["docs/06-arquitetura/arquitetura.md"],
     gate: ["logging_estruturado", "metricas_red", "tracing", "alertas_slos", "runbooks"]
   },
   {
-    fase: 14,
+    fase: 15,
     nome: "Disaster Recovery",
     especialista: "Especialista em DevOps e Infraestrutura.md",
     entregavel: "docs/infra/disaster-recovery.md",
-    contexto_necessario: ["docs/05-arquitetura/arquitetura.md", "infra/"],
+    contexto_necessario: ["docs/06-arquitetura/arquitetura.md", "infra/"],
     gate: ["backup_strategy", "rto_rpo_definidos", "failover_testado"]
   }
+
 ];
 ```
 
