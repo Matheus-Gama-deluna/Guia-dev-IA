@@ -92,10 +92,10 @@ export const FLUXO_SIMPLES: Fluxo = {
     ],
 };
 
-// Fluxo para projetos médios (11 fases)
+// Fluxo para projetos médios (13 fases)
 export const FLUXO_MEDIO: Fluxo = {
     nivel: "medio",
-    total_fases: 11,
+    total_fases: 13,
     fases: [
         {
             numero: 1,
@@ -140,7 +140,7 @@ export const FLUXO_MEDIO: Fluxo = {
         {
             numero: 4,
             nome: "Modelo de Domínio",
-            especialista: "Modelagem de Domínio",
+            especialista: "Modelagem e Arquitetura de Domínio com IA",
             template: "modelo-dominio",
             gate_checklist: [
                 "Entidades identificadas",
@@ -177,7 +177,7 @@ export const FLUXO_MEDIO: Fluxo = {
         {
             numero: 7,
             nome: "Segurança",
-            especialista: "Segurança",
+            especialista: "Segurança da Informação",
             template: "checklist-seguranca",
             gate_checklist: [
                 "OWASP Top 10 avaliado",
@@ -201,7 +201,7 @@ export const FLUXO_MEDIO: Fluxo = {
         {
             numero: 9,
             nome: "Backlog",
-            especialista: "Plano de Execução",
+            especialista: "Plano de Execução com IA",
             template: "backlog",
             gate_checklist: [
                 "Épicos definidos",
@@ -225,24 +225,47 @@ export const FLUXO_MEDIO: Fluxo = {
         },
         {
             numero: 11,
-            nome: "Desenvolvimento",
-            especialista: "Desenvolvimento",
+            nome: "Frontend",
+            especialista: "Desenvolvimento Frontend",
             template: "historia-usuario",
             gate_checklist: [
-                "Frontend implementado",
-                "Backend implementado",
-                "Integração testada",
-                "Deploy realizado",
+                "Componentes implementados",
+                "Integração com mocks",
+                "Testes de componente passados",
             ],
-            entregavel_esperado: "codigo",
+            entregavel_esperado: "frontend-code",
+        },
+        {
+            numero: 12,
+            nome: "Backend",
+            especialista: "Desenvolvimento e Vibe Coding Estruturado",
+            template: "historia-usuario",
+            gate_checklist: [
+                "API implementada conforme contrato",
+                "Testes unitários passados",
+                "Migrações executadas",
+            ],
+            entregavel_esperado: "backend-code",
+        },
+        {
+            numero: 13,
+            nome: "Integração",
+            especialista: "DevOps e Infraestrutura",
+            template: "arquitetura",
+            gate_checklist: [
+                "Frontend integrado ao Backend",
+                "Testes E2E passados",
+                "Pipeline CI/CD verde",
+            ],
+            entregavel_esperado: "deploy.md",
         },
     ],
 };
 
-// Fluxo para projetos complexos (15 fases)
+// Fluxo para projetos complexos (17 fases)
 export const FLUXO_COMPLEXO: Fluxo = {
     nivel: "complexo",
-    total_fases: 15,
+    total_fases: 17,
     fases: [
         ...FLUXO_MEDIO.fases.slice(0, 6), // Produto até Arquitetura
         {
@@ -261,7 +284,7 @@ export const FLUXO_COMPLEXO: Fluxo = {
         {
             numero: 8,
             nome: "Segurança",
-            especialista: "Segurança",
+            especialista: "Segurança da Informação",
             template: "checklist-seguranca",
             gate_checklist: [
                 "OWASP Top 10 avaliado",
@@ -274,7 +297,7 @@ export const FLUXO_COMPLEXO: Fluxo = {
         {
             numero: 9,
             nome: "Performance",
-            especialista: "Performance",
+            especialista: "Performance e Escalabilidade",
             template: "plano-testes",
             gate_checklist: [
                 "Load testing planejado",
@@ -311,7 +334,7 @@ export const FLUXO_COMPLEXO: Fluxo = {
         {
             numero: 12,
             nome: "Backlog",
-            especialista: "Plano de Execução",
+            especialista: "Plano de Execução com IA",
             template: "backlog",
             gate_checklist: [
                 "Épicos definidos",
@@ -335,28 +358,51 @@ export const FLUXO_COMPLEXO: Fluxo = {
         },
         {
             numero: 14,
-            nome: "Desenvolvimento",
-            especialista: "Desenvolvimento",
+            nome: "Frontend",
+            especialista: "Desenvolvimento Frontend",
             template: "historia-usuario",
             gate_checklist: [
-                "Frontend implementado",
-                "Backend implementado",
-                "Integração testada",
+                "Componentes implementados",
+                "Integração com mocks",
+                "Testes de componente passados",
             ],
-            entregavel_esperado: "codigo",
+            entregavel_esperado: "frontend-code",
         },
         {
             numero: 15,
-            nome: "Deploy",
-            especialista: "DevOps",
+            nome: "Backend",
+            especialista: "Desenvolvimento e Vibe Coding Estruturado",
+            template: "historia-usuario",
+            gate_checklist: [
+                "API implementada conforme contrato",
+                "Testes unitários passados",
+                "Migrações executadas",
+            ],
+            entregavel_esperado: "backend-code",
+        },
+        {
+            numero: 16,
+            nome: "Integração",
+            especialista: "DevOps e Infraestrutura",
             template: "arquitetura",
             gate_checklist: [
-                "Pipeline CI/CD configurado",
-                "Infraestrutura provisionada",
-                "Rollback testado",
-                "Monitoring ativo",
+                "Frontend integrado ao Backend",
+                "Testes E2E passados",
+                "Pipeline CI/CD verde",
             ],
             entregavel_esperado: "deploy.md",
+        },
+        {
+            numero: 17,
+            nome: "Deploy Final",
+            especialista: "DevOps e Infraestrutura",
+            template: "arquitetura",
+            gate_checklist: [
+                "Deploy em produção",
+                "Monitoramento ativo",
+                "Health check ok",
+            ],
+            entregavel_esperado: "release.md",
         },
     ],
 };
