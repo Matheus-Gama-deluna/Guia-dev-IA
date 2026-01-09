@@ -3,13 +3,13 @@ import { join } from "path";
 import type { EstadoProjeto } from "../types/index.js";
 
 const ESTADO_FILENAME = "estado.json";
-const GUIA_DIR = ".guia";
+const MAESTRO_DIR = ".maestro";
 
 /**
  * Obtém caminho do arquivo de estado
  */
 function getEstadoPath(diretorio: string): string {
-    return join(diretorio, GUIA_DIR, ESTADO_FILENAME);
+    return join(diretorio, MAESTRO_DIR, ESTADO_FILENAME);
 }
 
 /**
@@ -29,8 +29,8 @@ export async function carregarEstado(diretorio: string): Promise<EstadoProjeto |
  * Salva estado do projeto
  */
 export async function salvarEstado(diretorio: string, estado: EstadoProjeto): Promise<void> {
-    const guiaDir = join(diretorio, GUIA_DIR);
-    await mkdir(guiaDir, { recursive: true });
+    const maestroDir = join(diretorio, MAESTRO_DIR);
+    await mkdir(maestroDir, { recursive: true });
 
     estado.atualizado_em = new Date().toISOString();
 

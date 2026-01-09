@@ -5,6 +5,7 @@ import type { ToolResult } from "../types/index.js";
 import { lerEspecialista, lerTemplate } from "../utils/files.js";
 import { salvarEstado, criarEstadoInicial } from "../state/storage.js";
 import { setCurrentDirectory } from "../state/context.js";
+import { salvarResumo, criarResumoInicial } from "../state/memory.js";
 import { getFase, getFluxo } from "../flows/types.js";
 
 interface IniciarProjetoArgs {
@@ -26,12 +27,17 @@ export async function iniciarProjeto(args: IniciarProjetoArgs): Promise<ToolResu
     const projetoId = uuid();
 
     // Criar estrutura de pastas
-    await mkdir(join(diretorio, ".guia"), { recursive: true });
+    await mkdir(join(diretorio, ".maestro"), { recursive: true });
     await mkdir(join(diretorio, "docs"), { recursive: true });
 
     // Estado inicial (médio por padrão, será reclassificado após PRD)
     const estado = criarEstadoInicial(projetoId, args.nome, diretorio);
     await salvarEstado(diretorio, estado);
+
+    // Criar resumo inicial do projeto
+    const resumo = criarResumoInicial(projetoId, args.nome, "medio", 1, 10);
+    resumo.descricao = args.descricao;
+    await salvarResumo(diretorio, resumo);
 
     // Carregar especialista e template da fase 1
     const fase = getFase("medio", 1)!;

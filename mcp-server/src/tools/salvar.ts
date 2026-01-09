@@ -35,7 +35,7 @@ export async function salvar(args: SalvarArgs): Promise<ToolResult> {
 
     switch (args.tipo) {
         case "rascunho":
-            targetDir = join(diretorio, ".guia", "rascunhos");
+            targetDir = join(diretorio, ".maestro", "rascunhos");
             nomeArquivo = args.nome_arquivo || `rascunho-${timestamp}.md`;
             break;
         case "anexo":
@@ -64,7 +64,7 @@ export async function salvar(args: SalvarArgs): Promise<ToolResult> {
 | **Tamanho** | ${args.conteudo.length} caracteres |
 
 ${args.tipo === "rascunho" ? `
-> 💡 Rascunhos são salvos em \`.guia/rascunhos/\` e não contam como entregáveis.
+> 💡 Rascunhos são salvos em \`.maestro/rascunhos/\` e não contam como entregáveis.
 ` : ""}
 
 ${args.tipo === "anexo" ? `

@@ -218,6 +218,7 @@ import {
 } from "./utils/files.js";
 
 import { iniciarProjeto } from "./tools/iniciar-projeto.js";
+import { carregarProjeto } from "./tools/carregar-projeto.js";
 import { proximo } from "./tools/proximo.js";
 import { status } from "./tools/status.js";
 import { validarGate } from "./tools/validar-gate.js";
@@ -303,6 +304,7 @@ Quando o usuário disser "próximo", "avançar", "terminei" ou "pronto":
 
 ### Core
 - \`iniciar_projeto\` - Inicia novo projeto
+- \`carregar_projeto\` - Carrega projeto existente
 - \`proximo\` - Salva entregável e avança fase
 - \`status\` - Retorna estado atual
 - \`validar_gate\` - Valida checklist da fase
@@ -329,13 +331,14 @@ async function getToolsList() {
         tools: [
             // Core
             { name: "iniciar_projeto", description: "Inicia um novo projeto com o Maestro", inputSchema: { type: "object", properties: { nome: { type: "string" }, descricao: { type: "string" }, diretorio: { type: "string" } }, required: ["nome"] } },
-            { name: "proximo", description: "Salva entregável e avança para próxima fase", inputSchema: { type: "object", properties: { entregavel: { type: "string" }, forcar: { type: "boolean" }, nome_arquivo: { type: "string" } }, required: ["entregavel"] } },
-            { name: "status", description: "Retorna status do projeto", inputSchema: { type: "object", properties: {} } },
+            { name: "carregar_projeto", description: "Carrega um projeto existente a partir do diretório", inputSchema: { type: "object", properties: { diretorio: { type: "string" } }, required: ["diretorio"] } },
+            { name: "proximo", description: "Salva entregável e avança para próxima fase", inputSchema: { type: "object", properties: { entregavel: { type: "string" }, forcar: { type: "boolean" }, nome_arquivo: { type: "string" }, diretorio: { type: "string" } }, required: ["entregavel"] } },
+            { name: "status", description: "Retorna status do projeto", inputSchema: { type: "object", properties: { diretorio: { type: "string" } } } },
             { name: "validar_gate", description: "Valida checklist de saída da fase", inputSchema: { type: "object", properties: { fase: { type: "number" }, entregavel: { type: "string" } } } },
             // V1.0
             { name: "classificar", description: "Reclassifica complexidade do projeto", inputSchema: { type: "object", properties: { prd: { type: "string" }, nivel: { type: "string", enum: ["simples", "medio", "complexo"] } } } },
             { name: "contexto", description: "Retorna contexto acumulado do projeto", inputSchema: { type: "object", properties: {} } },
-            { name: "salvar", description: "Salva conteúdo sem avançar de fase", inputSchema: { type: "object", properties: { conteudo: { type: "string" }, tipo: { type: "string", enum: ["rascunho", "anexo", "entregavel"] }, nome_arquivo: { type: "string" } }, required: ["conteudo", "tipo"] } },
+            { name: "salvar", description: "Salva conteúdo sem avançar de fase", inputSchema: { type: "object", properties: { conteudo: { type: "string" }, tipo: { type: "string", enum: ["rascunho", "anexo", "entregavel"] }, nome_arquivo: { type: "string" }, diretorio: { type: "string" } }, required: ["conteudo", "tipo"] } },
             { name: "implementar_historia", description: "Orquestra implementação de história", inputSchema: { type: "object", properties: { historia_id: { type: "string" }, modo: { type: "string", enum: ["analisar", "iniciar", "proximo_bloco"] } } } },
             // Fluxos Alternativos
             { name: "nova_feature", description: "Inicia fluxo de nova feature", inputSchema: { type: "object", properties: { descricao: { type: "string" }, impacto_estimado: { type: "string", enum: ["baixo", "medio", "alto"] } }, required: ["descricao"] } },
@@ -351,10 +354,12 @@ async function callTool(name: string, args?: Record<string, unknown>) {
         switch (name) {
             case "iniciar_projeto":
                 return await iniciarProjeto({ nome: a.nome as string, descricao: a.descricao as string | undefined, diretorio: a.diretorio as string | undefined });
+            case "carregar_projeto":
+                return await carregarProjeto({ diretorio: a.diretorio as string });
             case "proximo":
-                return await proximo({ entregavel: a.entregavel as string, forcar: a.forcar as boolean | undefined, nome_arquivo: a.nome_arquivo as string | undefined });
+                return await proximo({ entregavel: a.entregavel as string, forcar: a.forcar as boolean | undefined, nome_arquivo: a.nome_arquivo as string | undefined, diretorio: a.diretorio as string | undefined });
             case "status":
-                return await status();
+                return await status({ diretorio: a.diretorio as string | undefined });
             case "validar_gate":
                 return await validarGate({ fase: a.fase as number | undefined, entregavel: a.entregavel as string | undefined });
             case "classificar":
@@ -362,7 +367,7 @@ async function callTool(name: string, args?: Record<string, unknown>) {
             case "contexto":
                 return await contexto();
             case "salvar":
-                return await salvar({ conteudo: a.conteudo as string, tipo: a.tipo as "rascunho" | "anexo" | "entregavel", nome_arquivo: a.nome_arquivo as string | undefined });
+                return await salvar({ conteudo: a.conteudo as string, tipo: a.tipo as "rascunho" | "anexo" | "entregavel", nome_arquivo: a.nome_arquivo as string | undefined, diretorio: a.diretorio as string | undefined });
             case "implementar_historia":
                 return await implementarHistoria({ historia_id: a.historia_id as string | undefined, modo: a.modo as "analisar" | "iniciar" | "proximo_bloco" | undefined });
             case "nova_feature":

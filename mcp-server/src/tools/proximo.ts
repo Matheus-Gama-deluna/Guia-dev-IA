@@ -7,6 +7,8 @@ import { getFase, getFluxo } from "../flows/types.js";
 import { classificarPRD, descreverNivel } from "../flows/classifier.js";
 import { validarGate, formatarResultadoGate } from "../gates/validator.js";
 import { resolveDirectory } from "../state/context.js";
+import { carregarResumo, salvarResumo, extrairResumoEntregavel, criarResumoInicial } from "../state/memory.js";
+import type { EntregavelResumo } from "../types/memory.js";
 
 interface ProximoArgs {
     entregavel: string;
@@ -66,6 +68,38 @@ export async function proximo(args: ProximoArgs): Promise<ToolResult> {
     await writeFile(caminhoArquivo, args.entregavel, "utf-8");
     await registrarEntregavel(diretorio, estado.fase_atual, caminhoArquivo);
 
+    // Atualizar resumo do projeto
+    let resumo = await carregarResumo(diretorio);
+    if (!resumo) {
+        resumo = criarResumoInicial(estado.projeto_id, estado.nome, estado.nivel, estado.fase_atual, estado.total_fases);
+    }
+
+    // Extrair resumo do entregável e adicionar
+    const extractedInfo = extrairResumoEntregavel(args.entregavel, estado.fase_atual, faseAtual.nome, faseAtual.entregavel_esperado, caminhoArquivo);
+
+    const novoEntregavel: EntregavelResumo = {
+        fase: estado.fase_atual,
+        nome: faseAtual.nome,
+        tipo: faseAtual.entregavel_esperado,
+        arquivo: caminhoArquivo,
+        resumo: extractedInfo.resumo,
+        pontos_chave: extractedInfo.pontos_chave,
+        criado_em: new Date().toISOString(),
+    };
+
+    // Update or add deliverable
+    const existingIdx = resumo.entregaveis.findIndex(e => e.fase === estado.fase_atual);
+    if (existingIdx >= 0) {
+        resumo.entregaveis[existingIdx] = novoEntregavel;
+    } else {
+        resumo.entregaveis.push(novoEntregavel);
+    }
+
+    // Update project info
+    resumo.fase_atual = estado.fase_atual;
+    resumo.nivel = estado.nivel;
+    resumo.total_fases = estado.total_fases;
+
     // Classificar complexidade após fase 1 (PRD)
     let classificacaoInfo = "";
     if (estado.fase_atual === 1) {
@@ -97,6 +131,20 @@ ${classificacao.criterios.map(c => `- ${c}`).join("\n")}
         estado.gates_validados.push(faseAnterior);
         await salvarEstado(diretorio, estado);
     }
+
+    // Atualizar contexto atual no resumo
+    const proximaFaseInfo = getFase(estado.nivel, estado.fase_atual);
+    if (proximaFaseInfo) {
+        resumo.contexto_atual = {
+            fase_nome: proximaFaseInfo.nome,
+            objetivo: `Desenvolver ${proximaFaseInfo.entregavel_esperado}`,
+            proximo_passo: `Trabalhar com ${proximaFaseInfo.especialista} para criar o entregável`,
+            dependencias: resumo.entregaveis.map(e => e.nome),
+        };
+    }
+
+    // Salvar resumo atualizado
+    await salvarResumo(diretorio, resumo);
 
     const proximaFase = getFase(estado.nivel, estado.fase_atual);
 

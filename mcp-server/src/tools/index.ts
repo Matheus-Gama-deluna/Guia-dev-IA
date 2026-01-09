@@ -6,6 +6,7 @@ import {
 
 // Tools básicas
 import { iniciarProjeto, iniciarProjetoSchema } from "./iniciar-projeto.js";
+import { carregarProjeto, carregarProjetoSchema } from "./carregar-projeto.js";
 import { proximo, proximoSchema } from "./proximo.js";
 import { status, statusSchema } from "./status.js";
 import { validarGate, validarGateSchema } from "./validar-gate.js";
@@ -25,6 +26,9 @@ import { analisarQualidade, analisarQualidadeSchema } from "./analise/qualidade.
 import { analisarPerformance, analisarPerformanceSchema } from "./analise/performance.js";
 import { gerarRelatorio, gerarRelatorioSchema } from "./analise/relatorio.js";
 
+// Tools de memória
+import { atualizarCodebase, atualizarCodebaseSchema } from "./atualizar-codebase.js";
+
 /**
  * Registra todas as tools no servidor MCP
  */
@@ -37,6 +41,11 @@ export function registerTools(server: Server) {
                 name: "iniciar_projeto",
                 description: "Inicia um novo projeto com o Maestro. Cria estrutura de pastas e carrega primeiro especialista.",
                 inputSchema: iniciarProjetoSchema,
+            },
+            {
+                name: "carregar_projeto",
+                description: "Carrega um projeto existente a partir do diretório. Útil quando o servidor reinicia.",
+                inputSchema: carregarProjetoSchema,
             },
             {
                 name: "proximo",
@@ -111,6 +120,12 @@ export function registerTools(server: Server) {
                 description: "Gera relatório consolidado de todas as análises com score.",
                 inputSchema: gerarRelatorioSchema,
             },
+            // === MEMÓRIA ===
+            {
+                name: "atualizar_codebase",
+                description: "Atualiza informações do codebase para memória do projeto.",
+                inputSchema: atualizarCodebaseSchema,
+            },
         ],
     }));
 
@@ -128,6 +143,11 @@ export function registerTools(server: Server) {
                         nome: typedArgs?.nome as string,
                         descricao: typedArgs?.descricao as string | undefined,
                         diretorio: typedArgs?.diretorio as string | undefined,
+                    });
+
+                case "carregar_projeto":
+                    return await carregarProjeto({
+                        diretorio: typedArgs?.diretorio as string,
                     });
 
                 case "proximo":
@@ -217,6 +237,17 @@ export function registerTools(server: Server) {
                         codigo: typedArgs?.codigo as string | undefined,
                         arquivo: typedArgs?.arquivo as string | undefined,
                         formato: typedArgs?.formato as "completo" | "resumido" | undefined,
+                    });
+
+                case "atualizar_codebase":
+                    return await atualizarCodebase({
+                        diretorio: typedArgs?.diretorio as string | undefined,
+                        estrutura: typedArgs?.estrutura as { raiz: string; pastas: { path: string; descricao: string }[] } | undefined,
+                        arquivos: typedArgs?.arquivos as { path: string; tipo: "entry" | "config" | "core" | "util" | "test" | "other"; descricao: string }[] | undefined,
+                        dependencias: typedArgs?.dependencias as { nome: string; versao: string; tipo: "prod" | "dev"; uso: string }[] | undefined,
+                        endpoints: typedArgs?.endpoints as { path: string; metodo: "GET" | "POST" | "PUT" | "DELETE" | "PATCH"; descricao: string }[] | undefined,
+                        entidades: typedArgs?.entidades as { nome: string; campos: { nome: string; tipo: string }[] }[] | undefined,
+                        padroes: typedArgs?.padroes as { naming?: string; estrutura_pastas?: string; testes?: string; commits?: string } | undefined,
                     });
 
                 default:
