@@ -6,8 +6,8 @@ version: '3.8'
 services:
   mcp-maestro:
     build:
-      context: ..
-      dockerfile: mcp-server/Dockerfile
+      context: .
+      dockerfile: Dockerfile
       target: builder  # Use builder stage for dev
     container_name: mcp-maestro-dev
     ports:
@@ -18,12 +18,8 @@ services:
       - PORT=3000
     volumes:
       # Mount source for hot reload
-      - ./src:/app/src:ro
-      - ../01-playbook:/app/01-playbook:ro
-      - ../02-especialistas:/app/02-especialistas:ro
-      - ../03-guias:/app/03-guias:ro
-      - ../05-prompts:/app/05-prompts:ro
-      - ../06-templates:/app/06-templates:ro
+      - ./src/src:/app/src:ro
+      - ./content:/app/content:ro
     command: npx tsx watch src/index.ts
     restart: unless-stopped
     networks:

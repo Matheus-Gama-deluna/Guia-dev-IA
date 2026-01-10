@@ -3,8 +3,8 @@ version: '3.8'
 services:
   mcp-maestro:
     build:
-      context: ..
-      dockerfile: mcp-server/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     container_name: mcp-maestro
     ports:
       - "${PORT:-3000}:3000"

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import express from "express";
+import express, { Response } from "express";
 import cors from "cors";
 import { randomUUID } from "crypto";
 import { createMcpServer } from "./server.js";
@@ -14,8 +14,15 @@ app.use(express.json({ limit: "10mb" }));
 // Criar servidor MCP
 const mcpServer = createMcpServer();
 
-// Armazenar sessões ativas
-const sessions = new Map<string, { lastAccess: Date }>();
+// Interface para sessões SSE
+interface SseSession {
+    response: Response;
+    lastAccess: Date;
+    heartbeatInterval: NodeJS.Timeout;
+}
+
+// Armazenar sessões ativas (suporta SSE e HTTP simples)
+const sessions = new Map<string, SseSession>();
 
 // Limpar sessões inativas a cada 5 minutos
 setInterval(() => {
@@ -91,33 +98,145 @@ app.get("/tools", async (req, res) => {
     }
 });
 
+// ============================================
+// SSE Transport para MCP (Streamable HTTP)
+// ============================================
+
+/**
+ * SSE Endpoint - Estabelece conexão Server-Sent Events
+ * Clientes como Gemini/Antigravity usam este endpoint
+ */
+app.get("/mcp", (req, res) => {
+    // Verificar se é request SSE
+    const accept = req.headers.accept || "";
+    if (!accept.includes("text/event-stream")) {
+        // Não é SSE, retornar info do endpoint
+        res.json({
+            name: "MCP Maestro",
+            version: "1.0.0",
+            transport: "streamable-http",
+            endpoints: {
+                sse: "GET /mcp (Accept: text/event-stream)",
+                post: "POST /mcp",
+            },
+        });
+        return;
+    }
+
+    // Configurar headers SSE
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache, no-transform");
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no"); // Para Nginx/proxies
+    res.flushHeaders();
+
+    // Criar sessão
+    const sessionId = randomUUID();
+    
+    // Heartbeat para manter conexão viva
+    const heartbeatInterval = setInterval(() => {
+        try {
+            res.write(": heartbeat\n\n");
+        } catch {
+            // Conexão fechada
+            clearInterval(heartbeatInterval);
+        }
+    }, 25000);
+
+    // Armazenar sessão
+    sessions.set(sessionId, {
+        response: res,
+        lastAccess: new Date(),
+        heartbeatInterval,
+    });
+
+    // Enviar evento endpoint (obrigatório para MCP Streamable HTTP)
+    const endpointUrl = `/mcp?sessionId=${sessionId}`;
+    res.write(`event: endpoint\ndata: ${endpointUrl}\n\n`);
+
+    console.log(`[SSE] Session created: ${sessionId}`);
+
+    // Cleanup quando conexão fechar
+    req.on("close", () => {
+        console.log(`[SSE] Session closed: ${sessionId}`);
+        clearInterval(heartbeatInterval);
+        sessions.delete(sessionId);
+    });
+});
+
+/**
+ * DELETE /mcp - Encerra sessão SSE
+ */
+app.delete("/mcp", (req, res) => {
+    const sessionId = req.query.sessionId as string;
+    
+    if (sessionId && sessions.has(sessionId)) {
+        const session = sessions.get(sessionId);
+        if (session) {
+            clearInterval(session.heartbeatInterval);
+            try {
+                session.response.end();
+            } catch {
+                // Já fechada
+            }
+        }
+        sessions.delete(sessionId);
+        res.json({ success: true, message: "Session terminated" });
+    } else {
+        res.status(404).json({ error: "Session not found" });
+    }
+});
+
 /**
  * Endpoint principal MCP (JSON-RPC)
+ * Suporta tanto HTTP direto quanto SSE via sessionId
  */
 app.post("/mcp", async (req, res) => {
     try {
         const request = req.body;
+        const sessionId = req.query.sessionId as string | undefined;
+
+        // Atualizar lastAccess da sessão se existir
+        if (sessionId && sessions.has(sessionId)) {
+            const session = sessions.get(sessionId)!;
+            session.lastAccess = new Date();
+        }
 
         // Validar request JSON-RPC
         if (!request.jsonrpc || request.jsonrpc !== "2.0") {
-            res.status(400).json({
+            const errorResponse = {
                 jsonrpc: "2.0",
                 error: { code: -32600, message: "Invalid Request: missing jsonrpc 2.0" },
                 id: request.id || null,
-            });
+            };
+            res.status(400).json(errorResponse);
             return;
         }
 
         if (!request.method) {
-            res.status(400).json({
+            const errorResponse = {
                 jsonrpc: "2.0",
                 error: { code: -32600, message: "Invalid Request: missing method" },
                 id: request.id,
-            });
+            };
+            res.status(400).json(errorResponse);
             return;
         }
 
         const result = await handleMcpRequest(request);
+
+        // Se tem sessão SSE ativa, enviar resposta por lá também
+        if (sessionId && sessions.has(sessionId)) {
+            const session = sessions.get(sessionId)!;
+            try {
+                session.response.write(`event: message\ndata: ${JSON.stringify(result)}\n\n`);
+            } catch {
+                // Sessão SSE pode ter sido fechada
+                sessions.delete(sessionId);
+            }
+        }
+
+        // Sempre responder via HTTP também
         res.json(result);
     } catch (error) {
         console.error("[MCP Error]", error);

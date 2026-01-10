@@ -1,7 +1,7 @@
 # ==========================================
 # MCP Maestro Server - Dockerfile
 # Multi-stage build for production
-# Build context: repository root (for Coolify)
+# Build context: repository root
 # ==========================================
 
 # Stage 1: Build
@@ -10,12 +10,12 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Install dependencies first (cache optimization)
-COPY mcp-server/package*.json ./
+COPY src/package*.json ./
 RUN npm ci --only=production=false
 
 # Copy source and build
-COPY mcp-server/tsconfig.json ./
-COPY mcp-server/src ./src
+COPY src/tsconfig.json ./
+COPY src/src ./src
 RUN npm run build
 
 # Stage 2: Production
@@ -28,18 +28,14 @@ RUN addgroup -g 1001 -S nodejs && \
 WORKDIR /app
 
 # Copy package files and install production dependencies only
-COPY mcp-server/package*.json ./
+COPY src/package*.json ./
 RUN npm ci --only=production && npm cache clean --force
 
 # Copy built files from builder stage
 COPY --from=builder /app/dist ./dist
 
-# Copy prompts, templates, and other resources needed at runtime
-COPY --chown=maestro:nodejs 01-playbook ./01-playbook
-COPY --chown=maestro:nodejs 02-especialistas ./02-especialistas
-COPY --chown=maestro:nodejs 03-guias ./03-guias
-COPY --chown=maestro:nodejs 05-prompts ./05-prompts
-COPY --chown=maestro:nodejs 06-templates ./06-templates
+# Copy content resources needed at runtime
+COPY --chown=maestro:nodejs content ./content
 
 # Set ownership
 RUN chown -R maestro:nodejs /app
