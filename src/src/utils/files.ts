@@ -2,12 +2,18 @@ import { readFile, readdir, stat } from "fs/promises";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
-// Resolve path to Maestro root (parent of src folder)
+// Resolve path to Guia-dev-IA root (parent of src folder)
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const MAESTRO_ROOT = join(__dirname, "..", "..", "..");
+const GUIA_ROOT = join(__dirname, "..", "..");
 
-// Content paths
-const CONTENT_ROOT = join(MAESTRO_ROOT, "content");
+// Project root (where the actual folder structure is)
+const PROJECT_ROOT = GUIA_ROOT;
+
+// Content root (where specialists, templates, guides are located)
+const CONTENT_ROOT = join(PROJECT_ROOT, "content");
+
+// Maestro root (for project files)
+const MAESTRO_ROOT = PROJECT_ROOT;
 
 /**
  * Lê conteúdo de um especialista
