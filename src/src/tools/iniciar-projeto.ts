@@ -10,13 +10,13 @@ import { getFase } from "../flows/types.js";
 interface IniciarProjetoArgs {
     nome: string;
     descricao?: string;
-    diretorio: string; // Agora obrigatório - a IA deve informar
+    diretorio: string; // Obrigatório - a IA deve informar
 }
 
 /**
  * Tool: iniciar_projeto
  * Inicia um novo projeto com o Maestro (modo stateless)
- * Retorna arquivos para a IA salvar ao invés de salvar diretamente
+ * Retorna arquivos para a IA salvar com conteúdo inline
  */
 export async function iniciarProjeto(args: IniciarProjetoArgs): Promise<ToolResult> {
     // Validar diretório
@@ -52,7 +52,7 @@ iniciar_projeto(nome: "meu-projeto", diretorio: "C:/projetos/meu-projeto")
     const resumo = criarResumoInicial(projetoId, args.nome, "medio", 1, 10);
     resumo.descricao = args.descricao;
 
-    // Serializar arquivos para a IA salvar
+    // Serializar arquivos
     const estadoFile = serializarEstado(estado);
     const resumoFiles = serializarResumo(resumo);
 
@@ -60,6 +60,11 @@ iniciar_projeto(nome: "meu-projeto", diretorio: "C:/projetos/meu-projeto")
     const fase = getFase("medio", 1)!;
     const especialista = await lerEspecialista(fase.especialista);
     const template = await lerTemplate(fase.template);
+
+    // Conteúdos para incluir inline
+    const estadoContent = estadoFile.content;
+    const resumoJsonContent = resumoFiles[0].content;
+    const resumoMdContent = resumoFiles[1].content;
 
     const resposta = `# 🚀 Projeto Iniciado: ${args.nome}
 
@@ -71,9 +76,43 @@ iniciar_projeto(nome: "meu-projeto", diretorio: "C:/projetos/meu-projeto")
 | **Especialista** | ${fase.especialista} |
 | **Diretório** | \`${diretorio}\` |
 
+---
+
+## ⚡ AÇÃO OBRIGATÓRIA - Criar Arquivos do Projeto
+
+**A IA DEVE executar os comandos abaixo para criar os arquivos do projeto.**
+
+### 1. Criar diretório .maestro
+\`\`\`
+mkdir -p "${diretorio}/.maestro"
+\`\`\`
+
+### 2. Criar arquivo: estado.json
+**Caminho:** \`${diretorio}/.maestro/estado.json\`
+
+\`\`\`json
+${estadoContent}
+\`\`\`
+
+### 3. Criar arquivo: resumo.json
+**Caminho:** \`${diretorio}/.maestro/resumo.json\`
+
+\`\`\`json
+${resumoJsonContent}
+\`\`\`
+
+### 4. Criar arquivo: resumo.md
+**Caminho:** \`${diretorio}/.maestro/resumo.md\`
+
+\`\`\`markdown
+${resumoMdContent}
+\`\`\`
+
+---
+
 ## 📋 Próximo Passo
 
-Desenvolva o **PRD (Product Requirements Document)** para definir:
+Após criar os arquivos acima, desenvolva o **PRD (Product Requirements Document)** para definir:
 - Qual problema será resolvido
 - Quem são os usuários (personas)
 - Quais funcionalidades compõem o MVP
@@ -92,20 +131,6 @@ ${especialista}
 ## 📝 Template: PRD
 
 ${template}
-
----
-
-## 📁 Arquivos para Salvar
-
-> **IMPORTANTE**: A IA deve salvar os seguintes arquivos no diretório do projeto:
-
-| Arquivo | Caminho |
-|---------|---------|
-| Estado | \`${diretorio}/.maestro/estado.json\` |
-| Resumo JSON | \`${diretorio}/.maestro/resumo.json\` |
-| Resumo MD | \`${diretorio}/.maestro/resumo.md\` |
-
-> Use \`write_to_file\` para criar cada arquivo. Os conteúdos estão no campo \`files\` da resposta.
 `;
 
     // Retornar com arquivos para salvar

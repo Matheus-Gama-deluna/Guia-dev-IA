@@ -139,9 +139,18 @@ ${criterios.length > 0 ? `### Critérios detectados:\n${criterios.map(c => `- ${
 ## Fase Atual
 Você continua na **fase ${estado.fase_atual}** do fluxo.
 
-## 📁 Arquivo para Salvar
+---
 
-A IA deve salvar o arquivo de estado atualizado listado no campo \`files\`.
+## ⚡ AÇÃO OBRIGATÓRIA - Atualizar Estado
+
+**A IA DEVE salvar o arquivo de estado atualizado.**
+
+### Atualizar estado
+**Caminho:** \`${args.diretorio}/.maestro/estado.json\`
+
+\`\`\`json
+${estadoFile.content}
+\`\`\`
 `;
 
     return {

@@ -338,6 +338,38 @@ ${proximaFase.gate_checklist.map(item => `- [ ] ${item}`).join("\n")}
 
 ---
 
+## ⚡ AÇÃO OBRIGATÓRIA - Salvar Arquivos
+
+**A IA DEVE executar os comandos abaixo para criar os arquivos do projeto.**
+
+### 1. Criar diretório da fase
+\`\`\`
+mkdir -p "${diretorio}/docs/${faseDirName}"
+\`\`\`
+
+### 2. Salvar entregável
+**Caminho:** \`${caminhoArquivo}\`
+
+\`\`\`markdown
+${args.entregavel.slice(0, 500)}${args.entregavel.length > 500 ? "\n... [conteúdo completo no campo files]" : ""}
+\`\`\`
+
+### 3. Atualizar estado
+**Caminho:** \`${diretorio}/.maestro/estado.json\`
+
+\`\`\`json
+${estadoFile.content}
+\`\`\`
+
+### 4. Atualizar resumo
+**Caminho:** \`${diretorio}/.maestro/resumo.json\`
+
+\`\`\`json
+${resumoFiles[0].content.slice(0, 300)}...
+\`\`\`
+
+---
+
 ## 🎭 Especialista: ${proximaFase.especialista}
 
 ${especialista}
@@ -347,18 +379,6 @@ ${especialista}
 ## 📝 Template: ${proximaFase.template}
 
 ${template}
-
----
-
-## 📁 Arquivos para Salvar
-
-A IA deve salvar os arquivos listados no campo \`files\`:
-
-| Tipo | Caminho |
-|------|---------|
-| Entregável | \`${caminhoArquivo}\` |
-| Estado | \`${diretorio}/.maestro/estado.json\` |
-| Resumo | \`${diretorio}/.maestro/resumo.json\` |
 `;
 
     return {

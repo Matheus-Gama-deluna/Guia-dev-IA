@@ -106,7 +106,7 @@ salvar(
             break;
     }
 
-    const resposta = `# 💾 Conteúdo para Salvar
+    const resposta = `# 💾 Salvar Conteúdo
 
 ## Detalhes
 
@@ -131,9 +131,23 @@ ${args.tipo === "entregavel" ? `
 
 ---
 
-## 📁 Arquivo para Salvar
+## ⚡ AÇÃO OBRIGATÓRIA - Salvar Arquivo
 
-A IA deve salvar o arquivo listado no campo \`files\`.
+**A IA DEVE executar o comando abaixo para criar o arquivo.**
+
+### 1. Criar diretório (se necessário)
+\`\`\`
+mkdir -p "${targetPath.substring(0, targetPath.lastIndexOf("/"))}"
+\`\`\`
+
+### 2. Salvar arquivo
+**Caminho:** \`${targetPath}\`
+
+\`\`\`markdown
+${args.conteudo.slice(0, 500)}${args.conteudo.length > 500 ? "\n... [conteúdo completo no campo files]" : ""}
+\`\`\`
+
+---
 
 **Próximas ações:**
 - Para avançar de fase: \`proximo(entregavel: "...", estado_json: "...")\`
