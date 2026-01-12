@@ -39,51 +39,51 @@ export function registerTools(server: Server) {
     // Listar tools disponíveis
     server.setRequestHandler(ListToolsRequestSchema, async () => ({
         tools: [
-            // === CORE ===
+            // === CORE (Stateless) ===
             {
                 name: "iniciar_projeto",
-                description: "Inicia um novo projeto com o Maestro. Cria estrutura de pastas e carrega primeiro especialista.",
+                description: "Inicia um novo projeto com o Maestro. Retorna arquivos para a IA salvar. Requer diretorio.",
                 inputSchema: iniciarProjetoSchema,
             },
             {
                 name: "carregar_projeto",
-                description: "Carrega um projeto existente a partir do diretório. Útil quando o servidor reinicia.",
+                description: "Carrega um projeto existente. Requer estado_json (conteúdo de .maestro/estado.json) e diretorio.",
                 inputSchema: carregarProjetoSchema,
             },
             {
                 name: "proximo",
-                description: "Salva o entregável atual, valida o gate e avança para a próxima fase. Use quando o dev disser 'próximo', 'avançar' ou 'terminei'.",
+                description: "Valida entregável e avança para próxima fase. Requer entregavel, estado_json e diretorio. Retorna arquivos para IA salvar.",
                 inputSchema: proximoSchema,
             },
             {
                 name: "status",
-                description: "Retorna status completo do projeto: fase atual, progresso, entregáveis gerados.",
+                description: "Retorna status completo do projeto. Requer estado_json e diretorio.",
                 inputSchema: statusSchema,
             },
             {
                 name: "validar_gate",
-                description: "Valida o checklist de saída da fase atual ou específica.",
+                description: "Valida checklist de saída da fase. Requer estado_json e diretorio.",
                 inputSchema: validarGateSchema,
             },
-            // === V1.0 ===
+            // === V1.0 (Stateless) ===
             {
                 name: "classificar",
-                description: "Reclassifica a complexidade do projeto baseado no PRD ou manualmente.",
+                description: "Reclassifica complexidade do projeto. Requer estado_json e diretorio. Retorna arquivo para IA salvar.",
                 inputSchema: classificarSchema,
             },
             {
                 name: "contexto",
-                description: "Retorna contexto acumulado do projeto para manter consistência entre fases.",
+                description: "Retorna contexto acumulado do projeto. Requer estado_json e diretorio.",
                 inputSchema: contextoSchema,
             },
             {
                 name: "salvar",
-                description: "Salva conteúdo (rascunho, anexo ou entregável) sem avançar de fase.",
+                description: "Salva conteúdo sem avançar de fase. Requer conteudo, tipo, estado_json e diretorio. Retorna arquivo para IA salvar.",
                 inputSchema: salvarSchema,
             },
             {
                 name: "implementar_historia",
-                description: "Orquestra a implementação de uma história de usuário em blocos (Frontend First).",
+                description: "Orquestra implementação de história em blocos (Frontend First).",
                 inputSchema: implementarHistoriaSchema,
             },
             // === FLUXOS ALTERNATIVOS ===
@@ -146,54 +146,68 @@ export function registerTools(server: Server) {
 
         try {
             switch (name) {
-                // Core
+                // Core (Stateless)
                 case "iniciar_projeto":
                     return await iniciarProjeto({
                         nome: typedArgs?.nome as string,
                         descricao: typedArgs?.descricao as string | undefined,
-                        diretorio: typedArgs?.diretorio as string | undefined,
+                        diretorio: typedArgs?.diretorio as string,
                     });
 
                 case "carregar_projeto":
                     return await carregarProjeto({
+                        estado_json: typedArgs?.estado_json as string,
+                        resumo_json: typedArgs?.resumo_json as string | undefined,
                         diretorio: typedArgs?.diretorio as string,
                     });
 
                 case "proximo":
                     return await proximo({
                         entregavel: typedArgs?.entregavel as string,
+                        estado_json: typedArgs?.estado_json as string,
+                        resumo_json: typedArgs?.resumo_json as string | undefined,
                         forcar: typedArgs?.forcar as boolean | undefined,
+                        confirmar_usuario: typedArgs?.confirmar_usuario as boolean | undefined,
                         nome_arquivo: typedArgs?.nome_arquivo as string | undefined,
-                        diretorio: typedArgs?.diretorio as string | undefined,
+                        diretorio: typedArgs?.diretorio as string,
                     });
 
                 case "status":
                     return await status({
-                        diretorio: typedArgs?.diretorio as string | undefined,
+                        estado_json: typedArgs?.estado_json as string,
+                        diretorio: typedArgs?.diretorio as string,
                     });
 
                 case "validar_gate":
                     return await validarGate({
                         fase: typedArgs?.fase as number | undefined,
                         entregavel: typedArgs?.entregavel as string | undefined,
+                        estado_json: typedArgs?.estado_json as string,
+                        diretorio: typedArgs?.diretorio as string,
                     });
 
-                // V1.0
+                // V1.0 (Stateless)
                 case "classificar":
                     return await classificar({
                         prd: typedArgs?.prd as string | undefined,
                         nivel: typedArgs?.nivel as "simples" | "medio" | "complexo" | undefined,
+                        estado_json: typedArgs?.estado_json as string,
+                        diretorio: typedArgs?.diretorio as string,
                     });
 
                 case "contexto":
-                    return await contexto();
+                    return await contexto({
+                        estado_json: typedArgs?.estado_json as string,
+                        diretorio: typedArgs?.diretorio as string,
+                    });
 
                 case "salvar":
                     return await salvar({
                         conteudo: typedArgs?.conteudo as string,
                         tipo: typedArgs?.tipo as "rascunho" | "anexo" | "entregavel",
+                        estado_json: typedArgs?.estado_json as string,
                         nome_arquivo: typedArgs?.nome_arquivo as string | undefined,
-                        diretorio: typedArgs?.diretorio as string | undefined,
+                        diretorio: typedArgs?.diretorio as string,
                     });
 
                 case "implementar_historia":

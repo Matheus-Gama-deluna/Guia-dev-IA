@@ -1,37 +1,65 @@
-import type { ToolResult } from "../types/index.js";
-import { carregarEstado } from "../state/storage.js";
+import type { ToolResult, EstadoProjeto } from "../types/index.js";
+import { parsearEstado } from "../state/storage.js";
 import { getFase, getFluxo } from "../flows/types.js";
 import { descreverNivel } from "../flows/classifier.js";
-import { resolveDirectory } from "../state/context.js";
+import { setCurrentDirectory } from "../state/context.js";
 
 interface StatusArgs {
-    diretorio?: string;
+    estado_json: string;     // Estado atual (obrigatório)
+    diretorio: string;       // Diretório do projeto (obrigatório)
 }
 
 /**
  * Tool: status
- * Retorna status completo do projeto
+ * Retorna status completo do projeto (modo stateless)
  */
-export async function status(args?: StatusArgs): Promise<ToolResult> {
-    const diretorio = resolveDirectory(args?.diretorio);
-    const estado = await carregarEstado(diretorio);
-
-    if (!estado) {
+export async function status(args: StatusArgs): Promise<ToolResult> {
+    // Validar parâmetros
+    if (!args.estado_json) {
         return {
             content: [{
                 type: "text",
-                text: `# ℹ️ Nenhum projeto ativo
+                text: `# ℹ️ Status do Projeto (Modo Stateless)
 
-Nenhum projeto iniciado neste diretório.
+Para ver o status, a IA deve:
+1. Ler o arquivo \`.maestro/estado.json\` do projeto
+2. Passar o conteúdo como parâmetro
 
-**Para iniciar um projeto use:**
+**Uso:**
 \`\`\`
-iniciar_projeto(nome: "Nome do Projeto")
+status(
+    estado_json: "...",
+    diretorio: "C:/projetos/meu-projeto"
+)
 \`\`\`
 `,
             }],
         };
     }
+
+    if (!args.diretorio) {
+        return {
+            content: [{
+                type: "text",
+                text: "❌ **Erro**: Parâmetro `diretorio` é obrigatório.",
+            }],
+            isError: true,
+        };
+    }
+
+    // Parsear estado
+    const estado = parsearEstado(args.estado_json);
+    if (!estado) {
+        return {
+            content: [{
+                type: "text",
+                text: "❌ **Erro**: Não foi possível parsear o estado JSON.",
+            }],
+            isError: true,
+        };
+    }
+
+    setCurrentDirectory(args.diretorio);
 
     const fluxo = getFluxo(estado.nivel);
     const faseAtual = getFase(estado.nivel, estado.fase_atual);
@@ -56,7 +84,7 @@ iniciar_projeto(nome: "Nome do Projeto")
 |-------|-------|
 | **Projeto** | ${estado.nome} |
 | **ID** | \`${estado.projeto_id}\` |
-| **Diretório** | \`${estado.diretorio}\` |
+| **Diretório** | \`${args.diretorio}\` |
 | **Nível** | ${estado.nivel.toUpperCase()} |
 | **Tipo** | ${estado.tipo_fluxo} |
 
@@ -99,6 +127,7 @@ ${Object.keys(estado.entregaveis).length > 0
 
     return {
         content: [{ type: "text", text: resposta }],
+        estado_atualizado: args.estado_json,
     };
 }
 
@@ -108,9 +137,14 @@ ${Object.keys(estado.entregaveis).length > 0
 export const statusSchema = {
     type: "object",
     properties: {
+        estado_json: {
+            type: "string",
+            description: "Conteúdo do arquivo .maestro/estado.json",
+        },
         diretorio: {
             type: "string",
-            description: "Diretório do projeto (opcional)",
+            description: "Diretório absoluto do projeto",
         },
     },
+    required: ["estado_json", "diretorio"],
 };

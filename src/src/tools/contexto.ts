@@ -1,24 +1,64 @@
-import type { ToolResult } from "../types/index.js";
-import { carregarEstado } from "../state/storage.js";
+import type { ToolResult, EstadoProjeto } from "../types/index.js";
+import { parsearEstado } from "../state/storage.js";
 import { getFase, getFluxo } from "../flows/types.js";
+import { setCurrentDirectory } from "../state/context.js";
+
+interface ContextoArgs {
+    estado_json: string;     // Estado atual (obrigatório)
+    diretorio: string;       // Diretório do projeto (obrigatório)
+}
 
 /**
  * Tool: contexto
- * Retorna contexto acumulado do projeto para injeção em prompts
+ * Retorna contexto acumulado do projeto para injeção em prompts (modo stateless)
  */
-export async function contexto(): Promise<ToolResult> {
-    const diretorio = process.cwd();
-    const estado = await carregarEstado(diretorio);
-
-    if (!estado) {
+export async function contexto(args: ContextoArgs): Promise<ToolResult> {
+    // Validar parâmetros
+    if (!args.estado_json) {
         return {
             content: [{
                 type: "text",
-                text: "❌ **Erro**: Nenhum projeto iniciado neste diretório.",
+                text: `# 📋 Contexto do Projeto (Modo Stateless)
+
+Para obter o contexto, a IA deve:
+1. Ler o arquivo \`.maestro/estado.json\` do projeto
+2. Passar o conteúdo como parâmetro
+
+**Uso:**
+\`\`\`
+contexto(
+    estado_json: "...",
+    diretorio: "C:/projetos/meu-projeto"
+)
+\`\`\`
+`,
+            }],
+        };
+    }
+
+    if (!args.diretorio) {
+        return {
+            content: [{
+                type: "text",
+                text: "❌ **Erro**: Parâmetro `diretorio` é obrigatório.",
             }],
             isError: true,
         };
     }
+
+    // Parsear estado
+    const estado = parsearEstado(args.estado_json);
+    if (!estado) {
+        return {
+            content: [{
+                type: "text",
+                text: "❌ **Erro**: Não foi possível parsear o estado JSON.",
+            }],
+            isError: true,
+        };
+    }
+
+    setCurrentDirectory(args.diretorio);
 
     const fluxo = getFluxo(estado.nivel);
     const faseAtual = getFase(estado.nivel, estado.fase_atual);
@@ -84,6 +124,7 @@ ${fluxo.fases.map(f => {
 
     return {
         content: [{ type: "text", text: resposta }],
+        estado_atualizado: args.estado_json,
     };
 }
 
@@ -92,5 +133,15 @@ ${fluxo.fases.map(f => {
  */
 export const contextoSchema = {
     type: "object",
-    properties: {},
+    properties: {
+        estado_json: {
+            type: "string",
+            description: "Conteúdo do arquivo .maestro/estado.json",
+        },
+        diretorio: {
+            type: "string",
+            description: "Diretório absoluto do projeto",
+        },
+    },
+    required: ["estado_json", "diretorio"],
 };

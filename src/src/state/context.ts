@@ -50,6 +50,17 @@ export function hasCurrentDirectory(): boolean {
 }
 
 /**
+ * Get default projects directory based on environment
+ * In production (Docker), use /app/projects (where volume is mounted)
+ * In development, use current working directory
+ */
+export function getDefaultProjectsDirectory(): string {
+    return process.env.NODE_ENV === "production" 
+        ? "/app/projects" 
+        : process.cwd();
+}
+
+/**
  * Get project directory from args or fallback to current/cwd
  * Also performs auto-detection of existing projects
  */

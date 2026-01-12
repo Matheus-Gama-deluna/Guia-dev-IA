@@ -1,19 +1,20 @@
-import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
-import type { ToolResult } from "../types/index.js";
-import { carregarEstado } from "../state/storage.js";
-import { resolveDirectory } from "../state/context.js";
+import type { ToolResult, EstadoProjeto } from "../types/index.js";
+import { parsearEstado } from "../state/storage.js";
+import { setCurrentDirectory } from "../state/context.js";
 
 interface SalvarArgs {
     conteudo: string;
     tipo: "rascunho" | "anexo" | "entregavel";
+    estado_json: string;     // Estado atual (obrigatório)
     nome_arquivo?: string;
-    diretorio?: string;
+    diretorio: string;       // Diretório do projeto (obrigatório)
 }
 
 /**
  * Tool: salvar
- * Salva conteúdo sem avançar de fase
+ * Salva conteúdo sem avançar de fase (modo stateless)
+ * Retorna arquivo para a IA salvar
  */
 export async function salvar(args: SalvarArgs): Promise<ToolResult> {
     // Validar parâmetros obrigatórios
@@ -38,43 +39,74 @@ export async function salvar(args: SalvarArgs): Promise<ToolResult> {
         };
     }
 
-    const diretorio = resolveDirectory(args.diretorio);
-    const estado = await carregarEstado(diretorio);
-
-    if (!estado) {
+    if (!args.estado_json) {
         return {
             content: [{
                 type: "text",
-                text: `❌ **Erro**: Nenhum projeto iniciado neste diretório.\n\nDiretório verificado: ${diretorio}\n\nUse \`iniciar_projeto\` ou \`carregar_projeto\` primeiro.`,
+                text: `# ❌ Erro: Estado Obrigatório
+
+O parâmetro \`estado_json\` é obrigatório.
+
+**Uso:**
+\`\`\`
+salvar(
+    conteudo: "...",
+    tipo: "rascunho",
+    estado_json: "...",
+    diretorio: "C:/projetos/meu-projeto"
+)
+\`\`\`
+`,
             }],
             isError: true,
         };
     }
 
-    let targetDir: string;
+    if (!args.diretorio) {
+        return {
+            content: [{
+                type: "text",
+                text: "❌ **Erro**: Parâmetro `diretorio` é obrigatório.",
+            }],
+            isError: true,
+        };
+    }
+
+    // Parsear estado
+    const estado = parsearEstado(args.estado_json);
+    if (!estado) {
+        return {
+            content: [{
+                type: "text",
+                text: "❌ **Erro**: Não foi possível parsear o estado JSON.",
+            }],
+            isError: true,
+        };
+    }
+
+    const diretorio = args.diretorio;
+    setCurrentDirectory(diretorio);
+
+    let targetPath: string;
     let nomeArquivo: string;
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 
     switch (args.tipo) {
         case "rascunho":
-            targetDir = join(diretorio, ".maestro", "rascunhos");
             nomeArquivo = args.nome_arquivo || `rascunho-${timestamp}.md`;
+            targetPath = `${diretorio}/.maestro/rascunhos/${nomeArquivo}`;
             break;
         case "anexo":
-            targetDir = join(diretorio, "docs", `fase-${estado.fase_atual.toString().padStart(2, "0")}`, "anexos");
             nomeArquivo = args.nome_arquivo || `anexo-${timestamp}.md`;
+            targetPath = `${diretorio}/docs/fase-${estado.fase_atual.toString().padStart(2, "0")}/anexos/${nomeArquivo}`;
             break;
         case "entregavel":
-            targetDir = join(diretorio, "docs", `fase-${estado.fase_atual.toString().padStart(2, "0")}`);
             nomeArquivo = args.nome_arquivo || `entregavel-${timestamp}.md`;
+            targetPath = `${diretorio}/docs/fase-${estado.fase_atual.toString().padStart(2, "0")}/${nomeArquivo}`;
             break;
     }
 
-    await mkdir(targetDir, { recursive: true });
-    const caminhoCompleto = join(targetDir, nomeArquivo);
-    await writeFile(caminhoCompleto, args.conteudo, "utf-8");
-
-    const resposta = `# 💾 Conteúdo Salvo
+    const resposta = `# 💾 Conteúdo para Salvar
 
 ## Detalhes
 
@@ -82,7 +114,7 @@ export async function salvar(args: SalvarArgs): Promise<ToolResult> {
 |-------|-------|
 | **Tipo** | ${args.tipo} |
 | **Arquivo** | \`${nomeArquivo}\` |
-| **Caminho** | \`${caminhoCompleto}\` |
+| **Caminho** | \`${targetPath}\` |
 | **Tamanho** | ${args.conteudo.length} caracteres |
 
 ${args.tipo === "rascunho" ? `
@@ -94,18 +126,26 @@ ${args.tipo === "anexo" ? `
 ` : ""}
 
 ${args.tipo === "entregavel" ? `
-> ⚠️ Este entregável foi salvo mas **não foi validado**. Use \`proximo()\` para validar e avançar.
+> ⚠️ Este entregável será salvo mas **não foi validado**. Use \`proximo()\` para validar e avançar.
 ` : ""}
 
 ---
 
+## 📁 Arquivo para Salvar
+
+A IA deve salvar o arquivo listado no campo \`files\`.
+
 **Próximas ações:**
-- Para avançar de fase: \`proximo(entregavel: "[conteúdo]")\`
-- Para verificar status: \`status()\`
+- Para avançar de fase: \`proximo(entregavel: "...", estado_json: "...")\`
+- Para verificar status: \`status(estado_json: "...")\`
 `;
 
     return {
         content: [{ type: "text", text: resposta }],
+        files: [{
+            path: targetPath,
+            content: args.conteudo
+        }],
     };
 }
 
@@ -124,14 +164,18 @@ export const salvarSchema = {
             enum: ["rascunho", "anexo", "entregavel"],
             description: "Tipo do conteúdo",
         },
+        estado_json: {
+            type: "string",
+            description: "Conteúdo do arquivo .maestro/estado.json",
+        },
         nome_arquivo: {
             type: "string",
             description: "Nome do arquivo (opcional, será gerado automaticamente)",
         },
         diretorio: {
             type: "string",
-            description: "Diretório do projeto (opcional, usa o último se não informado)",
+            description: "Diretório absoluto do projeto",
         },
     },
-    required: ["conteudo", "tipo"],
+    required: ["conteudo", "tipo", "estado_json", "diretorio"],
 };

@@ -128,6 +128,57 @@ export function criarCodebaseInicial(): CodebaseInfo {
 }
 
 /**
+ * Serializa resumo para JSON e MD (modo stateless)
+ */
+export function serializarResumo(resumo: ProjectSummary): Array<{path: string; content: string}> {
+    const resumoAtualizado = {
+        ...resumo,
+        atualizado_em: new Date().toISOString()
+    };
+    return [
+        {
+            path: ".maestro/resumo.json",
+            content: JSON.stringify(resumoAtualizado, null, 2)
+        },
+        {
+            path: ".maestro/resumo.md",
+            content: formatResumoMarkdown(resumoAtualizado)
+        }
+    ];
+}
+
+/**
+ * Serializa codebase para JSON e MD (modo stateless)
+ */
+export function serializarCodebase(codebase: CodebaseInfo): Array<{path: string; content: string}> {
+    const codebaseAtualizado = {
+        ...codebase,
+        atualizado_em: new Date().toISOString()
+    };
+    return [
+        {
+            path: ".maestro/codebase.json",
+            content: JSON.stringify(codebaseAtualizado, null, 2)
+        },
+        {
+            path: ".maestro/codebase.md",
+            content: formatCodebaseMarkdown(codebaseAtualizado)
+        }
+    ];
+}
+
+/**
+ * Parseia resumo de JSON string
+ */
+export function parsearResumo(json: string): ProjectSummary | null {
+    try {
+        return JSON.parse(json) as ProjectSummary;
+    } catch {
+        return null;
+    }
+}
+
+/**
  * Extract summary from deliverable content
  */
 export function extrairResumoEntregavel(

@@ -71,4 +71,15 @@ export interface ToolResult {
         text: string;
     }>;
     isError?: boolean;
+    /** Files for the AI to save (stateless mode) */
+    files?: Array<{
+        path: string;
+        content: string;
+        encoding?: string;
+    }>;
+    /** Updated state JSON string */
+    estado_atualizado?: string;
 }
+
+// Re-export response types
+export { FileToSave, MaestroToolResult, createFileToSave, formatFilesInstruction } from "./response.js";

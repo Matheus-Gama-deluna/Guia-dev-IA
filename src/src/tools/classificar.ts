@@ -1,30 +1,68 @@
-import type { ToolResult, NivelComplexidade } from "../types/index.js";
-import { carregarEstado, salvarEstado } from "../state/storage.js";
+import type { ToolResult, NivelComplexidade, EstadoProjeto } from "../types/index.js";
+import { parsearEstado, serializarEstado } from "../state/storage.js";
 import { classificarPRD, descreverNivel } from "../flows/classifier.js";
 import { getFluxo } from "../flows/types.js";
+import { setCurrentDirectory } from "../state/context.js";
 
 interface ClassificarArgs {
     prd?: string;
     nivel?: NivelComplexidade;
+    estado_json: string;     // Estado atual (obrigatório)
+    diretorio: string;       // Diretório do projeto (obrigatório)
 }
 
 /**
  * Tool: classificar
- * Reclassifica complexidade do projeto baseado no PRD ou manual
+ * Reclassifica complexidade do projeto baseado no PRD ou manual (modo stateless)
  */
 export async function classificar(args: ClassificarArgs): Promise<ToolResult> {
-    const diretorio = process.cwd();
-    const estado = await carregarEstado(diretorio);
-
-    if (!estado) {
+    // Validar parâmetros
+    if (!args.estado_json) {
         return {
             content: [{
                 type: "text",
-                text: "❌ **Erro**: Nenhum projeto iniciado neste diretório.",
+                text: `# 📊 Classificar Projeto (Modo Stateless)
+
+Para classificar, a IA deve:
+1. Ler o arquivo \`.maestro/estado.json\` do projeto
+2. Passar o conteúdo como parâmetro
+
+**Uso:**
+\`\`\`
+classificar(
+    prd: "[conteúdo do PRD]",
+    estado_json: "...",
+    diretorio: "C:/projetos/meu-projeto"
+)
+\`\`\`
+`,
+            }],
+        };
+    }
+
+    if (!args.diretorio) {
+        return {
+            content: [{
+                type: "text",
+                text: "❌ **Erro**: Parâmetro `diretorio` é obrigatório.",
             }],
             isError: true,
         };
     }
+
+    // Parsear estado
+    const estado = parsearEstado(args.estado_json);
+    if (!estado) {
+        return {
+            content: [{
+                type: "text",
+                text: "❌ **Erro**: Não foi possível parsear o estado JSON.",
+            }],
+            isError: true,
+        };
+    }
+
+    setCurrentDirectory(args.diretorio);
 
     let novoNivel: NivelComplexidade;
     let criterios: string[] = [];
@@ -50,12 +88,12 @@ export async function classificar(args: ClassificarArgs): Promise<ToolResult> {
 
 **Classificação automática (recomendado):**
 \`\`\`
-classificar(prd: "[conteúdo do PRD]")
+classificar(prd: "[conteúdo do PRD]", estado_json: "...", diretorio: "...")
 \`\`\`
 
 **Classificação manual:**
 \`\`\`
-classificar(nivel: "simples" | "medio" | "complexo")
+classificar(nivel: "simples" | "medio" | "complexo", estado_json: "...", diretorio: "...")
 \`\`\`
 
 ## Níveis Disponíveis
@@ -76,9 +114,12 @@ classificar(nivel: "simples" | "medio" | "complexo")
     const nivelAnterior = estado.nivel;
     const fluxo = getFluxo(novoNivel);
 
+    // Atualizar estado
     estado.nivel = novoNivel;
     estado.total_fases = fluxo.total_fases;
-    await salvarEstado(diretorio, estado);
+    
+    // Serializar novo estado
+    const estadoFile = serializarEstado(estado);
 
     const resposta = `# 📊 Projeto Reclassificado
 
@@ -97,10 +138,19 @@ ${criterios.length > 0 ? `### Critérios detectados:\n${criterios.map(c => `- ${
 
 ## Fase Atual
 Você continua na **fase ${estado.fase_atual}** do fluxo.
+
+## 📁 Arquivo para Salvar
+
+A IA deve salvar o arquivo de estado atualizado listado no campo \`files\`.
 `;
 
     return {
         content: [{ type: "text", text: resposta }],
+        files: [{
+            path: `${args.diretorio}/${estadoFile.path}`,
+            content: estadoFile.content
+        }],
+        estado_atualizado: estadoFile.content,
     };
 }
 
@@ -119,5 +169,14 @@ export const classificarSchema = {
             enum: ["simples", "medio", "complexo"],
             description: "Nível de complexidade para classificação manual",
         },
+        estado_json: {
+            type: "string",
+            description: "Conteúdo do arquivo .maestro/estado.json",
+        },
+        diretorio: {
+            type: "string",
+            description: "Diretório absoluto do projeto",
+        },
     },
+    required: ["estado_json", "diretorio"],
 };

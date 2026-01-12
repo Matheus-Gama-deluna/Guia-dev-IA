@@ -1,43 +1,60 @@
-import { mkdir, writeFile } from "fs/promises";
 import { join } from "path";
 import { v4 as uuid } from "uuid";
 import type { ToolResult } from "../types/index.js";
 import { lerEspecialista, lerTemplate } from "../utils/files.js";
-import { salvarEstado, criarEstadoInicial } from "../state/storage.js";
+import { criarEstadoInicial, serializarEstado } from "../state/storage.js";
 import { setCurrentDirectory } from "../state/context.js";
-import { salvarResumo, criarResumoInicial } from "../state/memory.js";
-import { getFase, getFluxo } from "../flows/types.js";
+import { criarResumoInicial, serializarResumo } from "../state/memory.js";
+import { getFase } from "../flows/types.js";
 
 interface IniciarProjetoArgs {
     nome: string;
     descricao?: string;
-    diretorio?: string;
+    diretorio: string; // Agora obrigatório - a IA deve informar
 }
 
 /**
  * Tool: iniciar_projeto
- * Inicia um novo projeto com o Maestro
+ * Inicia um novo projeto com o Maestro (modo stateless)
+ * Retorna arquivos para a IA salvar ao invés de salvar diretamente
  */
 export async function iniciarProjeto(args: IniciarProjetoArgs): Promise<ToolResult> {
-    const diretorio = args.diretorio || process.cwd();
+    // Validar diretório
+    if (!args.diretorio) {
+        return {
+            content: [{
+                type: "text",
+                text: `# ❌ Erro: Diretório Obrigatório
 
+O parâmetro \`diretorio\` é obrigatório. Informe o caminho absoluto onde o projeto deve ser criado.
+
+**Exemplo:**
+\`\`\`
+iniciar_projeto(nome: "meu-projeto", diretorio: "C:/projetos/meu-projeto")
+\`\`\`
+`,
+            }],
+            isError: true,
+        };
+    }
+
+    const diretorio = args.diretorio;
+    
     // Set global directory context for subsequent tool calls
     setCurrentDirectory(diretorio);
 
     const projetoId = uuid();
 
-    // Criar estrutura de pastas
-    await mkdir(join(diretorio, ".maestro"), { recursive: true });
-    await mkdir(join(diretorio, "docs"), { recursive: true });
-
     // Estado inicial (médio por padrão, será reclassificado após PRD)
     const estado = criarEstadoInicial(projetoId, args.nome, diretorio);
-    await salvarEstado(diretorio, estado);
 
     // Criar resumo inicial do projeto
     const resumo = criarResumoInicial(projetoId, args.nome, "medio", 1, 10);
     resumo.descricao = args.descricao;
-    await salvarResumo(diretorio, resumo);
+
+    // Serializar arquivos para a IA salvar
+    const estadoFile = serializarEstado(estado);
+    const resumoFiles = serializarResumo(resumo);
 
     // Carregar especialista e template da fase 1
     const fase = getFase("medio", 1)!;
@@ -75,10 +92,30 @@ ${especialista}
 ## 📝 Template: PRD
 
 ${template}
+
+---
+
+## 📁 Arquivos para Salvar
+
+> **IMPORTANTE**: A IA deve salvar os seguintes arquivos no diretório do projeto:
+
+| Arquivo | Caminho |
+|---------|---------|
+| Estado | \`${diretorio}/.maestro/estado.json\` |
+| Resumo JSON | \`${diretorio}/.maestro/resumo.json\` |
+| Resumo MD | \`${diretorio}/.maestro/resumo.md\` |
+
+> Use \`write_to_file\` para criar cada arquivo. Os conteúdos estão no campo \`files\` da resposta.
 `;
 
+    // Retornar com arquivos para salvar
     return {
         content: [{ type: "text", text: resposta }],
+        files: [
+            { path: `${diretorio}/${estadoFile.path}`, content: estadoFile.content },
+            ...resumoFiles.map(f => ({ path: `${diretorio}/${f.path}`, content: f.content }))
+        ],
+        estado_atualizado: estadoFile.content,
     };
 }
 
@@ -98,8 +135,8 @@ export const iniciarProjetoSchema = {
         },
         diretorio: {
             type: "string",
-            description: "Diretório do projeto (default: diretório atual)",
+            description: "Diretório absoluto onde o projeto será criado (obrigatório)",
         },
     },
-    required: ["nome"],
+    required: ["nome", "diretorio"],
 };

@@ -1,22 +1,23 @@
-import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
-import type { ToolResult } from "../types/index.js";
+import type { ToolResult, EstadoProjeto } from "../types/index.js";
 import { lerEspecialista, lerTemplate } from "../utils/files.js";
-import { carregarEstado, salvarEstado, registrarEntregavel } from "../state/storage.js";
+import { parsearEstado, serializarEstado } from "../state/storage.js";
 import { getFase, getFluxo } from "../flows/types.js";
 import { classificarPRD, descreverNivel } from "../flows/classifier.js";
 import { validarGate, formatarResultadoGate } from "../gates/validator.js";
 import { validarEstrutura } from "../gates/estrutura.js";
-import { resolveDirectory } from "../state/context.js";
-import { carregarResumo, salvarResumo, extrairResumoEntregavel, criarResumoInicial } from "../state/memory.js";
-import type { EntregavelResumo } from "../types/memory.js";
+import { setCurrentDirectory } from "../state/context.js";
+import { parsearResumo, serializarResumo, criarResumoInicial, extrairResumoEntregavel } from "../state/memory.js";
+import type { EntregavelResumo, ProjectSummary } from "../types/memory.js";
 
 interface ProximoArgs {
     entregavel: string;
+    estado_json: string;         // Estado atual do projeto (obrigatório)
+    resumo_json?: string;        // Resumo atual (opcional, cria novo se não informado)
     forcar?: boolean;
-    confirmar_usuario?: boolean;  // NOVO: Somente usuário pode definir
+    confirmar_usuario?: boolean;
     nome_arquivo?: string;
-    diretorio?: string;
+    diretorio: string;           // Diretório do projeto (obrigatório)
 }
 
 /**
@@ -42,21 +43,60 @@ function calcularQualityScore(
 
 /**
  * Tool: proximo
- * Salva entregável e avança para próxima fase
+ * Salva entregável e avança para próxima fase (modo stateless)
+ * Retorna arquivos para a IA salvar
  */
 export async function proximo(args: ProximoArgs): Promise<ToolResult> {
-    const diretorio = resolveDirectory(args.diretorio);
-    const estado = await carregarEstado(diretorio);
-
-    if (!estado) {
+    // Validar parâmetros obrigatórios
+    if (!args.estado_json) {
         return {
             content: [{
                 type: "text",
-                text: "❌ **Erro**: Nenhum projeto iniciado neste diretório.\n\nUse `iniciar_projeto` primeiro.",
+                text: `# ❌ Erro: Estado Obrigatório
+
+O parâmetro \`estado_json\` é obrigatório no modo stateless.
+
+**Uso correto:**
+1. IA lê \`.maestro/estado.json\` do projeto
+2. Passa o conteúdo como parâmetro
+
+\`\`\`
+proximo(
+    entregavel: "conteúdo do PRD...",
+    estado_json: "...",
+    diretorio: "C:/projetos/meu-projeto"
+)
+\`\`\`
+`,
             }],
             isError: true,
         };
     }
+
+    if (!args.diretorio) {
+        return {
+            content: [{
+                type: "text",
+                text: "❌ **Erro**: Parâmetro `diretorio` é obrigatório.",
+            }],
+            isError: true,
+        };
+    }
+
+    // Parsear estado
+    const estado = parsearEstado(args.estado_json);
+    if (!estado) {
+        return {
+            content: [{
+                type: "text",
+                text: "❌ **Erro**: Não foi possível parsear o estado JSON.",
+            }],
+            isError: true,
+        };
+    }
+
+    const diretorio = args.diretorio;
+    setCurrentDirectory(diretorio);
 
     const faseAtual = getFase(estado.nivel, estado.fase_atual);
     if (!faseAtual) {
@@ -78,7 +118,7 @@ export async function proximo(args: ProximoArgs): Promise<ToolResult> {
     // Calcular score de qualidade
     const qualityScore = calcularQualityScore(estruturaResult, gateResultado);
 
-    // Score < 50: BLOQUEAR - não pode avançar de forma alguma
+    // Score < 50: BLOQUEAR
     if (qualityScore < 50) {
         return {
             content: [{
@@ -98,14 +138,12 @@ ${gateResultado.itens_pendentes.map((item, i) => `- ${item}\n  💡 ${gateResult
 
 ---
 
-**Não é possível avançar.** Corrija os itens acima e tente novamente.
-
-Use \`avaliar_entregavel(entregavel: "...")\` para ver a análise completa.`,
+**Não é possível avançar.** Corrija os itens acima e tente novamente.`,
             }],
         };
     }
 
-    // Score 50-69: Requer confirmação EXPLÍCITA do usuário
+    // Score 50-69: Requer confirmação do usuário
     if (qualityScore < 70 && !args.confirmar_usuario) {
         return {
             content: [{
@@ -128,40 +166,42 @@ ${gateResultado.itens_pendentes.length > 0 ? `**Checklist pendente:**\n${gateRes
 Para avançar com pendências, o **usuário** deve confirmar explicitamente:
 
 \`\`\`
-proximo(entregavel: "...", confirmar_usuario: true)
+proximo(entregavel: "...", estado_json: "...", confirmar_usuario: true)
 \`\`\`
 
 > ⚠️ **IMPORTANTE**: A IA NÃO pode definir \`confirmar_usuario\`. 
-> Apenas o usuário humano pode autorizar o avanço com pendências.
-
----
-
-**Alternativas:**
-1. Corrigir os itens pendentes e tentar novamente
-2. Usuário confirmar avanço com \`confirmar_usuario: true\``,
+> Apenas o usuário humano pode autorizar o avanço com pendências.`,
             }],
         };
     }
 
     // Score >= 70 OU usuário confirmou: Pode avançar
-    // (forcar ainda funciona para casos extremos, mas não é anunciado)
 
-    // Salvar entregável
+    // Preparar arquivos para salvar
+    const filesToSave: Array<{path: string; content: string}> = [];
+
+    // Arquivo do entregável
     const nomeArquivo = args.nome_arquivo || faseAtual.entregavel_esperado;
-    const faseDir = join(diretorio, "docs", `fase-${estado.fase_atual.toString().padStart(2, "0")}-${faseAtual.nome.toLowerCase().replace(/\s/g, "-")}`);
-    await mkdir(faseDir, { recursive: true });
+    const faseDirName = `fase-${estado.fase_atual.toString().padStart(2, "0")}-${faseAtual.nome.toLowerCase().replace(/\s/g, "-")}`;
+    const caminhoArquivo = `${diretorio}/docs/${faseDirName}/${nomeArquivo}`;
+    
+    filesToSave.push({
+        path: caminhoArquivo,
+        content: args.entregavel
+    });
 
-    const caminhoArquivo = join(faseDir, nomeArquivo);
-    await writeFile(caminhoArquivo, args.entregavel, "utf-8");
-    await registrarEntregavel(diretorio, estado.fase_atual, caminhoArquivo);
+    // Atualizar estado com entregável registrado
+    estado.entregaveis[`fase_${estado.fase_atual}`] = caminhoArquivo;
 
-    // Atualizar resumo do projeto
-    let resumo = await carregarResumo(diretorio);
-    if (!resumo) {
+    // Preparar/atualizar resumo
+    let resumo: ProjectSummary;
+    if (args.resumo_json) {
+        resumo = parsearResumo(args.resumo_json) || criarResumoInicial(estado.projeto_id, estado.nome, estado.nivel, estado.fase_atual, estado.total_fases);
+    } else {
         resumo = criarResumoInicial(estado.projeto_id, estado.nome, estado.nivel, estado.fase_atual, estado.total_fases);
     }
 
-    // Extrair resumo do entregável e adicionar
+    // Extrair resumo do entregável
     const extractedInfo = extrairResumoEntregavel(args.entregavel, estado.fase_atual, faseAtual.nome, faseAtual.entregavel_esperado, caminhoArquivo);
 
     const novoEntregavel: EntregavelResumo = {
@@ -174,18 +214,13 @@ proximo(entregavel: "...", confirmar_usuario: true)
         criado_em: new Date().toISOString(),
     };
 
-    // Update or add deliverable
+    // Adicionar ou atualizar entregável no resumo
     const existingIdx = resumo.entregaveis.findIndex(e => e.fase === estado.fase_atual);
     if (existingIdx >= 0) {
         resumo.entregaveis[existingIdx] = novoEntregavel;
     } else {
         resumo.entregaveis.push(novoEntregavel);
     }
-
-    // Update project info
-    resumo.fase_atual = estado.fase_atual;
-    resumo.nivel = estado.nivel;
-    resumo.total_fases = estado.total_fases;
 
     // Classificar complexidade após fase 1 (PRD)
     let classificacaoInfo = "";
@@ -216,10 +251,9 @@ ${classificacao.criterios.map(c => `- ${c}`).join("\n")}
     if (estado.fase_atual < estado.total_fases) {
         estado.fase_atual += 1;
         estado.gates_validados.push(faseAnterior);
-        await salvarEstado(diretorio, estado);
     }
 
-    // Atualizar contexto atual no resumo
+    // Atualizar contexto no resumo
     const proximaFaseInfo = getFase(estado.nivel, estado.fase_atual);
     if (proximaFaseInfo) {
         resumo.contexto_atual = {
@@ -229,9 +263,22 @@ ${classificacao.criterios.map(c => `- ${c}`).join("\n")}
             dependencias: resumo.entregaveis.map(e => e.nome),
         };
     }
+    resumo.fase_atual = estado.fase_atual;
+    resumo.nivel = estado.nivel;
+    resumo.total_fases = estado.total_fases;
 
-    // Salvar resumo atualizado
-    await salvarResumo(diretorio, resumo);
+    // Serializar estado e resumo
+    const estadoFile = serializarEstado(estado);
+    const resumoFiles = serializarResumo(resumo);
+
+    filesToSave.push({
+        path: `${diretorio}/${estadoFile.path}`,
+        content: estadoFile.content
+    });
+    filesToSave.push(...resumoFiles.map(f => ({
+        path: `${diretorio}/${f.path}`,
+        content: f.content
+    })));
 
     const proximaFase = getFase(estado.nivel, estado.fase_atual);
 
@@ -254,9 +301,13 @@ ${classificacao.criterios.map(c => `- ${c}`).join("\n")}
 ### Entregáveis gerados:
 ${Object.entries(estado.entregaveis).map(([fase, caminho]) => `- ${fase}: \`${caminho}\``).join("\n")}
 
-Parabéns! Todos os artefatos foram gerados em \`docs/\`.
+## 📁 Arquivos para Salvar
+
+A IA deve salvar os arquivos listados no campo \`files\`.
 `,
             }],
+            files: filesToSave,
+            estado_atualizado: estadoFile.content,
         };
     }
 
@@ -266,7 +317,7 @@ Parabéns! Todos os artefatos foram gerados em \`docs/\`.
 
     const resposta = `# ✅ Fase ${faseAnterior} Concluída!
 
-## 📁 Entregável Salvo
+## 📁 Entregável
 \`${caminhoArquivo}\`
 
 ${gateResultado.valido ? "✅ Gate aprovado" : "⚠️ Gate forçado"}
@@ -296,10 +347,24 @@ ${especialista}
 ## 📝 Template: ${proximaFase.template}
 
 ${template}
+
+---
+
+## 📁 Arquivos para Salvar
+
+A IA deve salvar os arquivos listados no campo \`files\`:
+
+| Tipo | Caminho |
+|------|---------|
+| Entregável | \`${caminhoArquivo}\` |
+| Estado | \`${diretorio}/.maestro/estado.json\` |
+| Resumo | \`${diretorio}/.maestro/resumo.json\` |
 `;
 
     return {
         content: [{ type: "text", text: resposta }],
+        files: filesToSave,
+        estado_atualizado: estadoFile.content,
     };
 }
 
@@ -312,6 +377,14 @@ export const proximoSchema = {
         entregavel: {
             type: "string",
             description: "Conteúdo do entregável da fase atual",
+        },
+        estado_json: {
+            type: "string",
+            description: "Conteúdo do arquivo .maestro/estado.json",
+        },
+        resumo_json: {
+            type: "string",
+            description: "Conteúdo do arquivo .maestro/resumo.json (opcional)",
         },
         confirmar_usuario: {
             type: "boolean",
@@ -327,8 +400,8 @@ export const proximoSchema = {
         },
         diretorio: {
             type: "string",
-            description: "Diretório do projeto (opcional)",
+            description: "Diretório absoluto do projeto",
         },
     },
-    required: ["entregavel"],
+    required: ["entregavel", "estado_json", "diretorio"],
 };

@@ -63,6 +63,34 @@ export function criarEstadoInicial(
 }
 
 /**
+ * Serializa estado para JSON (modo stateless - retorna ao invés de salvar)
+ */
+export function serializarEstado(estado: EstadoProjeto): {
+    path: string;
+    content: string;
+} {
+    const estadoAtualizado = {
+        ...estado,
+        atualizado_em: new Date().toISOString()
+    };
+    return {
+        path: ".maestro/estado.json",
+        content: JSON.stringify(estadoAtualizado, null, 2)
+    };
+}
+
+/**
+ * Parseia estado de JSON string
+ */
+export function parsearEstado(json: string): EstadoProjeto | null {
+    try {
+        return JSON.parse(json) as EstadoProjeto;
+    } catch {
+        return null;
+    }
+}
+
+/**
  * Registra entregável no estado
  */
 export async function registrarEntregavel(
