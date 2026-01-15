@@ -133,12 +133,12 @@ app.get("/mcp", (req, res) => {
 
     // Criar sessão
     const sessionId = randomUUID();
-    
+
     // Enviar padding inicial para forçar flush através de proxies (Cloudflare, etc.)
     // Alguns proxies bufferam até receber ~1KB de dados
     const padding = ": " + "x".repeat(2048) + "\n\n";
     res.write(padding);
-    
+
     // Heartbeat para manter conexão viva
     const heartbeatInterval = setInterval(() => {
         try {
@@ -175,7 +175,7 @@ app.get("/mcp", (req, res) => {
  */
 app.delete("/mcp", (req, res) => {
     const sessionId = req.query.sessionId as string;
-    
+
     if (sessionId && sessions.has(sessionId)) {
         const session = sessions.get(sessionId);
         if (session) {
@@ -353,38 +353,65 @@ import { salvar } from "./tools/salvar.js";
 import { implementarHistoria } from "./tools/implementar-historia.js";
 import { novaFeature, corrigirBug, refatorar } from "./tools/fluxos-alternativos.js";
 
-async function getResourcesList() {
-    const especialistas = await listarEspecialistas();
-    const templates = await listarTemplates();
-    const guias = await listarGuias();
+// Definição das tools para exibição como resources no seletor @mcp:maestro:
+const TOOLS_AS_RESOURCES = [
+    { name: "iniciar_projeto", emoji: "🚀", desc: "Inicia novo projeto Maestro", params: "nome, diretorio, [descricao]" },
+    { name: "carregar_projeto", emoji: "📂", desc: "Carrega projeto existente", params: "estado_json, diretorio" },
+    { name: "proximo", emoji: "➡️", desc: "Salva entregável e avança fase", params: "entregavel, estado_json, diretorio" },
+    { name: "status", emoji: "📊", desc: "Retorna status do projeto", params: "estado_json, diretorio" },
+    { name: "validar_gate", emoji: "✅", desc: "Valida checklist de saída", params: "estado_json, diretorio, [fase], [entregavel]" },
+    { name: "classificar", emoji: "📏", desc: "Reclassifica complexidade", params: "estado_json, diretorio, [prd], [nivel]" },
+    { name: "contexto", emoji: "📋", desc: "Retorna contexto acumulado", params: "estado_json, diretorio" },
+    { name: "salvar", emoji: "💾", desc: "Salva rascunhos/anexos", params: "conteudo, tipo, estado_json, diretorio" },
+    { name: "implementar_historia", emoji: "📝", desc: "Orquestra implementação de história", params: "[historia_id], [modo]" },
+    { name: "nova_feature", emoji: "✨", desc: "Inicia fluxo de nova feature", params: "descricao, [impacto_estimado]" },
+    { name: "corrigir_bug", emoji: "🐛", desc: "Inicia fluxo de correção de bug", params: "descricao, [severidade], [ticket_id]" },
+    { name: "refatorar", emoji: "♻️", desc: "Inicia fluxo de refatoração", params: "area, motivo" },
+];
 
+// Gera documentação de uma tool
+function getToolDocumentation(toolName: string): string {
+    const tool = TOOLS_AS_RESOURCES.find(t => t.name === toolName);
+    if (!tool) return `Tool não encontrada: ${toolName}`;
+
+    return `# ${tool.emoji} ${tool.name}
+
+${tool.desc}
+
+## Parâmetros
+\`${tool.params}\`
+
+## Como usar
+Peça para a IA executar esta tool naturalmente, por exemplo:
+- "Use ${tool.name} para..."
+- "Execute ${tool.name} com..."
+
+A IA chamará \`mcp_maestro_${tool.name}\` automaticamente.
+`;
+}
+
+async function getResourcesList() {
+    // Expõe apenas as tools no seletor @mcp:maestro:
+    // Especialistas, templates e guias continuam acessíveis via URI direta
     return {
-        resources: [
-            ...especialistas.map((e) => ({
-                uri: `maestro://especialista/${encodeURIComponent(e)}`,
-                name: `Especialista: ${e}`,
-                mimeType: "text/markdown",
-            })),
-            ...templates.map((t) => ({
-                uri: `maestro://template/${encodeURIComponent(t)}`,
-                name: `Template: ${t}`,
-                mimeType: "text/markdown",
-            })),
-            ...guias.map((g) => ({
-                uri: `maestro://guia/${encodeURIComponent(g)}`,
-                name: `Guia: ${g}`,
-                mimeType: "text/markdown",
-            })),
-            {
-                uri: "maestro://system-prompt",
-                name: "System Prompt",
-                mimeType: "text/markdown",
-            },
-        ],
+        resources: TOOLS_AS_RESOURCES.map((t) => ({
+            uri: `maestro://tool/${t.name}`,
+            name: `${t.emoji} ${t.name}`,
+            description: t.desc,
+            mimeType: "text/markdown",
+        })),
     };
 }
 
 async function getResourceContent(uri: string) {
+    // Handler para tools (exibidas no seletor @mcp:maestro:)
+    if (uri.startsWith("maestro://tool/")) {
+        const toolName = uri.replace("maestro://tool/", "");
+        const conteudo = getToolDocumentation(toolName);
+        return { contents: [{ uri, mimeType: "text/markdown", text: conteudo }] };
+    }
+
+    // Handlers para recursos internos (acessíveis via URI direta pela IA)
     if (uri.startsWith("maestro://especialista/")) {
         const nome = decodeURIComponent(uri.replace("maestro://especialista/", ""));
         const conteudo = await lerEspecialista(nome);
