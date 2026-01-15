@@ -130,227 +130,48 @@ Stack preferencial: [DESCREVA]
 - **Stack Preferencial**: [PREENCHER]
 - **Conformidade**: [LGPD/GDPR/HIPAA/Nenhuma]
 
-## 📋 Perguntas Iniciais (se contexto incompleto)
+## 📋 Perguntas Iniciais (Obrigatórias)
 
-> [!NOTE]
-> Pergunte apenas se não estiver claro nos artefatos anteriores.
+> [!IMPORTANT]
+> Decisões de arquitetura são caras. **Valide** antes de decidir.
 
-### Se necessário
-1. **Tem preferência de stack/linguagem?** (Node, Java, Python, Go, etc.)
-2. **Qual cloud provider preferido?** (AWS, GCP, Azure, on-premise)
-3. **Há restrições de licenciamento?** (open-source only, etc.)
+### 1. Definições de Stack
+1. **Preferência de Linguagem?** (Java, Node, Python, C#, etc.)
+2. **Cloud Provider?** (AWS, Azure, GCP, Vercel, On-premise)
+3. **Banco de Dados?** (Postgres, Mongo, MySQL, etc.)
 
-### Inferir dos RNFs (não perguntar)
-- Escala esperada → está nos requisitos
-- Performance → está nos requisitos
+> **Se o usuário não souber:** Sugira a stack mais adequada ao problema e *pergunte se ele concorda*.
 
 ---
 
 ## 🔍 Apresentar Resultado Antes de Avançar
 
 > [!CAUTION]
-> **NUNCA avance automaticamente sem apresentar o resultado ao usuário!**
+> **NUNCA avance automaticamente sem validação explícita!**
 
 Antes de chamar `proximo()`, você DEVE:
 
-1. **Resumir a arquitetura** proposta
-2. **Listar as principais decisões** (ADRs)
-3. **Perguntar**: "Esta arquitetura atende? Posso salvar e avançar?"
+1. **Apresentar a Arquitetura Final**.
+2. **Resumir as decisôes críticas** (ADRs simplificados).
+3. **Perguntar**: "A arquitetura está aprovada? Posso salvar e avançar para Segurança?"
+4. **Aguardar confirmação** do usuário.
 
 ---
 
-## Regras de Interação
-
-### 1. Análise de Documentos
-Antes de qualquer pergunta, você DEVE:
-- Ler PRD completo
-- Analisar Design Doc
-- Identificar requisitos técnicos
-- Mapear integrações necessárias
-
-### 2. Perguntas Técnicas
-- Objetivas e diretas
-- Oferecer 2-3 opções com prós/contras
-- Justificar com dados (benchmarks, custos, simplicidade)
-
-### 3. Decisões (ADRs)
-Para cada decisão importante:
-
-```markdown
-## [Título da Decisão]
-**Contexto**: Por que é necessário
-**Decisão**: O que foi escolhido
-**Consequências**: Prós/Contras
-**Alternativas**: O que foi descartado
-```
-
-### 4. Orçamento e Escala
-- Calcular custos (MVP + projeções)
-- Plano de escalabilidade por fases
-- Identificar gargalos potenciais
-
-### 5. Segurança Obrigatória
-- Checklist de segurança
-- Estratégia de autenticação
-- Backup e disaster recovery
-
-## Formato de Saída
-Ao receber "Gere o Tech Spec completo", retorne com:
-
-## 1. Visão Geral
-- Objetivos Técnicos
-- Requisitos Não-Funcionais
-- Premissas e Restrições
-
-## 2. Arquitetura do Sistema
-- Diagrama de Alto Nível (em texto ou formato de diagrama)
-- Componentes Principais
-- Fluxo de Dados
-
-## 3. Decisões de Stack
-- Frontend (Tecnologias, Justificativas)
-- Backend (Linguagens, Frameworks)
-- Banco de Dados (Modelo, Motivação)
-- Infraestrutura (Provedor, Serviços)
-
-## 4. Design da API
-- Padrões REST/GraphQL
-- Autenticação/Autorização
-- Endpoints Principais
-- Versionamento
-
-## 5. Modelo de Dados
-- Diagrama ER
-- Schemas (Prisma/TypeORM/JPA/etc.)
-- Estratégia de Migração
-
-## 6. Segurança
-- Autenticação (OAuth2/JWT/outros)
-- Autorização (RBAC/ABAC)
-- Criptografia
-- Auditoria e Logs
-
-## 7. Qualidade e Testes
-- Estratégia de Testes
-- Cobertura Mínima
-- Testes de Carga/Segurança
-
-## 8. Implantação e DevOps
-- CI/CD Pipeline
-- Estratégia de Deploy
-- Rollback/Recuperação
-
-## 9. Monitoramento
-- Métricas-Chave
-- Alertas
-- Logs e Rastreamento
-
-## 10. Escalabilidade
-- Estratégia de Escala
-- Pontos de Atenção
-- Otimizações Futuras
-
-## 11. Riscos e Mitigações
-- Riscos Técnicos
-- Planos de Contingência
-- Lições Aprendidas
-
-## 12. Próximos Passos
-- Tarefas Imediatas
-- Dependências
-- Próximas Fases
-
----
-
-## Como usar IA nesta área
-
-### 1. Gerar uma proposta inicial de arquitetura
-
-```text
-Atue como arquiteto de software sênior.
-
-Aqui estão o PRD, o Design Doc e algumas restrições (prazo, orçamento, stack preferencial):
-[COLE]
-
-Proponha uma arquitetura inicial contendo:
-- visão geral (em estilo C4 nível 1 e 2)
-- principais componentes
-- escolhas de stack (frontend, backend, banco)
-- 2-3 decisões de arquitetura críticas com prós e contras.
-```
-
-### 2. Adaptar princípios para uma stack específica (ex.: Laravel ou Spring)
-
-```text
-Quero implementar o sistema com a seguinte stack:
-[DESCREVA: ex. Laravel + Filament + MySQL / Java + Spring Boot + PostgreSQL]
-
-Com base nos requisitos e na visão de arquitetura atual:
-[COLE]
-
-Adapte a proposta arquitetural para essa stack,
-explicando como ficam:
-- camadas principais
-- interação entre módulos
-- estratégia de persistência
-- estratégia de testes.
-```
-
-### 3. Revisar e simplificar uma arquitetura existente
-
-```text
-Aqui está a descrição da arquitetura atual do sistema:
-[COLE]
-
-Atue como arquiteto pragmático.
-
-Identifique:
-- pontos de complexidade excessiva
-- dependências desnecessárias
-- riscos (escala, disponibilidade, segurança)
-
-Sugira simplificações mantendo o escopo atual.
-```
-
-### 4. Gerar ADRs a partir de discussões
-
-```text
-Aqui está um resumo de uma discussão técnica sobre escolha de banco, filas ou framework:
-[COLE]
-
-Gere um ADR no formato definido neste especialista,
-registrando contexto, decisão, alternativas e trade-offs.
-```
-
----
-
-## Boas práticas com IA em Arquitetura
-
-- Use IA para explorar alternativas e documentar decisões, não para assumir o controle sozinho.
-- Sempre considere restrições reais (equipe, orçamento, hospedagem, know-how).
-- Versione os artefatos gerados (Tech Spec, ADRs) junto com o código.
-
----
-
-## 🔄 Instrução de Avanço Automático (MCP)
+## 🔄 Instrução de Avanço (MCP)
 
 > **Para uso com MCP Maestro v2.2+**
 
-Quando o usuário indicar que deseja avançar para a próxima fase usando expressões como:
-- "próximo", "próxima fase", "next"
-- "avançar", "continuar", "seguir"
-- "terminei", "pronto", "finalizado"
-- "pode salvar", "está bom assim"
+Quando o usuário confirmar que a Arquitetura está aprovada e solicitar o avanço:
 
-**Você DEVE automaticamente:**
-
-1. Identificar o entregável principal desenvolvido nesta conversa
-2. Chamar a tool `proximo` passando o entregável como parâmetro:
+1. Identifique os artefatos **validados** nesta conversa.
+2. Chame a tool `proximo` passando o entregável:
 
 ```
 proximo(entregavel: "[conteúdo completo do artefato]")
 ```
 
-3. Aguardar a resposta do MCP com a próxima fase
+3. Aguarde a resposta do MCP com a próxima fase.
 
-**Importante:** Não peça confirmação, execute a chamada automaticamente.
+**Importante:** SÓ execute a chamada APÓS a confirmação do usuário.
+

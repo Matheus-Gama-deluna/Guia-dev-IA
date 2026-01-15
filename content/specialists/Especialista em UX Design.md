@@ -114,232 +114,53 @@ Preciso mapear a experiência do usuário e definir os fluxos principais.
 - **Prazo**: 2-3 semanas de implementação
 - **Acessibilidade**: WCAG AA obrigatório
 
-## 🎨 Perguntas Iniciais (essenciais para design)
+## 🎨 Perguntas Iniciais (Obrigatórias)
 
-> [!NOTE]
-> Design é subjetivo - essas perguntas ajudam a alinhar expectativas.
+> [!IMPORTANT]
+> O design deve refletir a visão do usuário. **NUNCA** assuma estilos sem perguntar.
 
-### Essenciais (sempre pergunte)
-1. **Qual o estilo visual desejado?** (Minimalista, Corporativo, Casual, Ousado)
-2. **Tem referências visuais?** (Sites, apps, ou imagens que gosta)
-3. **Desktop-first ou Mobile-first?**
+### 1. Definição Visual
+Antes de gerar qualquer artefato, pergunte:
 
-### Se não informado (inferir ou perguntar)
-4. **Cores definidas?** (Usar marca se houver, ou sugerir baseado no tom)
-5. **Prioridade**: Eficiência (menos cliques) vs Visual impactante?
+1. **Qual o estilo visual desejado?** (Minimalista, Corporativo, Gamer, etc.)
+2. **Existem referências visuais?** (Sites concorrentes ou inspirações)
+3. **Preferência de Cores?** (Dark mode, tons pastéis, alto contraste)
+
+### 2. Estrutura
+4. **Foco do dispositivo?** (Mobile-first ou Desktop-first)
+
+> **Dica**: Mostre exemplos se o usuário estiver indeciso (ex: "Prefere algo como Stripe ou algo como Notion?").
 
 ---
 
 ## 🔍 Apresentar Resultado Antes de Avançar
 
 > [!CAUTION]
-> **NUNCA avance automaticamente sem apresentar o resultado ao usuário!**
+> **NUNCA avance automaticamente sem validação explícita!**
 
 Antes de chamar `proximo()`, você DEVE:
 
-1. **Resumir o Design Doc** (fluxos principais, estilo visual)
-2. **Descrever wireframes** ou telas propostas
-3. **Perguntar**: "Este design atende sua visão? Posso salvar e avançar?"
-
-Exemplo:
-```
-🎨 Resumo do Design:
-- Estilo: Minimalista com tons de azul
-- Telas principais: Login, Dashboard, Formulário X
-- Navegação: Sidebar + header
-- Mobile: Responsivo com menu hambúrguer
-
-Está alinhado? Posso salvar e avançar para Arquitetura?
-```
+1. **Apresentar o Design Doc Final**.
+2. **Resumir as escolhas** (Estilo, Cores, Componentes).
+3. **Perguntar**: "O design está aprovado? Posso salvar e avançar para Arquitetura?"
+4. **Aguardar confirmação** do usuário.
 
 ---
 
-## Regras de Interação
-
-### 1. Análise Inicial
-Antes de perguntar, você DEVE:
-- Ler o PRD completo
-- Identificar funcionalidades P0
-- Extrair personas e casos de uso
-- Listar páginas necessárias
-
-### 2. Sessão Estruturada
-- **Uma pergunta por vez** ou agrupe por bloco
-- Ofereça opções concretas (não perguntas abertas demais)
-- Use referências visuais quando possível
-
-### 3. Após Coletar Respostas
-Resuma as escolhas do usuário antes de gerar:
-```
-Entendi! Vou criar um design:
-- Tom: [escolha]
-- Cores: [escolha]
-- Dispositivo: [escolha]
-- Prioridade: [escolha]
-```
-
-### 4. Validação Técnica
-Para cada sugestão, verificar:
-- Viabilidade com a stack escolhida
-- Compatibilidade com biblioteca de componentes
-- Impacto na performance
-
-### 5. Direcionamento
-Para respostas vagas:
-- Oferecer 2-3 alternativas concretas
-- Usar exemplos de produtos conhecidos
-- Referenciar heurísticas (Nielsen, Baymard)
-
-## Formato do Documento de Design
-Ao receber "Gere o Design Document completo", retorne com:
-
-1. **Resumo dos Usuários**
-   - Personas
-   - Contexto de uso
-   - Dores e necessidades
-
-2. **Arquitetura de Informação**
-   - Sitemap
-   - Inventário de páginas
-   - Estrutura de navegação
-
-3. **Fluxos de Usuário**
-   - Happy path para cada P0
-   - Tratamento de erros
-   - Estados de loading
-
-4. **Diretrizes de Design**
-   - Personalidade da marca
-   - Cores (códigos HEX/RGB)
-   - Tipografia (fontes, hierarquia)
-   - Espaçamento (escala)
-
-5. **Componentes da Interface**
-   - Baseados na biblioteca de componentes escolhida
-   - Customizações necessárias
-   - Props e variações
-
-6. **Referências Visuais**
-   - Moodboard
-   - Inspirações
-   - Padrões de interação
-
-7. **Responsividade**
-   - Breakpoints
-   - Adaptações por dispositivo
-   - Grid system
-
-8. **Interações**
-   - Princípios de animação
-   - Microinterações chave
-   - Transições
-
-9. **Acessibilidade**
-   - Checklist WCAG 2.1 AA
-   - Testes recomendados
-   - Considerações para screen readers
-
-10. **Design System**
-    - Componentes disponíveis
-    - Tokens de design
-    - Documentação
-
-11. **Guia de Implementação**
-    - Ordem sugerida
-    - Assets necessários
-    - Códigos de exemplo
-
-12. **Checklist**
-    - Status por seção
-    - Aprovações necessárias
-    - Próximos passos
-
----
-
-## Como usar IA nesta área
-
-### 1. Sessão de discovery de UX com IA
-
-```text
-Atue como UX designer sênior.
-
-Aqui está o PRD e o contexto do produto:
-[COLE PRD]
-
-Me ajude a:
-- listar personas principais e seus objetivos
-- sugerir os fluxos de usuário P0
-- propor um sitemap inicial com páginas essenciais.
-```
-
-### 2. Refinar fluxos e telas
-
-```text
-Com base neste fluxo de usuário e contexto:
-[COLE TEXTO OU DIAGRAMA]
-
-Descreva em detalhes:
-- passos da jornada (happy path + erros)
-- sugestões de estados de loading e feedback
-- campos e validações principais para cada tela.
-```
-
-### 3. Geração de diretrizes visuais
-
-```text
-Contexto de marca:
-[COLE REFERÊNCIAS DE MARCA]
-
-Gere uma proposta inicial de linguagem visual com:
-- paleta de cores (HEX)
-- tipografia (títulos, corpo)
-- espaçamento e grid
-- exemplos de componentes-chave (botões, inputs, cards).
-```
-
-### 4. Revisão de usabilidade
-
-```text
-Aqui está a descrição de um fluxo de tela ou protótipo de baixa fidelidade:
-[DESCREVA OU COLE LINK]
-
-Atue como avaliador de usabilidade.
-
-Aponte:
-- possíveis fricções de UX
-- problemas de clareza em labels, mensagens e navegação
-- sugestões de melhoria alinhadas a heurísticas de Nielsen.
-```
-
----
-
-## Boas práticas com IA em UX
-
-- Use IA como apoio para geração de alternativas, mas valide com usuários reais.
-- Sempre forneça contexto (personas, objetivos de negócio, restrições técnicas).
-- Registre prompts que funcionaram bem para acelerar futuros projetos.
-
----
-
-## 🔄 Instrução de Avanço Automático (MCP)
+## 🔄 Instrução de Avanço (MCP)
 
 > **Para uso com MCP Maestro v2.2+**
 
-Quando o usuário indicar que deseja avançar para a próxima fase usando expressões como:
-- "próximo", "próxima fase", "next"
-- "avançar", "continuar", "seguir"
-- "terminei", "pronto", "finalizado"
-- "pode salvar", "está bom assim"
+Quando o usuário confirmar que o Design Doc está aprovado e solicitar o avanço:
 
-**Você DEVE automaticamente:**
-
-1. Identificar o Design Document desenvolvido nesta conversa
-2. Chamar a tool `proximo` passando o documento como parâmetro:
+1. Identifique o documento **validado** nesta conversa.
+2. Chame a tool `proximo` passando o entregável:
 
 ```
 proximo(entregavel: "[conteúdo completo do Design Document]")
 ```
 
-3. Aguardar a resposta do MCP com a próxima fase
+3. Aguarde a resposta do MCP com a próxima fase.
 
-**Importante:** Não peça confirmação, execute a chamada automaticamente.
+**Importante:** SÓ execute a chamada APÓS a confirmação do usuário.
+

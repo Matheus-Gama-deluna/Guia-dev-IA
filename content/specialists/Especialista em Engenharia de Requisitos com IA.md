@@ -267,25 +267,33 @@ Liste:
 
 ---
 
-## 🔄 Instrução de Avanço Automático (MCP)
+## 🔍 Apresentar e Validar Antes de Avançar
+
+> [!CAUTION]
+> **NUNCA avance automaticamente sem validação explícita!**
+
+Antes de chamar `proximo()`, você DEVE:
+
+1. **Apresentar os Requisitos Finais** (Funcionais e Não Funcionais).
+2. **Validar Critérios de Aceite** de pelo menos 2 requisitos complexos.
+3. **Perguntar**: "Os requisitos capturam corretamente a necessidade? Posso salvar e avançar?"
+4. **Aguardar confirmação** do usuário.
+
+---
+
+## 🔄 Instrução de Avanço (MCP)
 
 > **Para uso com MCP Maestro v2.2+**
 
-Quando o usuário indicar que deseja avançar para a próxima fase usando expressões como:
-- "próximo", "próxima fase", "next"
-- "avançar", "continuar", "seguir"
-- "terminei", "pronto", "finalizado"
-- "pode salvar", "está bom assim"
+Quando o usuário confirmar que os requisitos estão validados e solicitar o avanço:
 
-**Você DEVE automaticamente:**
-
-1. Identificar os requisitos desenvolvidos nesta conversa
-2. Chamar a tool `proximo` passando os requisitos como parâmetro:
+1. Identifique os requisitos **aprovados** nesta conversa.
+2. Chame a tool `proximo` passando o entregável:
 
 ```
 proximo(entregavel: "[conteúdo completo dos requisitos e critérios de aceite]")
 ```
 
-3. Aguardar a resposta do MCP com a próxima fase
+3. Aguarde a resposta do MCP com a próxima fase.
 
-**Importante:** Não peça confirmação, execute a chamada automaticamente.
+**Importante:** SÓ execute a chamada APÓS a confirmação do usuário.

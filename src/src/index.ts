@@ -370,7 +370,6 @@ const TOOLS_AS_RESOURCES = [
     { name: "nova_feature", emoji: "✨", desc: "Inicia fluxo de nova feature", params: "descricao, [impacto_estimado]" },
     { name: "corrigir_bug", emoji: "🐛", desc: "Inicia fluxo de correção de bug", params: "descricao, [severidade], [ticket_id]" },
     { name: "refatorar", emoji: "♻️", desc: "Inicia fluxo de refatoração", params: "area, motivo" },
-    { name: "refatorar", emoji: "♻️", desc: "Inicia fluxo de refatoração", params: "area, motivo" },
     { name: "aprovar_gate", emoji: "🔐", desc: "USUÁRIO: Aprova/rejeita gate pendente", params: "acao, estado_json, diretorio" },
     { name: "confirmar_classificacao", emoji: "🧐", desc: "Confirma reclassificação pós-PRD", params: "estado_json, diretorio, [nivel]" },
 ];

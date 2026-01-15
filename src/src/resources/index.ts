@@ -26,9 +26,12 @@ Você está usando o **Maestro**, um guia de desenvolvimento assistido por IA.
 ## Comportamentos Automáticos
 
 Quando o usuário disser "próximo", "avançar", "terminei" ou "pronto":
-1. Identifique o entregável desenvolvido na conversa
-2. Chame a tool \`proximo\` passando o entregável
-3. Aguarde a resposta com a próxima fase
+1. **Verifique se o entregável foi validado pelo usuário**
+2. Se sim, chame a tool \`proximo\` passando o entregável
+3. Se não, apresente o entregável e peça confirmação
+
+## Regra de Ouro
+**Nunca infira dados críticos.** Se faltar informação, **pergunte** antes de gerar.
 
 ## Gatilhos Reconhecidos
 
