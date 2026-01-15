@@ -19,6 +19,7 @@ export interface EstadoProjeto {
     entregaveis: Record<string, string>;
     gates_validados: number[];
     usar_stitch: boolean;
+    stitch_confirmado: boolean;  // Indica se usuário já respondeu sobre usar Stitch
     criado_em: string;
     atualizado_em: string;
 }

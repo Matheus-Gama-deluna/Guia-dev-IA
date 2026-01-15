@@ -15,7 +15,7 @@ interface IniciarProjetoArgs {
 /**
  * Tool: iniciar_projeto
  * Inicia um novo projeto com o Maestro (modo stateless)
- * Retorna arquivos para a IA salvar - resposta compacta
+ * Retorna arquivos para a IA salvar + pergunta sobre Stitch
  */
 export async function iniciarProjeto(args: IniciarProjetoArgs): Promise<ToolResult> {
     // Validar diretório
@@ -48,14 +48,11 @@ iniciar_projeto(nome: "meu-projeto", diretorio: "C:/projetos/meu-projeto")
     const estadoFile = serializarEstado(estado);
     const resumoFiles = serializarResumo(resumo);
 
-    const fase = getFase("medio", 1)!;
-
     const resposta = `# 🚀 Projeto Iniciado: ${args.nome}
 
 | Campo | Valor |
 |-------|-------|
 | **ID** | \`${projetoId}\` |
-| **Fase** | 1/? (definido após PRD) |
 | **Diretório** | \`${diretorio}\` |
 
 ---
@@ -85,18 +82,37 @@ ${resumoFiles[1].content}
 
 ---
 
-## 📋 Próximo Passo
+## 🎨 Prototipagem Rápida com Google Stitch (Opcional)
 
-Desenvolva o **PRD** definindo:
-- Problema a resolver
-- Personas
-- MVP
-- Métricas
+Antes de iniciar o desenvolvimento, você gostaria de usar o **Google Stitch** para criar protótipos de UI rapidamente?
 
-Quando terminar, diga **"próximo"**.
+### Com Stitch você pode:
+- ✨ Validar UI com stakeholders antes de desenvolver
+- 🎯 Gerar código base para componentes
+- ⚡ Acelerar a fase de design
 
-> 💡 Use \`read_resource("maestro://especialista/${fase.especialista}")\` para ver o especialista.
-> 💡 Use \`read_resource("maestro://template/${fase.template}")\` para ver o template.
+> [Mais sobre Google Stitch](https://stitch.withgoogle.com)
+
+---
+
+## ❓ AGUARDANDO RESPOSTA DO USUÁRIO
+
+**Pergunte ao usuário:**
+> "Deseja utilizar o Google Stitch para prototipagem rápida de UI?"
+>
+> Opções: **"Sim"** ou **"Não"**
+
+Após a resposta, use a tool \`confirmar_stitch\`:
+
+\`\`\`
+confirmar_stitch(
+    estado_json: "<conteúdo do estado.json>",
+    diretorio: "${diretorio}",
+    usar_stitch: true  // ou false
+)
+\`\`\`
+
+> ⚠️ **IMPORTANTE**: Aguarde a resposta do usuário antes de prosseguir!
 `;
 
     return {

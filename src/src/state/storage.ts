@@ -57,6 +57,7 @@ export function criarEstadoInicial(
         entregaveis: {},
         gates_validados: [],
         usar_stitch: false,
+        stitch_confirmado: false, // Aguarda resposta do usuário sobre Stitch
         criado_em: new Date().toISOString(),
         atualizado_em: new Date().toISOString(),
     };

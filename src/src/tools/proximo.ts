@@ -1,7 +1,7 @@
 import { join } from "path";
 import type { ToolResult, EstadoProjeto } from "../types/index.js";
 import { parsearEstado, serializarEstado } from "../state/storage.js";
-import { getFase, getFluxo } from "../flows/types.js";
+import { getFase, getFluxo, getFaseComStitch, getFluxoComStitch } from "../flows/types.js";
 import { classificarPRD, descreverNivel } from "../flows/classifier.js";
 import { validarGate, formatarResultadoGate } from "../gates/validator.js";
 import { validarEstrutura } from "../gates/estrutura.js";
@@ -97,7 +97,7 @@ proximo(
     const diretorio = args.diretorio;
     setCurrentDirectory(diretorio);
 
-    const faseAtual = getFase(estado.nivel, estado.fase_atual);
+    const faseAtual = getFaseComStitch(estado.nivel, estado.fase_atual, estado.usar_stitch);
     if (!faseAtual) {
         return {
             content: [{
@@ -177,13 +177,13 @@ proximo(entregavel: "...", estado_json: "...", confirmar_usuario: true)
     // Score >= 70 OU usuário confirmou: Pode avançar
 
     // Preparar arquivos para salvar
-    const filesToSave: Array<{path: string; content: string}> = [];
+    const filesToSave: Array<{ path: string; content: string }> = [];
 
     // Arquivo do entregável
     const nomeArquivo = args.nome_arquivo || faseAtual.entregavel_esperado;
     const faseDirName = `fase-${estado.fase_atual.toString().padStart(2, "0")}-${faseAtual.nome.toLowerCase().replace(/\s/g, "-")}`;
     const caminhoArquivo = `${diretorio}/docs/${faseDirName}/${nomeArquivo}`;
-    
+
     filesToSave.push({
         path: caminhoArquivo,
         content: args.entregavel
@@ -226,7 +226,7 @@ proximo(entregavel: "...", estado_json: "...", confirmar_usuario: true)
     if (estado.fase_atual === 1) {
         const classificacao = classificarPRD(args.entregavel);
         estado.nivel = classificacao.nivel;
-        estado.total_fases = getFluxo(classificacao.nivel).total_fases;
+        estado.total_fases = getFluxoComStitch(classificacao.nivel, estado.usar_stitch).total_fases;
 
         classificacaoInfo = `
 ## 🎯 Classificação do Projeto
@@ -253,7 +253,7 @@ ${classificacao.criterios.map(c => `- ${c}`).join("\n")}
     }
 
     // Atualizar contexto no resumo
-    const proximaFaseInfo = getFase(estado.nivel, estado.fase_atual);
+    const proximaFaseInfo = getFaseComStitch(estado.nivel, estado.fase_atual, estado.usar_stitch);
     if (proximaFaseInfo) {
         resumo.contexto_atual = {
             fase_nome: proximaFaseInfo.nome,
@@ -279,7 +279,7 @@ ${classificacao.criterios.map(c => `- ${c}`).join("\n")}
         content: f.content
     })));
 
-    const proximaFase = getFase(estado.nivel, estado.fase_atual);
+    const proximaFase = getFaseComStitch(estado.nivel, estado.fase_atual, estado.usar_stitch);
 
     // Se projeto concluído
     if (!proximaFase || estado.fase_atual > estado.total_fases) {

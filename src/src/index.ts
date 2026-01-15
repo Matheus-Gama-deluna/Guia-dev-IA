@@ -369,24 +369,73 @@ const TOOLS_AS_RESOURCES = [
     { name: "refatorar", emoji: "♻️", desc: "Inicia fluxo de refatoração", params: "area, motivo" },
 ];
 
-// Gera documentação de uma tool
+// Gera instrução de execução para uma tool
 function getToolDocumentation(toolName: string): string {
     const tool = TOOLS_AS_RESOURCES.find(t => t.name === toolName);
     if (!tool) return `Tool não encontrada: ${toolName}`;
 
-    return `# ${tool.emoji} ${tool.name}
+    // Instruções específicas por tool
+    const instrucoes: Record<string, string> = {
+        iniciar_projeto: `Pergunte ao usuário:
+1. Nome do projeto
+2. Descrição breve (opcional)
+3. Diretório (padrão: diretório atual)
+
+Depois execute \`mcp_maestro_iniciar_projeto\` com esses dados.`,
+
+        carregar_projeto: `Procure o arquivo \`.maestro/estado.json\` no diretório atual.
+Se encontrar, leia o conteúdo e execute \`mcp_maestro_carregar_projeto\`.
+Se não encontrar, avise o usuário que não há projeto Maestro neste diretório.`,
+
+        status: `Procure o arquivo \`.maestro/estado.json\` no diretório atual.
+Se encontrar, leia o conteúdo e execute \`mcp_maestro_status\`.
+Mostre: fase atual, especialista, progresso e próximos passos.`,
+
+        proximo: `1. Leia o arquivo \`.maestro/estado.json\`
+2. Compile o entregável da fase atual baseado na conversa
+3. Execute \`mcp_maestro_proximo\` com o entregável
+4. Salve o novo estado no arquivo`,
+
+        validar_gate: `1. Leia o arquivo \`.maestro/estado.json\`
+2. Execute \`mcp_maestro_validar_gate\`
+3. Mostre o resultado do checklist`,
+
+        classificar: `1. Leia o arquivo \`.maestro/estado.json\`
+2. Execute \`mcp_maestro_classificar\` com o nível desejado
+3. Atualize o arquivo de estado`,
+
+        contexto: `1. Leia o arquivo \`.maestro/estado.json\`
+2. Execute \`mcp_maestro_contexto\`
+3. Mostre o contexto acumulado do projeto`,
+
+        salvar: `Use quando o usuário quiser salvar um rascunho ou anexo.
+Execute \`mcp_maestro_salvar\` com o conteúdo e tipo.`,
+
+        implementar_historia: `Use para implementar uma história do backlog.
+Execute \`mcp_maestro_implementar_historia\` com o ID da história.`,
+
+        nova_feature: `Pergunte a descrição da feature e impacto estimado.
+Execute \`mcp_maestro_nova_feature\`.`,
+
+        corrigir_bug: `Pergunte a descrição do bug e severidade.
+Execute \`mcp_maestro_corrigir_bug\`.`,
+
+        refatorar: `Pergunte a área e motivo da refatoração.
+Execute \`mcp_maestro_refatorar\`.`,
+    };
+
+    return `## 🎯 EXECUTE AGORA: ${tool.emoji} ${tool.name}
 
 ${tool.desc}
 
-## Parâmetros
+### Parâmetros
 \`${tool.params}\`
 
-## Como usar
-Peça para a IA executar esta tool naturalmente, por exemplo:
-- "Use ${tool.name} para..."
-- "Execute ${tool.name} com..."
+### Instruções
+${instrucoes[toolName] || `Execute \`mcp_maestro_${toolName}\` com os parâmetros necessários.`}
 
-A IA chamará \`mcp_maestro_${tool.name}\` automaticamente.
+---
+**AÇÃO REQUERIDA**: Execute a tool acima imediatamente. Se precisar de informações do usuário, pergunte primeiro.
 `;
 }
 

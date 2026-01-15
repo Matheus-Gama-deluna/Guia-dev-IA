@@ -6,6 +6,7 @@ import {
 
 // Tools básicas
 import { iniciarProjeto, iniciarProjetoSchema } from "./iniciar-projeto.js";
+import { confirmarStitch, confirmarStitchSchema } from "./confirmar-stitch.js";
 import { carregarProjeto, carregarProjetoSchema } from "./carregar-projeto.js";
 import { proximo, proximoSchema } from "./proximo.js";
 import { status, statusSchema } from "./status.js";
@@ -42,8 +43,13 @@ export function registerTools(server: Server) {
             // === CORE (Stateless) ===
             {
                 name: "iniciar_projeto",
-                description: "Inicia um novo projeto com o Maestro. Retorna arquivos para a IA salvar. Requer diretorio.",
+                description: "Inicia um novo projeto com o Maestro. Retorna arquivos para a IA salvar e pergunta sobre Stitch. Requer diretorio.",
                 inputSchema: iniciarProjetoSchema,
+            },
+            {
+                name: "confirmar_stitch",
+                description: "Confirma se o projeto usará prototipagem com Google Stitch. Deve ser chamada após iniciar_projeto com a resposta do usuário.",
+                inputSchema: confirmarStitchSchema,
             },
             {
                 name: "carregar_projeto",
@@ -152,6 +158,13 @@ export function registerTools(server: Server) {
                         nome: typedArgs?.nome as string,
                         descricao: typedArgs?.descricao as string | undefined,
                         diretorio: typedArgs?.diretorio as string,
+                    });
+
+                case "confirmar_stitch":
+                    return await confirmarStitch({
+                        estado_json: typedArgs?.estado_json as string,
+                        diretorio: typedArgs?.diretorio as string,
+                        usar_stitch: typedArgs?.usar_stitch as boolean,
                     });
 
                 case "carregar_projeto":

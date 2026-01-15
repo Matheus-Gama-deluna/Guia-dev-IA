@@ -428,3 +428,54 @@ export function getFase(nivel: "simples" | "medio" | "complexo", numero: number)
     const fluxo = getFluxo(nivel);
     return fluxo.fases.find((f) => f.numero === numero);
 }
+
+// Fase opcional de Stitch (inserida após Requisitos quando habilitada)
+const FASE_STITCH: Fase = {
+    numero: 0, // Será ajustado dinamicamente
+    nome: "Prototipagem",
+    especialista: "Prototipagem Rápida com Google Stitch",
+    template: "gerar-ui-stitch",
+    gate_checklist: [
+        "Prompts para Stitch gerados",
+        "Protótipos testados no stitch.withgoogle.com",
+        "Código exportado e salvo",
+    ],
+    entregavel_esperado: "stitch-prompts.md",
+};
+
+/**
+ * Obtém fluxo com fase de Stitch opcional
+ * Se usarStitch=true, insere fase de prototipagem após Requisitos (fase 2)
+ */
+export function getFluxoComStitch(nivel: "simples" | "medio" | "complexo", usarStitch: boolean): Fluxo {
+    const base = getFluxo(nivel);
+
+    if (!usarStitch) {
+        return base;
+    }
+
+    // Insere Stitch como fase 3 (após Requisitos)
+    const fasesComStitch: Fase[] = [
+        ...base.fases.slice(0, 2), // Fases 1-2: Produto + Requisitos
+        { ...FASE_STITCH, numero: 3 }, // Stitch como fase 3
+        ...base.fases.slice(2).map(f => ({ ...f, numero: f.numero + 1 })) // Renumera restante
+    ];
+
+    return {
+        nivel: base.nivel,
+        total_fases: base.total_fases + 1,
+        fases: fasesComStitch
+    };
+}
+
+/**
+ * Obtém fase específica considerando Stitch opcional
+ */
+export function getFaseComStitch(
+    nivel: "simples" | "medio" | "complexo",
+    numero: number,
+    usarStitch: boolean
+): Fase | undefined {
+    const fluxo = getFluxoComStitch(nivel, usarStitch);
+    return fluxo.fases.find(f => f.numero === numero);
+}
