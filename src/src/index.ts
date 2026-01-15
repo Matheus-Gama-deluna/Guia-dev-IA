@@ -342,7 +342,7 @@ import {
     lerPrompt,
 } from "./utils/files.js";
 
-import { iniciarProjeto } from "./tools/iniciar-projeto.js";
+import { iniciarProjeto, confirmarProjeto } from "./tools/iniciar-projeto.js";
 import { carregarProjeto } from "./tools/carregar-projeto.js";
 import { proximo } from "./tools/proximo.js";
 import { status } from "./tools/status.js";
@@ -356,7 +356,8 @@ import { aprovarGate } from "./tools/aprovar-gate.js";
 
 // Definição das tools para exibição como resources no seletor @mcp:maestro:
 const TOOLS_AS_RESOURCES = [
-    { name: "iniciar_projeto", emoji: "🚀", desc: "Inicia novo projeto Maestro", params: "nome, diretorio, [descricao]" },
+    { name: "iniciar_projeto", emoji: "🚀", desc: "Inicia novo projeto (Analisa e Sugere)", params: "nome, diretorio, [descricao]" },
+    { name: "confirmar_projeto", emoji: "✅", desc: "Confirma criação com tipo definido", params: "nome, diretorio, tipo_artefato, nivel_complexidade" },
     { name: "carregar_projeto", emoji: "📂", desc: "Carrega projeto existente", params: "estado_json, diretorio" },
     { name: "proximo", emoji: "➡️", desc: "Salva entregável e avança fase", params: "entregavel, estado_json, diretorio" },
     { name: "status", emoji: "📊", desc: "Retorna status do projeto", params: "estado_json, diretorio" },
@@ -383,7 +384,12 @@ function getToolDocumentation(toolName: string): string {
 2. Descrição breve (opcional)
 3. Diretório (padrão: diretório atual)
 
-Depois execute \`mcp_maestro_iniciar_projeto\` com esses dados.`,
+Depois execute \`mcp_maestro_iniciar_projeto\` com esses dados.
+A tool retornará uma sugestão de classificação. Peça confirmação ao usuário.`,
+
+        confirmar_projeto: `Use APÓS \`iniciar_projeto\` ter retornado uma sugestão.
+Execute \`mcp_maestro_confirmar_projeto\` com os dados confirmados pelo usuário (tipo e nível).
+Isso criará efetivamente os arquivos do projeto.`,
 
         carregar_projeto: `Procure o arquivo \`.maestro/estado.json\` no diretório atual.
 Se encontrar, leia o conteúdo e execute \`mcp_maestro_carregar_projeto\`.
@@ -561,7 +567,8 @@ async function getToolsList() {
     return {
         tools: [
             // Core (Stateless) - requer estado_json e diretorio
-            { name: "iniciar_projeto", description: "Inicia novo projeto (stateless). Retorna arquivos para IA salvar.", inputSchema: { type: "object", properties: { nome: { type: "string" }, descricao: { type: "string" }, diretorio: { type: "string" } }, required: ["nome", "diretorio"] } },
+            { name: "iniciar_projeto", description: "Analisa novo projeto e sugere classificação (stateless). NÃO CRIA ARQUIVOS.", inputSchema: { type: "object", properties: { nome: { type: "string" }, descricao: { type: "string" }, diretorio: { type: "string" } }, required: ["nome", "diretorio"] } },
+            { name: "confirmar_projeto", description: "Cria efetivamente o projeto com classificação confirmada.", inputSchema: { type: "object", properties: { nome: { type: "string" }, descricao: { type: "string" }, diretorio: { type: "string" }, tipo_artefato: { type: "string", enum: ["poc", "script", "internal", "product"] }, nivel_complexidade: { type: "string", enum: ["simples", "medio", "complexo"] } }, required: ["nome", "diretorio", "tipo_artefato", "nivel_complexidade"] } },
             { name: "carregar_projeto", description: "Carrega projeto existente (stateless). Requer estado_json.", inputSchema: { type: "object", properties: { estado_json: { type: "string" }, diretorio: { type: "string" } }, required: ["estado_json", "diretorio"] } },
             { name: "proximo", description: "Salva entregável e avança fase (stateless). Requer estado_json.", inputSchema: { type: "object", properties: { entregavel: { type: "string" }, estado_json: { type: "string" }, diretorio: { type: "string" } }, required: ["entregavel", "estado_json", "diretorio"] } },
             { name: "status", description: "Retorna status do projeto (stateless). Requer estado_json.", inputSchema: { type: "object", properties: { estado_json: { type: "string" }, diretorio: { type: "string" } }, required: ["estado_json", "diretorio"] } },
@@ -586,6 +593,8 @@ async function callTool(name: string, args?: Record<string, unknown>) {
         switch (name) {
             case "iniciar_projeto":
                 return await iniciarProjeto({ nome: a.nome as string, descricao: a.descricao as string | undefined, diretorio: a.diretorio as string });
+            case "confirmar_projeto":
+                return await confirmarProjeto({ nome: a.nome as string, descricao: a.descricao as string | undefined, diretorio: a.diretorio as string, tipo_artefato: a.tipo_artefato as any, nivel_complexidade: a.nivel_complexidade as any });
             case "carregar_projeto":
                 return await carregarProjeto({ estado_json: a.estado_json as string, diretorio: a.diretorio as string });
             case "proximo":

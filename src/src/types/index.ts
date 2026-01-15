@@ -7,12 +7,22 @@ export type TipoFluxo = "novo_projeto" | "feature" | "bug" | "refatoracao";
 // Tipos de história (Frontend First)
 export type TipoHistoria = "contrato" | "frontend" | "backend" | "integracao";
 
+// Tipo de artefato - determina criticidade e formalidade
+export type TipoArtefato = "poc" | "script" | "internal" | "product";
+
+// Tier de gates - determina profundidade das validações
+export type TierGate = "essencial" | "base" | "avancado";
+
+
 // Estado do projeto
 export interface EstadoProjeto {
     projeto_id: string;
     nome: string;
     diretorio: string;
     nivel: NivelComplexidade;
+    tipo_artefato: TipoArtefato;           // Novo: tipo de artefato
+    tier_gate: TierGate;                    // Novo: tier de validações
+    classificacao_confirmada: boolean;      // Novo: se usuário confirmou tipo/complexidade
     tipo_fluxo: TipoFluxo;
     fase_atual: number;
     total_fases: number;
@@ -27,6 +37,7 @@ export interface EstadoProjeto {
     criado_em: string;
     atualizado_em: string;
 }
+
 
 // Fase do fluxo
 export interface Fase {

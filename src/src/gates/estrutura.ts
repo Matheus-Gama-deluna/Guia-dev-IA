@@ -1,19 +1,28 @@
 /**
  * Estrutura obrigatória de entregáveis por fase
- * Define seções que devem existir e tamanhos mínimos
+ * Define seções que devem existir e tamanhos mínimos adaptativos por tier
  */
+
+import type { TierGate } from "../types/index.js";
 
 export interface SecaoObrigatoria {
     header: string;           // Regex para header (ex: "^##?\\s*Problema")
     descricao: string;        // Descrição para feedback
-    tamanho_minimo?: number;  // Caracteres mínimos após header
+    tamanho_minimo?: number;  // Caracteres mínimos após header (opcional, só para tier avançado)
+    obrigatorio_tier?: TierGate; // Tier mínimo onde esta seção é obrigatória (default: essencial)
+}
+
+export interface TamanhosPorTier {
+    essencial: number;
+    base: number;
+    avancado: number;
 }
 
 export interface EstruturaFase {
     fase: number;
     nome: string;
     secoes: SecaoObrigatoria[];
-    tamanho_minimo_total: number;  // Total do documento
+    tamanho_minimo_por_tier: TamanhosPorTier;  // Tamanhos adaptativos por tier
     peso_estrutura: number;        // Peso no score (0-1)
 }
 
@@ -24,49 +33,49 @@ export const ESTRUTURAS_FASES: EstruturaFase[] = [
     {
         fase: 1,
         nome: "PRD",
-        tamanho_minimo_total: 500,
+        tamanho_minimo_por_tier: { essencial: 100, base: 300, avancado: 500 },
         peso_estrutura: 0.3,
         secoes: [
             { header: "^#{1,2}\\s*(problema|problem)", descricao: "Seção de Problema" },
-            { header: "^#{1,2}\\s*(usuário|usuario|user|persona)", descricao: "Seção de Usuários/Personas" },
+            { header: "^#{1,2}\\s*(usuário|usuario|user|persona)", descricao: "Seção de Usuários/Personas", obrigatorio_tier: "base" },
             { header: "^#{1,2}\\s*(funcionalidade|feature|mvp|escopo)", descricao: "Seção de Funcionalidades/MVP" },
-            { header: "^#{1,2}\\s*(métrica|metrica|sucesso|kpi)", descricao: "Seção de Métricas de Sucesso", tamanho_minimo: 50 },
+            { header: "^#{1,2}\\s*(métrica|metrica|sucesso|kpi)", descricao: "Seção de Métricas de Sucesso", obrigatorio_tier: "base" },
         ],
     },
     {
         fase: 2,
         nome: "Requisitos",
-        tamanho_minimo_total: 400,
+        tamanho_minimo_por_tier: { essencial: 100, base: 300, avancado: 400 },
         peso_estrutura: 0.3,
         secoes: [
             { header: "^#{1,2}\\s*(requisito|requirement|rf\\d|funcional)", descricao: "Requisitos Funcionais" },
-            { header: "^#{1,2}\\s*(não.?funcional|nfr|rnf|performance|segurança)", descricao: "Requisitos Não-Funcionais" },
+            { header: "^#{1,2}\\s*(não.?funcional|nfr|rnf|performance|segurança)", descricao: "Requisitos Não-Funcionais", obrigatorio_tier: "base" },
         ],
     },
     {
         fase: 3,
         nome: "UX/Design",
-        tamanho_minimo_total: 300,
+        tamanho_minimo_por_tier: { essencial: 50, base: 200, avancado: 300 },
         peso_estrutura: 0.2,
         secoes: [
             { header: "^#{1,2}\\s*(jornada|journey|fluxo|flow)", descricao: "Jornadas/Fluxos" },
-            { header: "^#{1,2}\\s*(wireframe|protótipo|prototipo|tela|screen)", descricao: "Wireframes/Protótipos" },
+            { header: "^#{1,2}\\s*(wireframe|protótipo|prototipo|tela|screen)", descricao: "Wireframes/Protótipos", obrigatorio_tier: "base" },
         ],
     },
     {
         fase: 4,
         nome: "Domínio",
-        tamanho_minimo_total: 300,
+        tamanho_minimo_por_tier: { essencial: 50, base: 200, avancado: 300 },
         peso_estrutura: 0.3,
         secoes: [
             { header: "^#{1,2}\\s*(entidade|entity|modelo|model)", descricao: "Entidades" },
-            { header: "^#{1,2}\\s*(relacionamento|relação|relation)", descricao: "Relacionamentos" },
+            { header: "^#{1,2}\\s*(relacionamento|relação|relation)", descricao: "Relacionamentos", obrigatorio_tier: "base" },
         ],
     },
     {
         fase: 5,
         nome: "Banco de Dados",
-        tamanho_minimo_total: 300,
+        tamanho_minimo_por_tier: { essencial: 50, base: 200, avancado: 300 },
         peso_estrutura: 0.3,
         secoes: [
             { header: "^#{1,2}\\s*(tabela|table|schema|modelo)", descricao: "Schema/Tabelas" },
@@ -75,38 +84,38 @@ export const ESTRUTURAS_FASES: EstruturaFase[] = [
     {
         fase: 6,
         nome: "Arquitetura",
-        tamanho_minimo_total: 400,
+        tamanho_minimo_por_tier: { essencial: 100, base: 300, avancado: 400 },
         peso_estrutura: 0.3,
         secoes: [
-            { header: "^#{1,2}\\s*(c4|diagrama|arquitetura|architecture)", descricao: "Diagrama C4/Arquitetura" },
+            { header: "^#{1,2}\\s*(c4|diagrama|arquitetura|architecture)", descricao: "Diagrama C4/Arquitetura", obrigatorio_tier: "base" },
             { header: "^#{1,2}\\s*(stack|tecnologia|technology)", descricao: "Stack Tecnológica" },
-            { header: "^#{1,2}\\s*(adr|decisão|decision)", descricao: "ADRs/Decisões" },
+            { header: "^#{1,2}\\s*(adr|decisão|decision)", descricao: "ADRs/Decisões", obrigatorio_tier: "base" },
         ],
     },
     {
         fase: 7,
         nome: "Segurança",
-        tamanho_minimo_total: 300,
+        tamanho_minimo_por_tier: { essencial: 50, base: 200, avancado: 300 },
         peso_estrutura: 0.3,
         secoes: [
-            { header: "^#{1,2}\\s*(owasp|vulnerabilidade|security)", descricao: "OWASP/Vulnerabilidades" },
+            { header: "^#{1,2}\\s*(owasp|vulnerabilidade|security)", descricao: "OWASP/Vulnerabilidades", obrigatorio_tier: "avancado" },
             { header: "^#{1,2}\\s*(autenticação|authentication|auth)", descricao: "Autenticação" },
         ],
     },
     {
         fase: 8,
         nome: "Testes",
-        tamanho_minimo_total: 250,
+        tamanho_minimo_por_tier: { essencial: 50, base: 150, avancado: 250 },
         peso_estrutura: 0.3,
         secoes: [
             { header: "^#{1,2}\\s*(estratégia|strategy|plano)", descricao: "Estratégia de Testes" },
-            { header: "^#{1,2}\\s*(caso|case|cenário|scenario)", descricao: "Casos de Teste" },
+            { header: "^#{1,2}\\s*(caso|case|cenário|scenario)", descricao: "Casos de Teste", obrigatorio_tier: "base" },
         ],
     },
     {
         fase: 9,
         nome: "Backlog",
-        tamanho_minimo_total: 400,
+        tamanho_minimo_por_tier: { essencial: 100, base: 300, avancado: 400 },
         peso_estrutura: 0.3,
         secoes: [
             { header: "^#{1,2}\\s*(épico|epic)", descricao: "Épicos" },
@@ -116,7 +125,7 @@ export const ESTRUTURAS_FASES: EstruturaFase[] = [
     {
         fase: 10,
         nome: "Contratos API",
-        tamanho_minimo_total: 300,
+        tamanho_minimo_por_tier: { essencial: 50, base: 200, avancado: 300 },
         peso_estrutura: 0.3,
         secoes: [
             { header: "^#{1,2}\\s*(endpoint|api|openapi|swagger)", descricao: "Endpoints/OpenAPI" },
@@ -125,7 +134,7 @@ export const ESTRUTURAS_FASES: EstruturaFase[] = [
     {
         fase: 11,
         nome: "Implementação",
-        tamanho_minimo_total: 200,
+        tamanho_minimo_por_tier: { essencial: 50, base: 150, avancado: 200 },
         peso_estrutura: 0.2,
         secoes: [
             { header: "^#{1,2}\\s*(código|code|implement)", descricao: "Código Implementado" },
@@ -141,9 +150,22 @@ export function getEstruturaFase(fase: number): EstruturaFase | undefined {
 }
 
 /**
- * Validate estrutura of an entregavel
+ * Verifica se uma seção é obrigatória para o tier atual
  */
-export function validarEstrutura(fase: number, entregavel: string): {
+function isSecaoObrigatoria(secao: SecaoObrigatoria, tier: TierGate): boolean {
+    const tierMinimo = secao.obrigatorio_tier || "essencial";
+    const tierOrder: Record<TierGate, number> = { essencial: 0, base: 1, avancado: 2 };
+    return tierOrder[tier] >= tierOrder[tierMinimo];
+}
+
+/**
+ * Validate estrutura of an entregavel com suporte a tier
+ */
+export function validarEstrutura(
+    fase: number,
+    entregavel: string,
+    tier: TierGate = "base"  // Tier para determinar exigências
+): {
     valido: boolean;
     score: number;
     secoes_encontradas: string[];
@@ -170,8 +192,11 @@ export function validarEstrutura(fase: number, entregavel: string): {
     const feedback: string[] = [];
     const conteudoLower = entregavel.toLowerCase();
 
+    // Filtra seções obrigatórias para o tier atual
+    const secoesObrigatorias = estrutura.secoes.filter(s => isSecaoObrigatoria(s, tier));
+
     // Check each section
-    for (const secao of estrutura.secoes) {
+    for (const secao of secoesObrigatorias) {
         const regex = new RegExp(secao.header, "im");
         const match = conteudoLower.match(regex);
 
@@ -192,17 +217,18 @@ export function validarEstrutura(fase: number, entregavel: string): {
         }
     }
 
-    // Check total size
-    const tamanho_ok = entregavel.length >= estrutura.tamanho_minimo_total;
+    // Check total size based on tier
+    const tamanhoMinimo = estrutura.tamanho_minimo_por_tier[tier];
+    const tamanho_ok = entregavel.length >= tamanhoMinimo;
     if (!tamanho_ok) {
-        feedback.push(`⚠️ Documento muito curto: ${entregavel.length}/${estrutura.tamanho_minimo_total} caracteres`);
+        feedback.push(`⚠️ Documento muito curto: ${entregavel.length}/${tamanhoMinimo} caracteres`);
     }
 
     // Calculate score
-    const secaoScore = estrutura.secoes.length > 0
-        ? (secoes_encontradas.length / estrutura.secoes.length) * 100
+    const secaoScore = secoesObrigatorias.length > 0
+        ? (secoes_encontradas.length / secoesObrigatorias.length) * 100
         : 100;
-    const tamanhoScore = tamanho_ok ? 100 : (entregavel.length / estrutura.tamanho_minimo_total) * 100;
+    const tamanhoScore = tamanho_ok ? 100 : (entregavel.length / tamanhoMinimo) * 100;
 
     const score = Math.round((secaoScore * estrutura.peso_estrutura) + (tamanhoScore * (1 - estrutura.peso_estrutura)));
     const valido = secoes_faltando.length === 0 && tamanho_ok;

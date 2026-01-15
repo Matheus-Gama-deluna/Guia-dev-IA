@@ -1,7 +1,9 @@
-import type { GateResultado, Fase } from "../types/index.js";
+import type { GateResultado, Fase, TierGate } from "../types/index.js";
+import { getChecklistPorTier } from "./tiers.js";
 
 /**
- * Checklists de validação por fase
+ * Checklists de validação por fase (legado - mantido para compatibilidade)
+ * @deprecated Use getChecklistPorTier() para validação adaptativa
  */
 export const GATE_CHECKLISTS: Record<number, string[]> = {
     1: [
@@ -64,14 +66,26 @@ export const GATE_CHECKLISTS: Record<number, string[]> = {
 };
 
 /**
- * Valida gate de uma fase
+ * Valida gate de uma fase com suporte a tier
+ * @param fase - Fase a validar
+ * @param entregavel - Conteúdo do entregável
+ * @param tier - Tier de validação (default: usa checklist da fase, que é tier 'base')
  */
-export function validarGate(fase: Fase, entregavel: string): GateResultado {
+export function validarGate(
+    fase: Fase,
+    entregavel: string,
+    tier?: TierGate
+): GateResultado {
     const validados: string[] = [];
     const pendentes: string[] = [];
     const sugestoes: string[] = [];
 
-    for (const item of fase.gate_checklist) {
+    // Usa checklist do tier se especificado, senão usa o da fase (legado)
+    const checklist = tier
+        ? getChecklistPorTier(fase.numero, tier)
+        : fase.gate_checklist;
+
+    for (const item of checklist) {
         if (verificarItem(item, entregavel)) {
             validados.push(item);
         } else {
@@ -87,6 +101,7 @@ export function validarGate(fase: Fase, entregavel: string): GateResultado {
         sugestoes,
     };
 }
+
 
 /**
  * Verifica se um item do checklist está presente no entregável

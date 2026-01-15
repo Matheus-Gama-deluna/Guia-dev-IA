@@ -1,19 +1,21 @@
-import type { ToolResult, NivelComplexidade, EstadoProjeto } from "../types/index.js";
+import type { ToolResult, NivelComplexidade, EstadoProjeto, TipoArtefato } from "../types/index.js";
 import { parsearEstado, serializarEstado } from "../state/storage.js";
 import { classificarPRD, descreverNivel } from "../flows/classifier.js";
 import { getFluxo } from "../flows/types.js";
 import { setCurrentDirectory } from "../state/context.js";
+import { determinarTierGate, descreverTier } from "../gates/tiers.js";
 
 interface ClassificarArgs {
     prd?: string;
     nivel?: NivelComplexidade;
-    estado_json: string;     // Estado atual (obrigatório)
-    diretorio: string;       // Diretório do projeto (obrigatório)
+    tipo_artefato?: TipoArtefato; // Novo
+    estado_json: string;
+    diretorio: string;
 }
 
 /**
  * Tool: classificar
- * Reclassifica complexidade do projeto baseado no PRD ou manual (modo stateless)
+ * Reclassifica complexidade e tipo do projeto (modo stateless)
  */
 export async function classificar(args: ClassificarArgs): Promise<ToolResult> {
     // Validar parâmetros
@@ -23,16 +25,13 @@ export async function classificar(args: ClassificarArgs): Promise<ToolResult> {
                 type: "text",
                 text: `# 📊 Classificar Projeto (Modo Stateless)
 
-Para classificar, a IA deve:
-1. Ler o arquivo \`.maestro/estado.json\` do projeto
-2. Passar o conteúdo como parâmetro
-
 **Uso:**
 \`\`\`
 classificar(
-    prd: "[conteúdo do PRD]",
+    nivel: "simples" | "medio" | "complexo",
+    tipo_artefato: "poc" | "script" | "internal" | "product",
     estado_json: "...",
-    diretorio: "C:/projetos/meu-projeto"
+    diretorio: "..."
 )
 \`\`\`
 `,
@@ -42,10 +41,7 @@ classificar(
 
     if (!args.diretorio) {
         return {
-            content: [{
-                type: "text",
-                text: "❌ **Erro**: Parâmetro `diretorio` é obrigatório.",
-            }],
+            content: [{ type: "text", text: "❌ **Erro**: Parâmetro `diretorio` é obrigatório." }],
             isError: true,
         };
     }
@@ -54,96 +50,73 @@ classificar(
     const estado = parsearEstado(args.estado_json);
     if (!estado) {
         return {
-            content: [{
-                type: "text",
-                text: "❌ **Erro**: Não foi possível parsear o estado JSON.",
-            }],
+            content: [{ type: "text", text: "❌ **Erro**: Não foi possível parsear o estado JSON." }],
             isError: true,
         };
     }
 
     setCurrentDirectory(args.diretorio);
 
-    let novoNivel: NivelComplexidade;
+    let novoNivel: NivelComplexidade = estado.nivel;
+    let novoTipo: TipoArtefato = estado.tipo_artefato || "product"; // Default se não existir
     let criterios: string[] = [];
     let pontuacao = 0;
 
+    // Atualiza baseados nos argumentos
     if (args.nivel) {
-        // Classificação manual
         novoNivel = args.nivel;
-        criterios.push("Classificação manual pelo usuário");
-    } else if (args.prd) {
-        // Classificação automática baseada no PRD
+        criterios.push("Nível ajustado manualmente");
+    }
+
+    if (args.tipo_artefato) {
+        novoTipo = args.tipo_artefato;
+        criterios.push("Tipo de artefato ajustado manualmente");
+    }
+
+    // Se PRD fornecido, tenta inferir nível (mas respeita manual se dado)
+    if (args.prd && !args.nivel) {
         const resultado = classificarPRD(args.prd);
         novoNivel = resultado.nivel;
         criterios = resultado.criterios;
         pontuacao = resultado.pontuacao;
-    } else {
-        return {
-            content: [{
-                type: "text",
-                text: `# 📊 Classificar Projeto
-
-## Uso
-
-**Classificação automática (recomendado):**
-\`\`\`
-classificar(prd: "[conteúdo do PRD]", estado_json: "...", diretorio: "...")
-\`\`\`
-
-**Classificação manual:**
-\`\`\`
-classificar(nivel: "simples" | "medio" | "complexo", estado_json: "...", diretorio: "...")
-\`\`\`
-
-## Níveis Disponíveis
-
-| Nível | Fases | Descrição |
-|-------|-------|-----------|
-| simples | 5 | MVP rápido, poucas integrações |
-| medio | 11 | Completo com segurança e testes |
-| complexo | 15 | Enterprise com arquitetura avançada |
-
-## Nível Atual
-**${estado.nivel.toUpperCase()}** (${estado.total_fases} fases)
-`,
-            }],
-        };
     }
 
     const nivelAnterior = estado.nivel;
+    const tipoAnterior = estado.tipo_artefato;
+    const tierAnterior = estado.tier_gate;
+
+    // Recalcula Tier
+    const novoTier = determinarTierGate(novoTipo, novoNivel);
     const fluxo = getFluxo(novoNivel);
 
     // Atualizar estado
     estado.nivel = novoNivel;
+    estado.tipo_artefato = novoTipo;
+    estado.tier_gate = novoTier;
     estado.total_fases = fluxo.total_fases;
-    
+    estado.classificacao_confirmada = true; // Se reclassificou, está confirmado
+
     // Serializar novo estado
     const estadoFile = serializarEstado(estado);
 
     const resposta = `# 📊 Projeto Reclassificado
 
-## Alteração
+## Alterações
 
 | Campo | Antes | Depois |
 |-------|-------|--------|
+| **Tipo** | ${tipoAnterior || "-"} | **${novoTipo}** |
 | **Nível** | ${nivelAnterior} | **${novoNivel.toUpperCase()}** |
-| **Total de Fases** | ${getFluxo(nivelAnterior).total_fases} | **${fluxo.total_fases}** |
+| **Tier** | ${tierAnterior || "-"} | **${novoTier.toUpperCase()}** |
+| **Fases** | ${getFluxo(nivelAnterior).total_fases} | **${fluxo.total_fases}** |
 
-${pontuacao > 0 ? `## Análise\n- **Pontuação:** ${pontuacao} pontos` : ""}
+> ${descreverTier(novoTier)}
 
-${criterios.length > 0 ? `### Critérios detectados:\n${criterios.map(c => `- ${c}`).join("\n")}` : ""}
-
-> ${descreverNivel(novoNivel)}
-
-## Fase Atual
-Você continua na **fase ${estado.fase_atual}** do fluxo.
+${pontuacao > 0 ? `## Análise PRD\n- **Pontuação:** ${pontuacao}\n${criterios.map(c => `- ${c}`).join("\n")}` : ""}
 
 ---
 
 ## ⚡ AÇÃO OBRIGATÓRIA - Atualizar Estado
-
-**A IA DEVE salvar o arquivo de estado atualizado.**
 
 ### Atualizar estado
 **Caminho:** \`${args.diretorio}/.maestro/estado.json\`
@@ -176,7 +149,12 @@ export const classificarSchema = {
         nivel: {
             type: "string",
             enum: ["simples", "medio", "complexo"],
-            description: "Nível de complexidade para classificação manual",
+            description: "Novo nível de complexidade",
+        },
+        tipo_artefato: {
+            type: "string",
+            enum: ["poc", "script", "internal", "product"],
+            description: "Novo tipo de artefato",
         },
         estado_json: {
             type: "string",

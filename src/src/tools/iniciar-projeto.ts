@@ -1,54 +1,157 @@
 import { join } from "path";
 import { v4 as uuid } from "uuid";
-import type { ToolResult } from "../types/index.js";
+import type { ToolResult, TipoArtefato, NivelComplexidade, TierGate } from "../types/index.js";
 import { criarEstadoInicial, serializarEstado } from "../state/storage.js";
 import { setCurrentDirectory } from "../state/context.js";
 import { criarResumoInicial, serializarResumo } from "../state/memory.js";
-import { getFase } from "../flows/types.js";
+import { determinarTierGate, descreverTier } from "../gates/tiers.js";
 
 interface IniciarProjetoArgs {
     nome: string;
     descricao?: string;
-    diretorio: string; // Obrigatório - a IA deve informar
+    diretorio: string;
+}
+
+interface ConfirmarProjetoArgs extends IniciarProjetoArgs {
+    tipo_artefato: TipoArtefato;
+    nivel_complexidade: NivelComplexidade;
+}
+
+/**
+ * Infere o tipo de artefato baseado na descrição
+ */
+function inferirTipoArtefato(nome: string, descricao: string = ""): { tipo: TipoArtefato; razao: string } {
+    const texto = (nome + " " + descricao).toLowerCase();
+
+    if (texto.includes("poc") || texto.includes("prova de conceito") || texto.includes("teste rápido") || texto.includes("protótipo"))
+        return { tipo: "poc", razao: "Termos indicam experimento ou teste conceito" };
+
+    if (texto.includes("script") || texto.includes("cli") || texto.includes("automação") || texto.includes("bot"))
+        return { tipo: "script", razao: "Termos indicam automação ou ferramenta de linha de comando" };
+
+    if (texto.includes("interno") || texto.includes("backoffice") || texto.includes("painel admin") || texto.includes("dashboard equipe"))
+        return { tipo: "internal", razao: "Termos indicam ferramenta de uso interno" };
+
+    return { tipo: "product", razao: "Padrão para sistemas voltados ao usuário final" };
+}
+
+/**
+ * Infere a complexidade baseada na descrição e tipo
+ */
+function inferirComplexidade(tipo: TipoArtefato, descricao: string = ""): { nivel: NivelComplexidade; razao: string } {
+    const texto = descricao.toLowerCase();
+
+    // POCs e Scripts tendem a ser simples, mas podem variar
+    if (tipo === "poc" || tipo === "script") {
+        if (texto.includes("complexo") || texto.includes("avançado")) return { nivel: "medio", razao: "Tipo simples, mas descrição indica complexidade moderada" };
+        return { nivel: "simples", razao: "Padrão para POCs e Scripts" };
+    }
+
+    if (texto.includes("microserviços") || texto.includes("distribuído") || texto.includes("alta escala") || texto.includes("crítico"))
+        return { nivel: "complexo", razao: "Indicadores de arquitetura distribuída ou alta criticidade" };
+
+    if (texto.includes("simples") || texto.includes("básico") || texto.includes("crud") || texto.includes("landing page"))
+        return { nivel: "simples", razao: "Termos indicam escopo reduzido" };
+
+    return { nivel: "medio", razao: "Complexidade padrão para aplicações web/mobile" };
 }
 
 /**
  * Tool: iniciar_projeto
- * Inicia um novo projeto com o Maestro (modo stateless)
- * Retorna arquivos para a IA salvar + pergunta sobre Stitch
+ * Analisa a descrição, infere tipo e tier, e PEDE CONFIRMAÇÃO
+ * NÃO CRIA ARQUIVOS AINDA
  */
 export async function iniciarProjeto(args: IniciarProjetoArgs): Promise<ToolResult> {
-    // Validar diretório
     if (!args.diretorio) {
         return {
-            content: [{
-                type: "text",
-                text: `# ❌ Erro: Diretório Obrigatório
-
-O parâmetro \`diretorio\` é obrigatório.
-
-**Exemplo:**
-\`\`\`
-iniciar_projeto(nome: "meu-projeto", diretorio: "C:/projetos/meu-projeto")
-\`\`\`
-`,
-            }],
+            content: [{ type: "text", text: "❌ Erro: Diretório é obrigatório." }],
             isError: true,
         };
     }
 
+    // Inferir Classificação
+    const inferenciaTipo = inferirTipoArtefato(args.nome, args.descricao);
+    const inferenciaNivel = inferirComplexidade(inferenciaTipo.tipo, args.descricao);
+    const tierSugerido = determinarTierGate(inferenciaTipo.tipo, inferenciaNivel.nivel);
+    const descricaoTier = descreverTier(tierSugerido);
+
+    const resposta = `# 🧐 Análise de Novo Projeto: ${args.nome}
+
+Analisei a descrição e sugiro a seguinte configuração:
+
+| Configuração | Sugestão | Motivo |
+|---|---|---|
+| **Tipo de Artefato** | \`${inferenciaTipo.tipo}\` | ${inferenciaTipo.razao} |
+| **Complexidade** | \`${inferenciaNivel.nivel}\` | ${inferenciaNivel.razao} |
+| **Tier de Gates** | **${tierSugerido.toUpperCase()}** | ${descricaoTier} |
+
+---
+
+## 🚦 Confirmação Necessária
+
+Para efetivamente criar o projeto, você precisa **confirmar ou ajustar** estes valores.
+
+**Opção 1: Concordo (Criar como sugerido)**
+\`\`\`
+confirmar_projeto(
+    nome: "${args.nome}",
+    descricao: "${args.descricao || ''}",
+    diretorio: "${args.diretorio}",
+    tipo_artefato: "${inferenciaTipo.tipo}",
+    nivel_complexidade: "${inferenciaNivel.nivel}"
+)
+\`\`\`
+
+**Opção 2: Ajustar (Forçar outro tipo)**
+\`\`\`
+confirmar_projeto(
+    nome: "${args.nome}",
+    descricao: "${args.descricao || ''}",
+    diretorio: "${args.diretorio}",
+    tipo_artefato: "product",  <-- altere aqui
+    nivel_complexidade: "complexo" <-- altere aqui
+)
+\`\`\`
+`;
+
+    return {
+        content: [{ type: "text", text: resposta }],
+    };
+}
+
+/**
+ * Tool: confirmar_projeto
+ * Cria efetivamente os arquivos do projeto com os tipos confirmados
+ */
+export async function confirmarProjeto(args: ConfirmarProjetoArgs): Promise<ToolResult> {
     const diretorio = args.diretorio;
     setCurrentDirectory(diretorio);
 
+    // Recalcula tier baseado no confirmado
+    const tier = determinarTierGate(args.tipo_artefato, args.nivel_complexidade);
+
     const projetoId = uuid();
+
+    // Cria estado com novos campos
     const estado = criarEstadoInicial(projetoId, args.nome, diretorio);
-    const resumo = criarResumoInicial(projetoId, args.nome, "medio", 1, 10);
+    estado.nivel = args.nivel_complexidade;
+    estado.tipo_artefato = args.tipo_artefato;
+    estado.tier_gate = tier;
+    estado.classificacao_confirmada = true;
+
+    // Cria resumo
+    const resumo = criarResumoInicial(projetoId, args.nome, args.nivel_complexidade, 1, 10);
     resumo.descricao = args.descricao;
 
     const estadoFile = serializarEstado(estado);
     const resumoFiles = serializarResumo(resumo);
 
     const resposta = `# 🚀 Projeto Iniciado: ${args.nome}
+
+**Configuração Confirmada:**
+- Tipo: \`${args.tipo_artefato}\`
+- Complexidade: \`${args.nivel_complexidade}\`
+- Tier: **${tier.toUpperCase()}**
 
 | Campo | Valor |
 |-------|-------|
@@ -113,6 +216,13 @@ confirmar_stitch(
 \`\`\`
 
 > ⚠️ **IMPORTANTE**: Aguarde a resposta do usuário antes de prosseguir!
+
+---
+
+## 🎨 Próximos Passos (Alternativo)
+
+Se não for usar o Stitch, você pode iniciar a Fase 1 (Produto) direto.
+O projeto foi inicializado no Tier **${tier.toUpperCase()}**.
 `;
 
     return {
@@ -128,18 +238,21 @@ confirmar_stitch(
 export const iniciarProjetoSchema = {
     type: "object",
     properties: {
-        nome: {
-            type: "string",
-            description: "Nome do projeto",
-        },
-        descricao: {
-            type: "string",
-            description: "Descrição opcional do projeto",
-        },
-        diretorio: {
-            type: "string",
-            description: "Diretório absoluto onde o projeto será criado (obrigatório)",
-        },
+        nome: { type: "string", description: "Nome do projeto" },
+        descricao: { type: "string", description: "Descrição para análise" },
+        diretorio: { type: "string", description: "Diretório absoluto" },
     },
     required: ["nome", "diretorio"],
+};
+
+export const confirmarProjetoSchema = {
+    type: "object",
+    properties: {
+        nome: { type: "string" },
+        descricao: { type: "string" },
+        diretorio: { type: "string" },
+        tipo_artefato: { type: "string", enum: ["poc", "script", "internal", "product"] },
+        nivel_complexidade: { type: "string", enum: ["simples", "medio", "complexo"] },
+    },
+    required: ["nome", "diretorio", "tipo_artefato", "nivel_complexidade"],
 };
