@@ -429,23 +429,26 @@ export function getFase(nivel: "simples" | "medio" | "complexo", numero: number)
     return fluxo.fases.find((f) => f.numero === numero);
 }
 
-// Fase opcional de Stitch (inserida após Requisitos quando habilitada)
+// Fase opcional de Stitch (inserida após UX Design quando habilitada)
 const FASE_STITCH: Fase = {
     numero: 0, // Será ajustado dinamicamente
     nome: "Prototipagem",
     especialista: "Prototipagem Rápida com Google Stitch",
-    template: "gerar-ui-stitch",
+    template: "prototipo-stitch",
     gate_checklist: [
-        "Prompts para Stitch gerados",
+        "Design Doc aprovado como base para prototipagem",
+        "Prompts para Stitch gerados com base no estilo definido",
         "Protótipos testados no stitch.withgoogle.com",
-        "Código exportado e salvo",
+        "Código HTML/CSS exportado e salvo em docs/03-ux/stitch-output/",
+        "Assets (imagens/ícones) salvos em docs/03-ux/stitch-output/assets/",
     ],
-    entregavel_esperado: "stitch-prompts.md",
+    entregavel_esperado: "prototipos.md",
 };
 
 /**
  * Obtém fluxo com fase de Stitch opcional
- * Se usarStitch=true, insere fase de prototipagem após Requisitos (fase 2)
+ * Se usarStitch=true, insere fase de prototipagem após UX Design (fase 3)
+ * Isso garante que o Design Doc com estilo visual esteja pronto antes de prototipar
  */
 export function getFluxoComStitch(nivel: "simples" | "medio" | "complexo", usarStitch: boolean): Fluxo {
     const base = getFluxo(nivel);
@@ -454,11 +457,12 @@ export function getFluxoComStitch(nivel: "simples" | "medio" | "complexo", usarS
         return base;
     }
 
-    // Insere Stitch como fase 3 (após Requisitos)
+    // Insere Stitch como fase 4 (após UX Design)
+    // Fluxo: Produto(1) -> Requisitos(2) -> UX Design(3) -> Stitch(4) -> ...
     const fasesComStitch: Fase[] = [
-        ...base.fases.slice(0, 2), // Fases 1-2: Produto + Requisitos
-        { ...FASE_STITCH, numero: 3 }, // Stitch como fase 3
-        ...base.fases.slice(2).map(f => ({ ...f, numero: f.numero + 1 })) // Renumera restante
+        ...base.fases.slice(0, 3), // Fases 1-3: Produto + Requisitos + UX Design
+        { ...FASE_STITCH, numero: 4 }, // Stitch como fase 4
+        ...base.fases.slice(3).map(f => ({ ...f, numero: f.numero + 1 })) // Renumera restante
     ];
 
     return {

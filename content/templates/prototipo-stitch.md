@@ -99,14 +99,40 @@ Após análise dos protótipos, os seguintes componentes reutilizáveis foram id
 ## Próximos Passos
 
 - [ ] Exportar todos os códigos para `docs/03-ux/stitch-output/`
+- [ ] Exportar assets para `docs/03-ux/stitch-output/assets/`
 - [ ] Analisar código com IA para extrair componentes
-- [ ] Passar para UX Designer refinar
 - [ ] Atualizar CONTEXTO.md com decisões visuais
+- [ ] Prosseguir para Modelagem de Domínio
 
 ---
 
 ## Arquivos Relacionados
 
+- Design Doc (base para prompts): `docs/03-ux/design-doc.md`
 - Prompts usados: `docs/03-ux/stitch-prompts.md`
 - Código exportado: `docs/03-ux/stitch-output/`
-- Design Doc (próxima fase): `docs/03-ux/design-doc.md`
+
+---
+
+## 🔗 Integração com Frontend
+
+### Para Desenvolvimento Frontend
+
+Os arquivos exportados serão usados na fase de Frontend:
+
+| Arquivo | Destino Sugerido | Tipo |
+|---------|------------------|------|
+| `*.html` | `src/components/` | Referência estrutural |
+| `assets/*.png` | `public/images/` | Assets estáticos |
+| `assets/*.svg` | `src/assets/icons/` | Ícones vetoriais |
+
+### Instruções para o Desenvolvedor Frontend
+
+Na fase de Frontend, a IA deve:
+
+1. **Verificar** se existe `docs/03-ux/stitch-output/`
+2. **Ler todos os HTML** exportados
+3. **Extrair componentes** identificados neste documento
+4. **Copiar assets** para a estrutura correta do projeto
+5. **Adaptar markup** para a stack definida (React, Vue, etc.)
+

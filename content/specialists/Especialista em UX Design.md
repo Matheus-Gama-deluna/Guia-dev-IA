@@ -64,10 +64,11 @@ Antes de avançar para Modelagem/Arquitetura, valide:
 ## 🔗 Fluxo de Contexto
 
 ### Especialista Anterior
-← [Especialista em Prototipagem com Stitch](./Especialista%20em%20Prototipagem%20Rápida%20com%20Google%20Stitch.md) *(ou Requisitos se pular prototipagem)*
+← [Especialista em Engenharia de Requisitos](./Especialista%20em%20Engenharia%20de%20Requisitos%20com%20IA.md)
 
 ### Próximo Especialista
-→ [Especialista em Modelagem de Domínio](./Especialista%20em%20Modelagem%20e%20Arquitetura%20de%20Domínio%20com%20IA.md)
+→ [Especialista em Prototipagem com Stitch](./Especialista%20em%20Prototipagem%20Rápida%20com%20Google%20Stitch.md) *(se usar prototipagem)*
+→ [Especialista em Modelagem de Domínio](./Especialista%20em%20Modelagem%20e%20Arquitetura%20de%20Domínio%20com%20IA.md) *(se pular prototipagem)*
 
 ### Contexto Obrigatório
 

@@ -30,10 +30,11 @@ Acelerar a validação visual do sistema criando protótipos de UI em minutos us
 |---|---|---|
 | PRD | `docs/01-produto/PRD.md` | ⚠️ Recomendado |
 | Requisitos | `docs/02-requisitos/requisitos.md` | ✅ |
+| **Design Doc** | `docs/03-ux/design-doc.md` | ✅ |
 | CONTEXTO.md | `docs/CONTEXTO.md` | ✅ |
 
-> [!WARNING]
-> Cole os requisitos para que a IA gere prompts precisos para o Stitch.
+> [!IMPORTANT]
+> O Design Doc é **obrigatório** nesta fase. Use as definições de estilo, cores e componentes do UX Designer para gerar prompts mais precisos no Stitch.
 
 ---
 
@@ -49,34 +50,35 @@ Acelerar a validação visual do sistema criando protótipos de UI em minutos us
 
 ## ✅ Checklist de Saída (Gate)
 
-Antes de avançar para UX Design detalhado, valide:
+Antes de avançar para Modelagem de Domínio, valide:
 
-- [ ] Prompts para Stitch gerados
+- [ ] Design Doc usado como referência de estilo
+- [ ] Prompts para Stitch gerados com base no estilo visual definido
 - [ ] Protótipos testados no stitch.withgoogle.com
 - [ ] Interface validada com stakeholders
-- [ ] Código exportado e salvo no projeto
-- [ ] Código analisado pela IA
+- [ ] Código HTML/CSS exportado para `docs/03-ux/stitch-output/`
+- [ ] Assets (imagens/ícones) salvos em `docs/03-ux/stitch-output/assets/`
 
 ---
 
 ## 🔗 Fluxo de Contexto
 
 ### Especialista Anterior
-← [Especialista em Engenharia de Requisitos](./Especialista%20em%20Engenharia%20de%20Requisitos%20com%20IA.md)
+← [Especialista em UX Design](./Especialista%20em%20UX%20Design.md)
 
 ### Próximo Especialista
-→ [Especialista em UX Design](./Especialista%20em%20UX%20Design.md)
+→ [Especialista em Modelagem de Domínio](./Especialista%20em%20Modelagem%20e%20Arquitetura%20de%20Domínio%20com%20IA.md)
 
 ### Fluxo de Trabalho (Human-in-the-Loop)
 
 ```mermaid
 flowchart LR
-    A[Requisitos] --> B[IA gera prompts]
+    A[Design Doc] --> B[IA gera prompts]
     B --> C[Você testa no Stitch]
     C --> D[Valida interface]
     D --> E[Exporta código]
     E --> F[IA analisa código]
-    F --> G[Prossegue para UX]
+    F --> G[Prossegue para Modelagem]
 ```
 
 ### Prompt de Continuação (Etapa 1 - Gerar Prompts)
@@ -235,7 +237,43 @@ Create a checkout page for an e-commerce store:
 - Valide com usuários/stakeholders cedo
 - Não se prenda a detalhes - é um protótipo rápido
 - Use o código gerado como **ponto de partida**, não final
-- Documente decisões de UI para o UX Designer
+- Documente decisões de UI no registro de protótipos
+
+---
+
+## 📦 Integração com Desenvolvimento Frontend
+
+Os artefatos gerados pelo Stitch serão usados diretamente na fase de Frontend:
+
+### Estrutura de Arquivos Exportados
+
+| Tipo | Caminho | Uso |
+|------|---------|-----|
+| HTML | `docs/03-ux/stitch-output/*.html` | Estrutura base dos componentes |
+| CSS | `docs/03-ux/stitch-output/*.css` | Estilos de referência |
+| Imagens | `docs/03-ux/stitch-output/assets/` | Assets para o projeto |
+
+### Como o Frontend Utilizará Esses Arquivos
+
+1. **Componentes Reutilizáveis**: A IA analisa o HTML exportado e extrai padrões de componentes para React/Vue/etc
+2. **Estrutura de Layout**: Containers e grids são adaptados para a stack do projeto
+3. **Assets Visuais**: Imagens e ícones são copiados para `public/` ou `src/assets/`
+
+### Prompt de Análise (usado na fase Frontend)
+
+```text
+Antes de criar componentes do zero, analise os protótipos Stitch:
+
+1. Liste os arquivos em: docs/03-ux/stitch-output/
+2. Para cada HTML encontrado:
+   - Extraia a estrutura de componentes
+   - Identifique padrões CSS reutilizáveis
+   - Liste assets referenciados
+3. Adapte para a stack do projeto (React/Vue/etc)
+```
+
+> [!TIP]
+> Os protótipos aceleram significativamente o desenvolvimento frontend quando bem documentados.
 
 ---
 

@@ -524,6 +524,26 @@ Siga estas instruções cuidadosamente.
    - Inclua todas as seções obrigatórias
    - Não omita partes do template
 
+## 📚 ACESSANDO RECURSOS (OBRIGATÓRIO)
+
+Para cada fase, você DEVE ler o especialista e template antes de gerar entregáveis:
+
+### Como usar recursos
+\`\`\`
+read_resource("maestro://especialista/{nome}")  // Ler especialista
+read_resource("maestro://template/{nome}")      // Ler template
+\`\`\`
+
+### Recursos Disponíveis
+
+| Tipo | URI | Exemplo |
+|------|-----|---------|
+| Especialista | \`maestro://especialista/{nome}\` | \`maestro://especialista/UX Design\` |
+| Template | \`maestro://template/{nome}\` | \`maestro://template/design-doc\` |
+| Guia | \`maestro://guia/{nome}\` | \`maestro://guia/Gates de Qualidade\` |
+
+> ⚠️ **SEMPRE** leia o especialista e template da fase atual antes de gerar qualquer entregável!
+
 ## 🔐 Sistema de Proteção de Gates
 
 O Maestro usa um sistema de bloqueio persistente:

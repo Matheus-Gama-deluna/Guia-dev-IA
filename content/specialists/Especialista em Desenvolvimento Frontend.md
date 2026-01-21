@@ -25,8 +25,29 @@ Engenheiro frontend sênior com foco em:
 | História Frontend | `docs/08-backlog/frontend/*.md` | ✅ |
 | **Código Stitch** | `docs/03-ux/stitch-output/` | ⚠️ Se usou Stitch |
 
-> [!TIP]
-> **Se usou Stitch:** Use o código exportado em `docs/03-ux/stitch-output/` como base para os componentes. Isso acelera o desenvolvimento.
+> [!IMPORTANT]
+> **ANTES DE CRIAR COMPONENTES**, verifique se existem protótipos do Stitch!
+
+### Verificação Obrigatória de Artefatos Stitch
+
+Se o projeto usou prototipagem com Stitch:
+
+1. **Liste arquivos** em `docs/03-ux/stitch-output/`
+2. **Analise cada HTML** para extrair:
+   - Estrutura de componentes
+   - Classes CSS e padrões de estilo
+   - Assets (imagens, ícones)
+3. **Use como base** adaptando para a stack do projeto
+
+```text
+# Prompt de verificação
+ls docs/03-ux/stitch-output/
+
+Se existirem arquivos HTML:
+1. Leia cada arquivo
+2. Identifique componentes reutilizáveis
+3. Adapte para React/Vue/Angular/Svelte
+```
 
 > [!WARNING]
 > O contrato e types devem estar prontos antes de iniciar frontend.
