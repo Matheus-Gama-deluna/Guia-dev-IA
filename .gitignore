@@ -1,0 +1,65 @@
+# =========================
+# Dependencies
+# =========================
+node_modules/
+.pnpm-store/
+
+# =========================
+# Build outputs
+# =========================
+dist/
+build/
+*.tsbuildinfo
+
+# =========================
+# Cache
+# =========================
+.cache/
+.npm/
+.eslintcache
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Environment
+# =========================
+.env
+.env.local
+.env.*.local
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# =========================
+# Maestro state (opcional)
+# =========================
+# Descomente se não quiser versionar estado de projetos
+# .maestro/
+
+# =========================
+# Docker
+# =========================
+*.pid
+*.seed
+*.pid.lock
+
+# =========================
+# Test coverage
+# =========================
+coverage/
+.nyc_output/
