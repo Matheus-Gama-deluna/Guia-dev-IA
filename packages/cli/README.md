@@ -1,38 +1,46 @@
-# @maestro/cli
+# @maestro-ai/cli
 
 CLI para inicializar projetos com Maestro - Desenvolvimento assistido por IA.
 
-## Instalação
+## Uso Rápido
 
 ```bash
-npx @maestro init
+npx @maestro-ai/cli
 ```
 
-## Comandos
+Só isso! O comando injeta automaticamente todos os arquivos na pasta atual.
 
-### `init`
-
-Inicializa Maestro no projeto atual:
+## Opções
 
 ```bash
-npx @maestro init          # Instalação completa
-npx @maestro init --minimal # Apenas workflows + GEMINI.md
-npx @maestro init --force   # Sobrescreve arquivos existentes
+npx @maestro-ai/cli              # Instalação completa
+npx @maestro-ai/cli --minimal    # Apenas workflows + GEMINI.md
+npx @maestro-ai/cli --force      # Sobrescreve arquivos existentes
 ```
 
 **O que é criado:**
 - `.maestro/config.json` - Configuração do projeto
-- `content/` - Especialistas, templates, guides
+- `.maestro/content/` - Especialistas, templates, guides, prompts
+- `.agent/skills/` - Skills para a IA
 - `.agent/workflows/` - Workflows automatizados
 - `GEMINI.md` - Rules para a IA
+
+## Comandos Alternativos
+
+### `init` (explícito)
+
+```bash
+npx @maestro-ai/cli init
+npx @maestro-ai/cli init --force
+```
 
 ### `update`
 
 Atualiza content para a última versão:
 
 ```bash
-npx @maestro update
-npx @maestro update --force  # Sobrescreve arquivos modificados
+npx @maestro-ai/cli update
+npx @maestro-ai/cli update --force  # Sobrescreve arquivos modificados
 ```
 
 ## Após Inicialização

@@ -9,7 +9,13 @@ const program = new Command();
 program
     .name('maestro')
     .description('CLI para inicializar projetos com Maestro - Desenvolvimento assistido por IA')
-    .version('1.0.0');
+    .version('1.0.0')
+    .option('-f, --force', 'Sobrescreve arquivos existentes')
+    .option('--minimal', 'Instala apenas workflows e GEMINI.md')
+    .action(async (options) => {
+        // Comportamento padrão: executa init quando chamado sem subcomando
+        await init(options);
+    });
 
 program
     .command('init')
