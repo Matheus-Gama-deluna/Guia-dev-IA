@@ -4,6 +4,7 @@ import { getFase, getFluxo } from "../flows/types.js";
 import { descreverNivel } from "../flows/classifier.js";
 import { setCurrentDirectory } from "../state/context.js";
 import { gerarInstrucaoRecursosCompacta } from "../utils/instructions.js";
+import { gerarSecaoPrompts } from "../utils/prompt-mapper.js";
 
 interface StatusArgs {
     estado_json: string;     // Estado atual (obrigatório)
@@ -114,7 +115,7 @@ ${fasesPendentes.length > 0 ? fasesPendentes.join("\n") : "Todas as fases foram 
 ## Gate da Fase Atual
 
 ${faseAtual?.gate_checklist.map(item => `- [ ] ${item}`).join("\n") || "N/A"}
-
+${faseAtual ? gerarSecaoPrompts(faseAtual.nome) : ""}
 ## Entregáveis Gerados
 
 ${Object.keys(estado.entregaveis).length > 0

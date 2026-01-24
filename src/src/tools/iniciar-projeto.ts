@@ -7,6 +7,7 @@ import { criarResumoInicial, serializarResumo } from "../state/memory.js";
 import { determinarTierGate, descreverTier } from "../gates/tiers.js";
 import { logEvent, EventTypes } from "../utils/history.js";
 import { gerarSystemMd } from "../utils/system-md.js";
+import { detectarStack, gerarSecaoPrompts, gerarSecaoExemplo } from "../utils/prompt-mapper.js";
 
 interface IniciarProjetoArgs {
     nome: string;
@@ -249,6 +250,8 @@ confirmar_stitch(
 
 Se não for usar o Stitch, você pode iniciar a Fase 1 (Produto) direto.
 O projeto foi inicializado no Tier **${tier.toUpperCase()}**.
+${gerarSecaoPrompts("Produto")}
+${gerarSecaoExemplo(detectarStack(args.nome, args.descricao))}
 `;
 
     return {

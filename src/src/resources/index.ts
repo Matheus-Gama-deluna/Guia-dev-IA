@@ -9,10 +9,13 @@ import {
     listarEspecialistas,
     listarTemplates,
     listarGuias,
+    listarExemplos,
     lerEspecialista,
     lerTemplate,
     lerGuia,
     lerPrompt,
+    lerExemplo,
+    getProjectDirectory,
 } from "../utils/files.js";
 
 /**
@@ -76,9 +79,12 @@ read_resource("maestro://template/{nome}")
 export function registerResources(server: Server) {
     // Listar resources disponíveis
     server.setRequestHandler(ListResourcesRequestSchema, async () => {
-        const especialistas = await listarEspecialistas();
-        const templates = await listarTemplates();
-        const guias = await listarGuias();
+        // Usa diretório do projeto para priorizar content local (null -> undefined)
+        const diretorio = getProjectDirectory() || undefined;
+        const especialistas = await listarEspecialistas(diretorio);
+        const templates = await listarTemplates(diretorio);
+        const guias = await listarGuias(diretorio);
+        const exemplos = await listarExemplos(diretorio);
 
         return {
             resources: [
@@ -103,6 +109,13 @@ export function registerResources(server: Server) {
                     mimeType: "text/markdown",
                     description: `Guia de ${g}`,
                 })),
+                // Exemplos de Fluxo Completo
+                ...exemplos.map((ex) => ({
+                    uri: `maestro://exemplo/${encodeURIComponent(ex)}`,
+                    name: `Exemplo: ${ex}`,
+                    mimeType: "text/markdown",
+                    description: `Exemplo de fluxo completo: ${ex}`,
+                })),
                 // System prompt
                 {
                     uri: "maestro://system-prompt",
@@ -118,24 +131,27 @@ export function registerResources(server: Server) {
     server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
         const { uri } = request.params;
 
+        // Usa diretório do projeto para priorizar content local (null -> undefined)
+        const diretorio = getProjectDirectory() || undefined;
+
         // Especialista
         if (uri.startsWith("maestro://especialista/")) {
             const nome = decodeURIComponent(uri.replace("maestro://especialista/", ""));
-            const conteudo = await lerEspecialista(nome);
+            const conteudo = await lerEspecialista(nome, diretorio);
             return { contents: [{ uri, mimeType: "text/markdown", text: conteudo }] };
         }
 
         // Template
         if (uri.startsWith("maestro://template/")) {
             const nome = decodeURIComponent(uri.replace("maestro://template/", ""));
-            const conteudo = await lerTemplate(nome);
+            const conteudo = await lerTemplate(nome, diretorio);
             return { contents: [{ uri, mimeType: "text/markdown", text: conteudo }] };
         }
 
         // Guia
         if (uri.startsWith("maestro://guia/")) {
             const nome = decodeURIComponent(uri.replace("maestro://guia/", ""));
-            const conteudo = await lerGuia(nome);
+            const conteudo = await lerGuia(nome, diretorio);
             return { contents: [{ uri, mimeType: "text/markdown", text: conteudo }] };
         }
 
@@ -145,8 +161,16 @@ export function registerResources(server: Server) {
             const [categoria, nome] = path.split("/");
             const conteudo = await lerPrompt(
                 decodeURIComponent(categoria),
-                decodeURIComponent(nome)
+                decodeURIComponent(nome),
+                diretorio
             );
+            return { contents: [{ uri, mimeType: "text/markdown", text: conteudo }] };
+        }
+
+        // Exemplo de Fluxo Completo
+        if (uri.startsWith("maestro://exemplo/")) {
+            const nome = decodeURIComponent(uri.replace("maestro://exemplo/", ""));
+            const conteudo = await lerExemplo(nome, diretorio);
             return { contents: [{ uri, mimeType: "text/markdown", text: conteudo }] };
         }
 

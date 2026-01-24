@@ -5,6 +5,7 @@
 
 import { existsSync } from "fs";
 import { join } from "path";
+import { setProjectDirectory } from "../utils/files.js";
 
 // Global state: stores the current project directory
 let currentProjectDirectory: string | null = null;
@@ -22,9 +23,12 @@ export function isValidProject(dir: string): boolean {
 
 /**
  * Set the current project directory
+ * Also updates the files utility for local content reading
  */
 export function setCurrentDirectory(dir: string): void {
     currentProjectDirectory = dir;
+    // Sincroniza com files.ts para leitura de content local
+    setProjectDirectory(dir);
 }
 
 /**
@@ -40,6 +44,7 @@ export function getCurrentDirectory(): string {
  */
 export function clearCurrentDirectory(): void {
     currentProjectDirectory = null;
+    setProjectDirectory(null);
 }
 
 /**

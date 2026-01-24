@@ -1,117 +1,199 @@
 import { readFile, readdir, stat } from "fs/promises";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { existsSync } from "fs";
 
-// Resolve path to Guia-dev-IA root (parent of src folder)
+// Resolve path to content folder (server fallback)
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const GUIA_ROOT = join(__dirname, "..", "..");
+const SERVER_CONTENT_ROOT = join(__dirname, "..", "..", "..", "content");
 
-// Project root (where the actual folder structure is)
-const PROJECT_ROOT = GUIA_ROOT;
-
-// Content root (where specialists, templates, guides are located)
-const CONTENT_ROOT = join(PROJECT_ROOT, "content");
-
-// Maestro root (for project files)
-const MAESTRO_ROOT = PROJECT_ROOT;
+// Diretório do projeto atual (pode ser setado por contexto)
+let currentProjectDir: string | null = null;
 
 /**
- * Lê conteúdo de um especialista
+ * Define o diretório do projeto para leitura local
  */
-export async function lerEspecialista(nome: string): Promise<string> {
-    const especialistasDir = join(CONTENT_ROOT, "specialists");
-    const files = await readdir(especialistasDir);
-
-    // Busca arquivo que contém o nome do especialista
-    const arquivo = files.find(f =>
-        f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
-    );
-
-    if (!arquivo) {
-        throw new Error(`Especialista não encontrado: ${nome}`);
-    }
-
-    const path = join(especialistasDir, arquivo);
-    return readFile(path, "utf-8");
+export function setProjectDirectory(dir: string | null) {
+    currentProjectDir = dir;
 }
 
 /**
- * Lê conteúdo de um template
+ * Obtém o diretório do projeto atual
  */
-export async function lerTemplate(nome: string): Promise<string> {
-    const templatesDir = join(CONTENT_ROOT, "templates");
-    const files = await readdir(templatesDir);
-
-    // Busca arquivo que contém o nome do template
-    const arquivo = files.find(f =>
-        f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
-    );
-
-    if (!arquivo) {
-        throw new Error(`Template não encontrado: ${nome}`);
-    }
-
-    const path = join(templatesDir, arquivo);
-    return readFile(path, "utf-8");
+export function getProjectDirectory(): string | null {
+    return currentProjectDir;
 }
 
 /**
- * Lê conteúdo de um prompt
+ * Verifica se o projeto tem content local instalado
  */
-export async function lerPrompt(categoria: string, nome: string): Promise<string> {
-    const path = join(CONTENT_ROOT, "prompts", categoria, `${nome}.md`);
-    return readFile(path, "utf-8");
+export function temContentLocal(diretorio?: string): boolean {
+    const dir = diretorio || currentProjectDir;
+    if (!dir) return false;
+    return existsSync(join(dir, '.maestro', 'content'));
 }
 
 /**
- * Lê conteúdo de um guia
+ * Obtém o diretório de content (local ou servidor)
  */
-export async function lerGuia(nome: string): Promise<string> {
-    const guiasDir = join(CONTENT_ROOT, "guides");
-    const files = await readdir(guiasDir);
-
-    const arquivo = files.find(f =>
-        f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
-    );
-
-    if (!arquivo) {
-        throw new Error(`Guia não encontrado: ${nome}`);
+function getContentRoot(diretorio?: string): string {
+    const dir = diretorio || currentProjectDir;
+    
+    // Tenta local primeiro
+    if (dir) {
+        const localContent = join(dir, '.maestro', 'content');
+        if (existsSync(localContent)) {
+            return localContent;
+        }
     }
+    
+    // Fallback para servidor
+    return SERVER_CONTENT_ROOT;
+}
 
-    const path = join(guiasDir, arquivo);
-    return readFile(path, "utf-8");
+/**
+ * Lê conteúdo de um especialista (local ou servidor)
+ */
+export async function lerEspecialista(nome: string, diretorio?: string): Promise<string> {
+    const contentRoot = getContentRoot(diretorio);
+    const especialistasDir = join(contentRoot, "specialists");
+    
+    try {
+        const files = await readdir(especialistasDir);
+        
+        // Busca arquivo que contém o nome do especialista
+        const arquivo = files.find(f =>
+            f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
+        );
+
+        if (!arquivo) {
+            throw new Error(`Especialista não encontrado: ${nome}`);
+        }
+
+        const path = join(especialistasDir, arquivo);
+        return readFile(path, "utf-8");
+    } catch (error) {
+        // Se falhou no local, tenta no servidor
+        if (contentRoot !== SERVER_CONTENT_ROOT) {
+            return lerEspecialista(nome, undefined);
+        }
+        throw error;
+    }
+}
+
+/**
+ * Lê conteúdo de um template (local ou servidor)
+ */
+export async function lerTemplate(nome: string, diretorio?: string): Promise<string> {
+    const contentRoot = getContentRoot(diretorio);
+    const templatesDir = join(contentRoot, "templates");
+    
+    try {
+        const files = await readdir(templatesDir);
+
+        const arquivo = files.find(f =>
+            f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
+        );
+
+        if (!arquivo) {
+            throw new Error(`Template não encontrado: ${nome}`);
+        }
+
+        const path = join(templatesDir, arquivo);
+        return readFile(path, "utf-8");
+    } catch (error) {
+        if (contentRoot !== SERVER_CONTENT_ROOT) {
+            return lerTemplate(nome, undefined);
+        }
+        throw error;
+    }
+}
+
+/**
+ * Lê conteúdo de um prompt (local ou servidor)
+ */
+export async function lerPrompt(categoria: string, nome: string, diretorio?: string): Promise<string> {
+    const contentRoot = getContentRoot(diretorio);
+    const path = join(contentRoot, "prompts", categoria, `${nome}.md`);
+    
+    try {
+        return await readFile(path, "utf-8");
+    } catch (error) {
+        if (contentRoot !== SERVER_CONTENT_ROOT) {
+            return lerPrompt(categoria, nome, undefined);
+        }
+        throw error;
+    }
+}
+
+/**
+ * Lê conteúdo de um guia (local ou servidor)
+ */
+export async function lerGuia(nome: string, diretorio?: string): Promise<string> {
+    const contentRoot = getContentRoot(diretorio);
+    const guiasDir = join(contentRoot, "guides");
+    
+    try {
+        const files = await readdir(guiasDir);
+
+        const arquivo = files.find(f =>
+            f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
+        );
+
+        if (!arquivo) {
+            throw new Error(`Guia não encontrado: ${nome}`);
+        }
+
+        const path = join(guiasDir, arquivo);
+        return readFile(path, "utf-8");
+    } catch (error) {
+        if (contentRoot !== SERVER_CONTENT_ROOT) {
+            return lerGuia(nome, undefined);
+        }
+        throw error;
+    }
 }
 
 /**
  * Lista arquivos markdown em um diretório dentro de content
  */
-export async function listarArquivos(subdir: string): Promise<string[]> {
-    const dir = join(CONTENT_ROOT, subdir);
-    const entries = await readdir(dir);
-    return entries.filter(e => e.endsWith(".md"));
+export async function listarArquivos(subdir: string, diretorio?: string): Promise<string[]> {
+    const contentRoot = getContentRoot(diretorio);
+    const dir = join(contentRoot, subdir);
+    
+    try {
+        const entries = await readdir(dir);
+        return entries.filter(e => e.endsWith(".md"));
+    } catch {
+        // Se falhar no local, tenta servidor
+        if (contentRoot !== SERVER_CONTENT_ROOT) {
+            return listarArquivos(subdir, undefined);
+        }
+        return [];
+    }
 }
 
 /**
  * Lista especialistas disponíveis
  */
-export async function listarEspecialistas(): Promise<string[]> {
-    const files = await listarArquivos("specialists");
+export async function listarEspecialistas(diretorio?: string): Promise<string[]> {
+    const files = await listarArquivos("specialists", diretorio);
     return files.map(f => f.replace(/^Especialista em /i, "").replace(".md", ""));
 }
 
 /**
  * Lista templates disponíveis
  */
-export async function listarTemplates(): Promise<string[]> {
-    const files = await listarArquivos("templates");
+export async function listarTemplates(diretorio?: string): Promise<string[]> {
+    const files = await listarArquivos("templates", diretorio);
     return files.map(f => f.replace(".md", ""));
 }
 
 /**
  * Lista guias disponíveis
  */
-export async function listarGuias(): Promise<string[]> {
-    const files = await listarArquivos("guides");
+export async function listarGuias(diretorio?: string): Promise<string[]> {
+    const files = await listarArquivos("guides", diretorio);
     return files.map(f => f.replace(".md", ""));
 }
 
@@ -128,8 +210,46 @@ export async function arquivoExiste(path: string): Promise<boolean> {
 }
 
 /**
- * Obtém caminho raiz do Maestro
+ * Obtém caminho raiz do servidor (fallback)
  */
-export function getMaestroRoot(): string {
-    return MAESTRO_ROOT;
+export function getServerContentRoot(): string {
+    return SERVER_CONTENT_ROOT;
+}
+
+/**
+ * Lê conteúdo de um exemplo de fluxo (local ou servidor)
+ */
+export async function lerExemplo(nome: string, diretorio?: string): Promise<string> {
+    const contentRoot = getContentRoot(diretorio);
+    const examplesDir = join(contentRoot, "examples");
+    
+    try {
+        const files = await readdir(examplesDir);
+        
+        // Busca arquivo que contém o nome do exemplo
+        const arquivo = files.find(f =>
+            f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
+        );
+
+        if (!arquivo) {
+            throw new Error(`Exemplo não encontrado: ${nome}`);
+        }
+
+        const path = join(examplesDir, arquivo);
+        return readFile(path, "utf-8");
+    } catch (error) {
+        // Se falhou no local, tenta no servidor
+        if (contentRoot !== SERVER_CONTENT_ROOT) {
+            return lerExemplo(nome, undefined);
+        }
+        throw error;
+    }
+}
+
+/**
+ * Lista exemplos disponíveis
+ */
+export async function listarExemplos(diretorio?: string): Promise<string[]> {
+    const files = await listarArquivos("examples", diretorio);
+    return files.map(f => f.replace(".md", ""));
 }

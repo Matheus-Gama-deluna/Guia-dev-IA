@@ -11,6 +11,7 @@ import { gerarInstrucaoProximaFase } from "../utils/instructions.js";
 import type { EntregavelResumo, ProjectSummary } from "../types/memory.js";
 import { logEvent, EventTypes } from "../utils/history.js";
 import { gerarSystemMd } from "../utils/system-md.js";
+import { gerarSecaoPrompts } from "../utils/prompt-mapper.js";
 
 interface ProximoArgs {
     entregavel: string;
@@ -541,7 +542,7 @@ ${classificacaoInfoAdicional}
 
 ## Gate de Saída
 ${proximaFase?.gate_checklist.map(item => `- [ ] ${item}`).join("\n") || "Nenhum"}
-
+${proximaFase ? gerarSecaoPrompts(proximaFase.nome) : ""}
 ---
 
 ## ⚡ AÇÃO OBRIGATÓRIA - Salvar Arquivos
