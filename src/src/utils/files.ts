@@ -2,6 +2,7 @@ import { readFile, readdir, stat } from "fs/promises";
 import { join, dirname, resolve, win32 } from "path";
 import { fileURLToPath } from "url";
 import { existsSync } from "fs";
+import { platform } from "os";
 
 // Resolve path to content folder (server fallback)
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -281,12 +282,23 @@ export function normalizeProjectPath(path: string): string {
  * Resolve o caminho do projeto lidando com ambientes mistos (Docker Linux -> Windows Host)
  */
 export function resolveProjectPath(path: string): string {
-    const normalized = normalizeProjectPath(path);
+    const normalized = normalizeProjectPath(path).trim();
     
-    // Se parece um caminho Windows (tem drive letter), força resolução win32
-    // Isso evita que o container Linux trate 'c:' como uma pasta relativa
-    if (normalized.match(/^[a-zA-Z]:/)) {
-        // Normaliza barras para evitar confusão no win32.resolve
+    // Debug logging
+    if (platform() !== 'win32') {
+        console.log(`[DEBUG] resolveProjectPath input: "${path}"`);
+        console.log(`[DEBUG] normalized: "${normalized}"`);
+    }
+
+    // Se o path é Windows (Drive Letter) mas estamos no Linux (Docker/WSL)
+    // Checks for "C:" at start OR "C:\" inside string (handling weird mounting)
+    if (platform() !== 'win32' && (normalized.match(/^[a-zA-Z]:/) || normalized.includes(':\\'))) {
+        console.log(`[DEBUG] Windows path detected on Linux. Mapping to CWD: ${process.cwd()}`);
+        return process.cwd();
+    }
+
+    // Se parece um caminho Windows em ambiente Windows, força win32
+    if (platform() === 'win32' && normalized.match(/^[a-zA-Z]:/)) {
         const safePath = normalized.replace(/\//g, '\\');
         return win32.resolve(safePath);
     }
