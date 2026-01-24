@@ -3,6 +3,8 @@ import { parsearEstado, serializarEstado } from "../state/storage.js";
 import { classificarPRD, descreverNivel } from "../flows/classifier.js";
 import { getFluxo } from "../flows/types.js";
 import { setCurrentDirectory } from "../state/context.js";
+import { normalizeProjectPath } from "../utils/files.js";
+import { resolve } from "path";
 import { determinarTierGate, descreverTier } from "../gates/tiers.js";
 
 interface ClassificarArgs {
@@ -55,7 +57,8 @@ classificar(
         };
     }
 
-    setCurrentDirectory(args.diretorio);
+    const diretorio = resolve(normalizeProjectPath(args.diretorio));
+    setCurrentDirectory(diretorio);
 
     let novoNivel: NivelComplexidade = estado.nivel;
     let novoTipo: TipoArtefato = estado.tipo_artefato || "product"; // Default se não existir

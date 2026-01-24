@@ -1,3 +1,4 @@
+
 import type { ToolResult, EstadoProjeto } from "../types/index.js";
 import { parsearEstado } from "../state/storage.js";
 import { existsSync } from "fs";
@@ -7,7 +8,7 @@ import { descreverNivel } from "../flows/classifier.js";
 import { setCurrentDirectory } from "../state/context.js";
 import { gerarInstrucaoRecursosCompacta } from "../utils/instructions.js";
 import { gerarSecaoPrompts } from "../utils/prompt-mapper.js";
-import { temContentLocal } from "../utils/files.js";
+import { temContentLocal, normalizeProjectPath } from "../utils/files.js";
 
 interface StatusArgs {
     estado_json: string;     // Estado atual (obrigatório)
@@ -68,7 +69,7 @@ status(
 
     // Verifica se CLI foi executada (content local existe)
     // Verifica se CLI foi executada (config.json existe)
-    const diretorio = resolve(args.diretorio);
+    const diretorio = resolve(normalizeProjectPath(args.diretorio));
     const configPath = join(diretorio, '.maestro', 'config.json');
     if (!existsSync(configPath)) {
         return {

@@ -1,6 +1,7 @@
 import type { ToolResult } from "../types/index.js";
+import { setCurrentDirectory } from "../state/context.js";
 import { salvarEstado, criarEstadoInicial, carregarEstado } from "../state/storage.js";
-import { lerEspecialista, lerTemplate } from "../utils/files.js";
+import { lerEspecialista, lerTemplate, normalizeProjectPath } from "../utils/files.js";
 import { FLUXO_FEATURE, FLUXO_BUG, FLUXO_REFATORACAO } from "../flows/alternativas.js";
 import { v4 as uuid } from "uuid";
 

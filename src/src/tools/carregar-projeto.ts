@@ -3,6 +3,7 @@ import { existsSync } from "fs";
 import type { ToolResult } from "../types/index.js";
 import { parsearEstado } from "../state/storage.js";
 import { setCurrentDirectory } from "../state/context.js";
+import { normalizeProjectPath } from "../utils/files.js";
 import { getFase } from "../flows/types.js";
 import { lerEspecialista, lerTemplate } from "../utils/files.js";
 import { gerarInstrucaoRecursos } from "../utils/instructions.js";
@@ -90,7 +91,7 @@ ${args.estado_json.slice(0, 200)}...
     }
 
     // Define o diretório global
-    const diretorio = resolve(args.diretorio);
+    const diretorio = resolve(normalizeProjectPath(args.diretorio));
     setCurrentDirectory(diretorio);
 
     // Verificar se o CLI foi executado

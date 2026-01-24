@@ -249,7 +249,26 @@ export async function lerExemplo(nome: string, diretorio?: string): Promise<stri
 /**
  * Lista exemplos disponíveis
  */
-export async function listarExemplos(diretorio?: string): Promise<string[]> {
-    const files = await listarArquivos("examples", diretorio);
-    return files.map(f => f.replace(".md", ""));
+
+/**
+ * Normaliza o caminho do projeto, removendo prefixos de container (ex: /app/c:)
+ */
+export function normalizeProjectPath(path: string): string {
+    if (!path) return path;
+    
+    // Remove prefixo /app/ de caminhos Windows com drive letter (ex: /app/c: -> c:)
+    const winDriveMatch = path.match(/^\/app\/([a-zA-Z]:.*)$/);
+    if (winDriveMatch) {
+        return winDriveMatch[1];
+    }
+
+    // Remove apenas /app/ se for um caminho absoluto linux/mac que foi prepended
+    if (path.startsWith('/app/')) {
+        const stripped = path.replace(/^\/app\//, '/');
+        // Se após remover ficar apenas uma barra ou caminho válido, retorna
+        return stripped;
+    }
+
+    return path;
 }
+

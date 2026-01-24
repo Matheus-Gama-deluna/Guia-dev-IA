@@ -2,7 +2,9 @@ import type { ToolResult, NivelComplexidade, TipoArtefato } from "../types/index
 import { parsearEstado, serializarEstado } from "../state/storage.js";
 import { determinarTierGate, descreverTier } from "../gates/tiers.js";
 import { getFluxoComStitch } from "../flows/types.js";
+import { normalizeProjectPath } from "../utils/files.js";
 import { setCurrentDirectory } from "../state/context.js";
+import { resolve } from "path";
 
 interface ConfirmarClassificacaoArgs {
     estado_json: string;
@@ -56,7 +58,7 @@ O parâmetro \`estado_json\` é obrigatório.
         };
     }
 
-    const diretorio = args.diretorio;
+    const diretorio = resolve(normalizeProjectPath(args.diretorio));
     setCurrentDirectory(diretorio);
 
     // Determinar valores finais (prioridade: argumento > sugestão > estado atual)

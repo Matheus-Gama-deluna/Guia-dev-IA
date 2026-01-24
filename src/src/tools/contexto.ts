@@ -1,8 +1,11 @@
+
 import type { ToolResult, EstadoProjeto } from "../types/index.js";
 import { parsearEstado } from "../state/storage.js";
 import { getFase, getFluxo } from "../flows/types.js";
 import { setCurrentDirectory } from "../state/context.js";
 import { gerarInstrucaoRecursosCompacta } from "../utils/instructions.js";
+import { normalizeProjectPath } from "../utils/files.js";
+import { resolve } from "path";
 
 interface ContextoArgs {
     estado_json: string;     // Estado atual (obrigatório)
@@ -59,7 +62,8 @@ contexto(
         };
     }
 
-    setCurrentDirectory(args.diretorio);
+    const diretorio = resolve(normalizeProjectPath(args.diretorio));
+    setCurrentDirectory(diretorio);
 
     const fluxo = getFluxo(estado.nivel);
     const faseAtual = getFase(estado.nivel, estado.fase_atual);

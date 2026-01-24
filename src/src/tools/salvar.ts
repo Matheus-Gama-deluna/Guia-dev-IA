@@ -1,6 +1,7 @@
-import { join } from "path";
+import { join, resolve } from "path";
 import type { ToolResult, EstadoProjeto } from "../types/index.js";
 import { parsearEstado } from "../state/storage.js";
+import { normalizeProjectPath } from "../utils/files.js";
 import { setCurrentDirectory } from "../state/context.js";
 
 interface SalvarArgs {
@@ -84,7 +85,7 @@ salvar(
         };
     }
 
-    const diretorio = args.diretorio;
+    const diretorio = resolve(normalizeProjectPath(args.diretorio));
     setCurrentDirectory(diretorio);
 
     let targetPath: string;

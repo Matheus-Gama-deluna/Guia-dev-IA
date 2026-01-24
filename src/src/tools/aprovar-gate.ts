@@ -1,6 +1,9 @@
 import type { ToolResult, EstadoProjeto } from "../types/index.js";
 import { parsearEstado, serializarEstado } from "../state/storage.js";
 import { setCurrentDirectory } from "../state/context.js";
+import { logEvent, EventTypes } from "../utils/history.js";
+import { normalizeProjectPath } from "../utils/files.js";
+import { resolve } from "path";
 
 interface AprovarGateArgs {
     estado_json: string;     // Estado atual (obrigatório)
@@ -53,6 +56,8 @@ aprovar_gate(
         };
     }
 
+    const diretorio = resolve(normalizeProjectPath(args.diretorio));
+
     if (!args.acao || !["aprovar", "rejeitar"].includes(args.acao)) {
         return {
             content: [{
@@ -75,7 +80,7 @@ aprovar_gate(
         };
     }
 
-    setCurrentDirectory(args.diretorio);
+    setCurrentDirectory(diretorio);
 
     // Verificar se há aprovação pendente
     if (!estado.aguardando_aprovacao) {

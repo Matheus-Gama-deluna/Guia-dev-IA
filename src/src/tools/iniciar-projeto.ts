@@ -9,6 +9,7 @@ import { determinarTierGate, descreverTier } from "../gates/tiers.js";
 import { logEvent, EventTypes } from "../utils/history.js";
 import { gerarSystemMd } from "../utils/system-md.js";
 import { detectarStack, gerarSecaoPrompts, gerarSecaoExemplo } from "../utils/prompt-mapper.js";
+import { normalizeProjectPath } from "../utils/files.js";
 
 interface IniciarProjetoArgs {
     nome: string;
@@ -74,7 +75,7 @@ export async function iniciarProjeto(args: IniciarProjetoArgs): Promise<ToolResu
     }
 
     // Normalizar diretório
-    const diretorio = resolve(args.diretorio);
+    const diretorio = resolve(normalizeProjectPath(args.diretorio));
 
     // Verificar se o CLI foi executado
     const configPath = join(diretorio, '.maestro', 'config.json');
@@ -184,7 +185,7 @@ confirmar_projeto(
  * Cria efetivamente os arquivos do projeto com os tipos confirmados
  */
 export async function confirmarProjeto(args: ConfirmarProjetoArgs): Promise<ToolResult> {
-    const diretorio = resolve(args.diretorio);
+    const diretorio = resolve(normalizeProjectPath(args.diretorio));
     setCurrentDirectory(diretorio);
 
     // Verificar se o CLI foi executado
