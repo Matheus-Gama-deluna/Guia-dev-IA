@@ -10,7 +10,7 @@ import { determinarTierGate, descreverTier } from "../gates/tiers.js";
 import { logEvent, EventTypes } from "../utils/history.js";
 import { gerarSystemMd } from "../utils/system-md.js";
 import { detectarStack, gerarSecaoPrompts, gerarSecaoExemplo } from "../utils/prompt-mapper.js";
-import { resolveProjectPath } from "../utils/files.js";
+import { resolveProjectPath, joinProjectPath } from "../utils/files.js";
 
 interface IniciarProjetoArgs {
     nome: string;
@@ -79,7 +79,7 @@ export async function iniciarProjeto(args: IniciarProjetoArgs): Promise<ToolResu
     const diretorio = resolveProjectPath(args.diretorio);
 
     // Verificar se o CLI foi executado
-    const configPath = join(diretorio, '.maestro', 'config.json');
+    const configPath = joinProjectPath(diretorio, '.maestro', 'config.json');
     
     if (!existsSync(configPath)) {
         // Tentar listar o diretório para debug (se existir)
@@ -199,7 +199,7 @@ export async function confirmarProjeto(args: ConfirmarProjetoArgs): Promise<Tool
     setCurrentDirectory(diretorio);
 
     // Verificar se o CLI foi executado
-    const configPath = join(diretorio, '.maestro', 'config.json');
+    const configPath = joinProjectPath(diretorio, '.maestro', 'config.json');
     if (!existsSync(configPath)) {
         return {
             content: [{ 

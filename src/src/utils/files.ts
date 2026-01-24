@@ -294,3 +294,18 @@ export function resolveProjectPath(path: string): string {
     // Caso contrário, usa resolve padrão do sistema
     return resolve(normalized);
 }
+
+/**
+ * Join paths handling mixed environments (Docker Linux -> Windows Host)
+ */
+export function joinProjectPath(...paths: string[]): string {
+    if (paths.length === 0) return "";
+    const first = normalizeProjectPath(paths[0]);
+    
+    // Se o primeiro segmento parece um caminho Windows, usa join win32
+    if (first.match(/^[a-zA-Z]:/)) {
+        return win32.join(...paths);
+    }
+    
+    return join(...paths);
+}

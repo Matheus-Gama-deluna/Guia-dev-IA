@@ -3,7 +3,7 @@ import { existsSync } from "fs";
 import type { ToolResult } from "../types/index.js";
 import { parsearEstado } from "../state/storage.js";
 import { setCurrentDirectory } from "../state/context.js";
-import { normalizeProjectPath } from "../utils/files.js";
+import { normalizeProjectPath, joinProjectPath } from "../utils/files.js";
 import { getFase } from "../flows/types.js";
 import { lerEspecialista, lerTemplate } from "../utils/files.js";
 import { gerarInstrucaoRecursos } from "../utils/instructions.js";
@@ -95,7 +95,7 @@ ${args.estado_json.slice(0, 200)}...
     setCurrentDirectory(diretorio);
 
     // Verificar se o CLI foi executado
-    const configPath = join(diretorio, '.maestro', 'config.json');
+    const configPath = joinProjectPath(diretorio, '.maestro', 'config.json');
     if (!existsSync(configPath)) {
         return {
             content: [{ 
