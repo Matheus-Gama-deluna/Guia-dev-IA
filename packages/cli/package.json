@@ -1,5 +1,5 @@
 {
-    "name": "@maestro/cli",
+    "name": "@maestro-ai/cli",
     "version": "1.0.0",
     "description": "CLI para inicializar projetos com Maestro - Desenvolvimento assistido por IA",
     "type": "module",
