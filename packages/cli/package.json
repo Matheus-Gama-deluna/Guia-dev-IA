@@ -1,7 +1,7 @@
 {
     "name": "@maestro-ai/cli",
-    "version": "1.1.0",
-    "description": "CLI para inicializar projetos com Maestro - Desenvolvimento assistido por IA",
+    "version": "1.2.0",
+    "description": "CLI para inicializar projetos Maestro File System - Orquestrador chat-first com workflows inteligentes",
     "type": "module",
     "main": "dist/index.js",
     "bin": {
@@ -40,8 +40,14 @@
         "maestro",
         "ai",
         "development",
-        "mcp",
-        "cli"
+        "file-system",
+        "chat-first",
+        "workflows",
+        "orchestrator",
+        "cli",
+        "windsurf",
+        "cursor",
+        "antigravity"
     ],
     "author": "Matheus Luna",
     "license": "MIT"

@@ -1,6 +1,6 @@
 # @maestro-ai/cli
 
-CLI para inicializar projetos com Maestro - Desenvolvimento assistido por IA.
+CLI para inicializar projetos **Maestro File System** - Orquestrador chat-first com workflows inteligentes.
 
 ## 🚀 Uso Rápido
 
@@ -8,7 +8,7 @@ CLI para inicializar projetos com Maestro - Desenvolvimento assistido por IA.
 npx @maestro-ai/cli
 ```
 
-Só isso! O comando injeta automaticamente todos os arquivos na pasta atual.
+Só isso! O comando injeta automaticamente todos os arquivos do Maestro na pasta atual.
 
 ---
 
@@ -18,25 +18,19 @@ Só isso! O comando injeta automaticamente todos os arquivos na pasta atual.
 |-------|-----------|
 | `--force` | Sobrescreve arquivos existentes |
 | `--minimal` | Instala apenas workflows + rules |
-| `--ide <ide>` | IDE alvo: `gemini`, `cursor`, `copilot`, `windsurf`, `all` (default: `all`) |
+| `--ide <ide>` | IDE alvo: `windsurf`, `cursor`, `antigravity`, `all` (default: `windsurf`) |
 
 ### Exemplos
 
 ```bash
-# Instalação completa (todas as IDEs)
+# Instalação completa (Windsurf - padrão)
 npx @maestro-ai/cli
-
-# Apenas para Gemini/Antigravity
-npx @maestro-ai/cli --ide gemini
 
 # Apenas para Cursor
 npx @maestro-ai/cli --ide cursor
 
-# Apenas para GitHub Copilot
-npx @maestro-ai/cli --ide copilot
-
-# Apenas para Windsurf
-npx @maestro-ai/cli --ide windsurf
+# Apenas para Antigravity/Gemini
+npx @maestro-ai/cli --ide antigravity
 
 # Sobrescrever arquivos existentes
 npx @maestro-ai/cli --force
@@ -55,45 +49,70 @@ projeto/
 │   ├── config.json          # Configuração do projeto
 │   ├── history/             # Histórico de conversas
 │   └── content/             # Especialistas, templates, guides, prompts
-├── .agent/
-│   ├── skills/              # Skills para a IA
-│   └── workflows/           # Workflows automatizados
-└── [Arquivos de regras por IDE]
+├── .windsurf/
+│   ├── skills/              # Skills especializadas
+│   └── workflows/           # Workflows inteligentes
+└── .windsurfrules           # Regras da IA para Windsurf
 ```
 
-### Arquivos de Regras por IDE
+### Arquivos por IDE
 
-| IDE | Arquivo Gerado |
-|-----|----------------|
-| Gemini/Antigravity | `.gemini/GEMINI.md` |
-| Cursor | `.cursorrules` |
-| GitHub Copilot | `.github/copilot-instructions.md` |
-| Windsurf | `.windsurfrules` |
+| IDE | Estrutura Gerada |
+|-----|------------------|
+| Windsurf | `.windsurf/workflows/` + `.windsurf/skills/` + `.windsurfrules` |
+| Cursor | `.cursor/commands/` + `.cursor/skills/` + `.cursorrules` |
+| Antigravity | `.agent/workflows/` + `.agent/skills/` + `.gemini/GEMINI.md` |
 
 ---
 
-## 🔄 Fluxo Esperado
+## 🎯 Fluxo de Trabalho
+
+O Maestro File System opera 100% localmente com workflows chat-first:
 
 ```mermaid
 graph LR
-    A[npx @maestro-ai/cli] --> B{Opção --ide?}
-    B -->|all| C[Gera todos]
-    B -->|específico| D[Gera um arquivo]
-    C --> E[.gemini/GEMINI.md]
-    C --> F[.cursorrules]
-    C --> G[.github/copilot-instructions.md]
-    C --> H[.windsurfrules]
-    D --> I[Arquivo da IDE escolhida]
+    A[/maestro] --> B{Estado do projeto}
+    B -->|Novo| C[/iniciar-projeto]
+    B -->|Em andamento| D[/continuar-fase]
+    B -->|Pronto| E[/avancar-fase]
+    C --> F[Fase 1: Produto]
+    D --> G[Retoma fase atual]
+    E --> H[Próxima fase]
 ```
 
-1. **Execute o CLI** no diretório do seu projeto
-2. **Escolha a IDE** (ou deixe `all` para suportar todas)
-3. **Configure o MCP** na sua IDE
-4. **Inicie um projeto Maestro** com `iniciar_projeto`
+### Comandos Principais
+
+| Comando | Descrição |
+|---------|-----------|
+| `/maestro` | Workflow universal inteligente que detecta estado |
+| `/iniciar-projeto` | Inicia novo projeto com classificação automática |
+| `/continuar-fase` | Retoma a fase atual do ponto exato |
+| `/avancar-fase` | Valida quality gates e avança para próxima fase |
+| `/status-projeto` | Mostra progresso completo e métricas |
+
+### Workflows de Desenvolvimento
+
+| Comando | Descrição |
+|---------|-----------|
+| `/nova-feature` | Adiciona funcionalidades (fluxo 6 fases) |
+| `/corrigir-bug` | Debugging estruturado (fluxo 4 fases) |
+| `/refatorar-codigo` | Refatoração segura com testes |
+| `/brainstorm` | Exploração estruturada de ideias |
+| `/deploy` | Deploy em produção com checklist |
+| `/testar` | Geração e execução de testes |
 
 ---
 
-## 📋 Comandos
+## 🔄 Como Funciona
+
+1. **Estado Centralizado**: `.maestro/estado.json` mantém toda a evolução do projeto
+2. **Workflows Inteligentes**: Cada workflow carrega especialistas, prompts e templates adequados
+3. **Quality Gates**: Validações automáticas entre fases com regras específicas
+4. **Multi-IDE**: Suporte nativo para Windsurf, Cursor e Antigravity
+
+---
+
+## 📋 Comandos CLI
 
 ### `init` (padrão)
 
@@ -114,24 +133,35 @@ npx @maestro-ai/cli update --force  # Sobrescreve arquivos modificados
 
 ---
 
-## ⚡ Após Inicialização
+## 🎨 Exemplo de Uso
 
-Configure o MCP na sua IDE:
+```bash
+# 1. Inicializar projeto
+npx @maestro-ai/cli
 
-```json
-{
-  "mcpServers": {
-    "maestro": {
-      "serverUrl": "https://maestro.deluna.dev.br/mcp"
-    }
-  }
-}
-```
+# 2. No Windsurf/Cursor, iniciar projeto
+/maestro
+# → Detecta projeto não inicializado
+# → Sugere /iniciar-projeto
 
-Depois inicie um projeto:
+# 3. Iniciar projeto
+/iniciar-projeto
+# → Coleta informações
+# → Classifica complexidade
+# → Cria estado inicial
+# → Prepara Fase 1
 
-```
-@mcp:maestro iniciar_projeto
+# 4. Desenvolver
+/continuar-fase
+# → Carrega especialista de Gestão de Produto
+# → Abre templates PRD.md
+# → Orienta preenchimento
+
+# 5. Avançar quando pronto
+/avancar-fase
+# → Valida quality gate
+# → Atualiza estado
+# → Prepara Fase 2
 ```
 
 ---
@@ -142,7 +172,7 @@ Depois inicie um projeto:
 cd packages/cli
 npm install
 npm run build
-npm run dev -- init --ide gemini  # Testar localmente
+npm run dev -- init --ide windsurf  # Testar localmente
 ```
 
 ---
