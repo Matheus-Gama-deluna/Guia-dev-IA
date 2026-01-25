@@ -2,9 +2,25 @@
 description: Refatoração estruturada de código (Análise → Testes → Refactor → Validação)
 ---
 
-# /mcp-refactor - Refatoração MCP
+# /refatorar-codigo - Refatoração Maestro
 
 $ARGUMENTS
+
+---
+
+## Integração obrigatória com o Maestro
+
+1. **Sincronize o estado** executando `/maestro` antes de começar. Garanta que não há gates bloqueados.
+2. **Carregue o estado e defina helpers**:
+   ```javascript
+   const estado = lerJson('.maestro/estado.json');
+   function salvarEstado(novoEstado) {
+     escreverJson('.maestro/estado.json', novoEstado, { spaces: 2 });
+   }
+   ```
+3. Sempre passe `estado_json` ao chamar qualquer tool MCP (`mcp_maestro_refatorar`, `mcp_maestro_avancar_refatoracao`, etc.).
+4. Atualize `estado.historico` com eventos como `refatoracao_iniciada`, `refatoracao_passo_concluido` e `refatoracao_finalizada`, armazenando `refactor_id` e arquivos afetados.
+5. Use `content/guides/fases-mapeamento.md` para escolher especialistas de apoio (Arquitetura, Performance, Testes) conforme o foco da refatoração.
 
 ---
 
@@ -22,8 +38,8 @@ Refatorar código de forma segura e estruturada usando fluxo de 5 fases do MCP M
 - Migrar para novo padrão ou arquitetura
 
 **NÃO usar para:**
-- Adicionar funcionalidade → Use `/mcp-feature`
-- Corrigir bugs → Use `/mcp-debug`
+- Adicionar funcionalidade → Use `/nova-feature`
+- Corrigir bugs → Use `/corrigir-bug`
 
 ---
 
@@ -75,10 +91,16 @@ Refatorar código de forma segura e estruturada usando fluxo de 5 fases do MCP M
 ### Passo 2: Iniciar Fluxo de Refatoração
 
 ```typescript
+const estadoJson = lerArquivo('.maestro/estado.json');
+
 await mcp_maestro_refatorar({
   area: "[área fornecida]",
-  motivo: "[motivo]"
+  motivo: "[motivo]",
+  estado_json: estadoJson,
+  diretorio: process.cwd()
 });
+
+salvarEstado(registrarHistorico(estado, { acao: 'refatoracao_iniciada', area, motivo }));
 ```
 
 **MCP cria contexto e retorna:**
@@ -397,7 +419,7 @@ Use: `/deploy production`
 ### Exemplo 1: Refatorar Serviço Complexo
 
 ```
-User: /mcp-refactor
+User: /refatorar-codigo
 
 AI: Qual área deseja refatorar?
 
@@ -435,7 +457,7 @@ AI: [Fase 2: Cria testes de caracterização]
     
     Todos passando. Pronto para refatorar!
 
-User: /mcp-next
+User: /avancar-fase (ou `/maestro` para validar e avançar)
 
 AI: [Fase 3: Refatoração]
     
@@ -463,7 +485,7 @@ AI: [Fase 3: Refatoração]
 ### Exemplo 2: Migração de Padrão
 
 ```
-User: /mcp-refactor Migrar de callback para async/await
+User: /refatorar-codigo Migrar de callback para async/await
 
 AI: Motivo?
 
@@ -496,9 +518,10 @@ AI: ✅ Refactor initiated
 ## Comandos Relacionados
 
 ```
-/mcp-refactor [área]        → Inicia refatoração
-/mcp-next                   → Avança entre fases/passos
-/mcp-status                 → Ver progresso da refatoração
+/refatorar-codigo [área]  → Inicia refatoração integrada ao estado
+/continuar-fase          → Retoma passo atual (usa análise do artefato)
+/avancar-fase            → Valida gate pós-refatoração
+/status-projeto          → Ver progresso e métricas
 ```
 
 ---

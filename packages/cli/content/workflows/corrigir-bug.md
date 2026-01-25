@@ -2,9 +2,24 @@
 description: Correção de bugs com fluxo estruturado (Reprodução → Análise → Fix → Regressão)
 ---
 
-# /mcp-debug - Correção de Bug MCP
+# /corrigir-bug - Correção de Bug Maestro
 
 $ARGUMENTS
+
+---
+
+## Integração com o Maestro
+
+1. Execute `/maestro` antes para garantir que o estado está sincronizado e detectar bloqueios ativos.
+2. Crie helpers mentais para ler e salvar estado:
+   ```javascript
+   const estado = lerJson('.maestro/estado.json');
+   function salvarEstado(next) {
+     escreverJson('.maestro/estado.json', next, { spaces: 2 });
+   }
+   ```
+3. Sempre passe `estado_json` para qualquer tool MCP que for invocado e registre eventos no `estado.historico` (`acao: "bug_iniciado"`, `bug_id`, `severidade`).
+4. Use `content/guides/fases-mapeamento.md` para carregar especialistas, prompts e templates de apoio (Debugging, DevOps, Testes, etc.).
 
 ---
 
@@ -21,8 +36,8 @@ Corrigir bugs de forma estruturada usando fluxo de 4 fases do MCP Maestro, com a
 - Erro que requer análise sistemática
 
 **NÃO usar para:**
-- Nova funcionalidade → Use `/mcp-feature`
-- Refatoração de código → Use `/mcp-refactor`
+- Nova funcionalidade → Use `/nova-feature`
+- Refatoração de código → Use `/refatorar-codigo`
 
 ---
 
@@ -71,12 +86,21 @@ Corrigir bugs de forma estruturada usando fluxo de 4 fases do MCP Maestro, com a
 
 ### Passo 2: Iniciar Fluxo de Debugging
 
+> [!IMPORTANT]
+> **Protocolo stateless:** carregar `.maestro/estado.json` do disco antes de qualquer chamada.
+
 ```typescript
+const estadoJson = lerArquivo('.maestro/estado.json');
+
 await mcp_maestro_corrigir_bug({
   descricao: "[descrição fornecida]",
   severidade: "[critica/alta/media/baixa]",
-  ticket_id: "[opcional: JIRA-123]"
+  ticket_id: "[opcional: JIRA-123]",
+  estado_json: estadoJson,
+  diretorio: process.cwd()
 });
+
+salvarEstado(registrarHistorico(estado, { acao: 'bug_iniciado', severidade }));
 ```
 
 **MCP cria contexto de bug e retorna:**
@@ -315,7 +339,7 @@ Executar deploy? Use `/deploy [ambiente]`
 ### Exemplo 1: Bug Crítico (Duplicação de Pedido)
 
 ```
-User: /mcp-debug
+User: /corrigir-bug
 
 AI: Descreva o bug:
 
@@ -382,7 +406,7 @@ AI: ✅ Fluxo iniciado (BUG-001) - Severidade CRÍTICA
 ### Exemplo 2: Bug de UI (Baixa Severidade)
 
 ```
-User: /mcp-debug Botão de logout desalinhado no mobile
+User: /corrigir-bug Botão de logout desalinhado no mobile
 
 AI: Severidade?
 

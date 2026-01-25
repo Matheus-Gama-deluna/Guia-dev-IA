@@ -10,29 +10,31 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 interface InitOptions {
     force?: boolean;
     minimal?: boolean;
-    ide?: 'gemini' | 'cursor' | 'copilot' | 'windsurf' | 'all';
+    ide?: 'windsurf' | 'cursor' | 'antigravity'; // Agora opcional
 }
 
 const IDE_CONFIGS = {
-    gemini: {
-        path: '.gemini/GEMINI.md',
-        header: '---\ntrigger: always_on\nsystem: maestro\nversion: 1.0.0\n---\n\n'
+    windsurf: {
+        path: '.windsurfrules',
+        header: '',
+        workflowsDir: '.windsurf/workflows',
+        skillsDir: '.windsurf/skills'
     },
     cursor: {
         path: '.cursorrules',
-        header: ''
+        header: '',
+        workflowsDir: '.cursor/commands',
+        skillsDir: '.cursor/skills'
     },
-    copilot: {
-        path: '.github/copilot-instructions.md',
-        header: ''
-    },
-    windsurf: {
-        path: '.windsurfrules',
-        header: ''
+    antigravity: {
+        path: '.gemini/GEMINI.md',
+        header: '---\ntrigger: always_on\nsystem: maestro\nversion: 1.0.0\n---\n\n',
+        workflowsDir: '.agent/workflows',
+        skillsDir: '.agent/skills'
     }
 } as const;
 
-export async function init(options: InitOptions = {}) {
+export async function init(options: InitOptions) {
     const cwd = process.cwd();
     const spinner = ora();
 
@@ -56,7 +58,8 @@ export async function init(options: InitOptions = {}) {
         await fse.writeJSON(join(cwd, '.maestro', 'config.json'), {
             version: '1.0.0',
             initialized: new Date().toISOString(),
-            mcpServer: 'https://maestro.deluna.dev.br/mcp'
+            ide: options.ide || 'windsurf',
+            mcpFree: true
         }, { spaces: 2 });
         spinner.succeed('Estrutura .maestro/ criada');
 
@@ -78,32 +81,9 @@ export async function init(options: InitOptions = {}) {
             spinner.succeed('Content copiado para .maestro/content/');
         }
 
-        // 3. Copiar skills para .agent/skills/
-        spinner.start('Copiando skills para .agent/skills/...');
-        const skillsSrc = join(contentSource, 'skills');
-        const skillsDest = join(cwd, '.agent', 'skills');
-
-        if (await fse.pathExists(skillsSrc)) {
-            await fse.copy(skillsSrc, skillsDest, { overwrite: options.force });
-        }
-        spinner.succeed('Skills copiados para .agent/skills/');
-
-        // 4. Copiar workflows para .agent/workflows/
-        spinner.start('Copiando workflows para .agent/workflows/...');
-        const workflowsSrc = join(contentSource, 'workflows');
-        const workflowsDest = join(cwd, '.agent', 'workflows');
-
-        if (await fse.pathExists(workflowsSrc)) {
-            await fse.copy(workflowsSrc, workflowsDest, { overwrite: options.force });
-        }
-        spinner.succeed('Workflows copiados para .agent/workflows/');
-
-        // 5. Gerar arquivos de regras por IDE
-        const targetIdes = options.ide === 'all' 
-            ? Object.keys(IDE_CONFIGS) as (keyof typeof IDE_CONFIGS)[]
-            : [options.ide || 'gemini'] as (keyof typeof IDE_CONFIGS)[];
-
-        spinner.start(`Gerando regras para IDE(s): ${targetIdes.join(', ')}...`);
+        // 4. Configurar IDE específica
+        const ideConfig = IDE_CONFIGS[options.ide!];
+        spinner.start(`Configurando IDE: ${options.ide}...`);
         
         // Ler RULES.md base
         const rulesPath = join(contentSource, 'rules', 'RULES.md');
@@ -114,18 +94,34 @@ export async function init(options: InitOptions = {}) {
             rulesContent = generateDefaultRules();
         }
 
-        // Gerar arquivo para cada IDE alvo
-        for (const ide of targetIdes) {
-            const config = IDE_CONFIGS[ide];
-            const targetPath = join(cwd, config.path);
-            await fse.ensureDir(dirname(targetPath));
-            const content = config.header + rulesContent;
-            await fse.writeFile(targetPath, content);
+        // Criar diretórios específicos da IDE
+        await fse.ensureDir(join(cwd, dirname(ideConfig.path)));
+        await fse.ensureDir(join(cwd, ideConfig.workflowsDir));
+        await fse.ensureDir(join(cwd, ideConfig.skillsDir));
+
+        // Copiar workflows para diretório específico da IDE
+        const workflowsSrc = join(contentSource, 'workflows');
+        const workflowsDest = join(cwd, ideConfig.workflowsDir);
+        if (await fse.pathExists(workflowsSrc)) {
+            await fse.copy(workflowsSrc, workflowsDest, { overwrite: options.force });
         }
-        spinner.succeed(`Regras geradas para: ${targetIdes.join(', ')}`);
+
+        // Copiar skills para diretório específico da IDE
+        const skillsSrc = join(contentSource, 'skills');
+        const skillsDest = join(cwd, ideConfig.skillsDir);
+        if (await fse.pathExists(skillsSrc)) {
+            await fse.copy(skillsSrc, skillsDest, { overwrite: options.force });
+        }
+
+        // Gerar arquivo de regras
+        const targetPath = join(cwd, ideConfig.path);
+        const content = ideConfig.header + rulesContent;
+        await fse.writeFile(targetPath, content);
+        
+        spinner.succeed(`IDE ${options.ide!} configurada com sucesso!`);
 
         // Resumo
-        console.log(chalk.green.bold('\n✅ Maestro inicializado com sucesso!\n'));
+        console.log(chalk.green.bold(`\n✅ Maestro inicializado para ${options.ide!}\n`));
         console.log(chalk.dim('Estrutura criada:'));
         console.log(chalk.dim('  .maestro/'));
         console.log(chalk.dim('    ├── config.json'));
@@ -137,17 +133,14 @@ export async function init(options: InitOptions = {}) {
             console.log(chalk.dim('        ├── guides/'));
             console.log(chalk.dim('        └── prompts/'));
         }
-        console.log(chalk.dim('  .agent/'));
-        console.log(chalk.dim('    ├── skills/'));
-        console.log(chalk.dim('    └── workflows/'));
-        for (const ide of targetIdes) {
-            console.log(chalk.dim(`  ${IDE_CONFIGS[ide].path}`));
-        }
+        console.log(chalk.dim(`  ${ideConfig.workflowsDir}/`));
+        console.log(chalk.dim(`  ${ideConfig.skillsDir}/`));
+        console.log(chalk.dim(`  ${ideConfig.path}`));
 
-        console.log(chalk.blue('\n📋 Próximos passos:'));
-        console.log('  1. Configure o MCP na sua IDE:');
-        console.log(chalk.gray('     "mcpServers": { "maestro": { "serverUrl": "https://maestro.deluna.dev.br/mcp" } }'));
-        console.log('  2. Inicie um novo projeto com: @mcp:maestro iniciar_projeto');
+        console.log(chalk.blue('\n🎯 Próximos passos:'));
+        console.log(`  1. Abra sua ${options.ide}`);
+        console.log('  2. Digite: /maestro');
+        console.log(' 3. Comece a desenvolver!');
         console.log('');
 
     } catch (error) {
@@ -158,40 +151,58 @@ export async function init(options: InitOptions = {}) {
 }
 
 function generateDefaultRules(): string {
-    return `# MCP Maestro Development Kit - AI Rules
+    return `# Maestro File System - AI Rules
 
-> Este arquivo define como a IA deve se comportar ao trabalhar com o sistema MCP Maestro.
-
-## Configuração MCP
-
-\`\`\`json
-{
-  "mcpServers": {
-    "maestro": {
-      "serverUrl": "https://maestro.deluna.dev.br/mcp"
-    }
-  }
-}
-\`\`\`
+> Este arquivo define como a IA deve se comportar ao trabalhar com o sistema Maestro File System.
 
 ## Como Usar
 
-1. **Iniciar projeto**: Use \`iniciar_projeto\` para começar
-2. **Avançar fases**: Use \`proximo\` para salvar e avançar
-3. **Ver status**: Use \`status\` para ver onde está
+1. **Iniciar projeto**: Use \`/iniciar-projeto\` para começar
+2. **Avançar fases**: Use \`/avancar-fase\` para avançar
+3. **Ver status**: Use \`/status-projeto\` para ver progresso
+4. **Continuar**: Use \`/continuar\` para retomar trabalho
 
 ## Estrutura Local
 
 | Pasta | Conteúdo |
 |-------|----------|
 | \`.maestro/estado.json\` | Estado do projeto (fonte da verdade) |
-| \`.maestro/SYSTEM.md\` | Contexto atual para IA |
 | \`.maestro/content/\` | Especialistas, templates, prompts |
-| \`.agent/skills/\` | Skills disponíveis |
-| \`.agent/workflows/\` | Workflows automatizados |
+| \`.windsurf/workflows/\` | Workflows para Windsurf |
+| \`.windsurf/skills/\` | Skills especializadas |
+| \`.cursor/commands/\` | Commands para Cursor |
+| \`.cursor/skills/\` | Skills especializadas |
+| \`.agent/workflows/\` | Workflows para Antigravity |
+| \`.agent/skills/\` | Skills especializadas |
+
+## Comandos Disponíveis
+
+### Gerenciamento de Projeto
+- \`/maestro\` - Comando universal inteligente
+- \`/iniciar-projeto\` - Iniciar novo projeto
+- \`/avancar-fase\` - Avançar para próxima fase
+- \`/status-projeto\` - Ver status e progresso
+- \`/continuar\` - Continuar fase atual
+
+### Desenvolvimento
+- \`/nova-feature\` - Criar nova funcionalidade
+- \`/corrigir-bug\` - Debugging estruturado
+- \`/refatorar-codigo\` - Refatoração segura
+
+## Especialistas IA
+
+- Gestão de Produto
+- Engenharia de Requisitos
+- UX Design
+- Arquitetura de Software
+- E mais 20 especialistas disponíveis
+
+## Orquestração Local
+
+Este sistema opera 100% localmente, sem dependência de MCP remoto. A IA detecta automaticamente os arquivos e workflows disponíveis.
 
 ## Estado do Projeto
 
-O estado é mantido em \`.maestro/estado.json\` e deve ser passado como \`estado_json\` em todos os tools MCP.
+O estado é mantido em \`.maestro/estado.json\` e serve como fonte da verdade para o progresso do projeto.
 `;
 }

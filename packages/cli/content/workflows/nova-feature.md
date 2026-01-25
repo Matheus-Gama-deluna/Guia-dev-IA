@@ -2,9 +2,24 @@
 description: Adicionar nova feature com fluxo estruturado (Análise → Implementação → Deploy)
 ---
 
-# /mcp-feature - Nova Feature MCP
+# /nova-feature - Nova Feature Maestro
 
 $ARGUMENTS
+
+---
+
+## Pré-requisitos e integração com o Maestro
+
+1. Execute `/maestro` para garantir que o estado esteja sincronizado com os fluxos MCP (7/13/17 + Stitch).
+2. Carregue o estado antes de qualquer tool:
+   ```javascript
+   const estado = lerJson('.maestro/estado.json');
+   function salvarEstado(novoEstado) {
+     escreverJson('.maestro/estado.json', novoEstado, { spaces: 2 });
+   }
+   ```
+3. Use `content/guides/fases-mapeamento.md` para alinhar especialistas, prompts e templates de suporte a features.
+4. Todos os artefatos criados devem ficar dentro de `docs/features/FEATURE-ID/` e ser registrados em `estado.historico`.
 
 ---
 
@@ -21,9 +36,9 @@ Adicionar nova funcionalidade em projeto existente usando fluxo estruturado de 6
 - Feature que precisa de análise de impacto
 
 **NÃO usar para:**
-- Correção de bugs → Use `/mcp-debug`
-- Melhorias de código → Use `/mcp-refactor`
-- Novo projeto → Use `/mcp-start`
+- Correção de bugs → Use `/corrigir-bug`
+- Melhorias de código → Use `/refatorar-codigo`
+- Novo projeto → Use `/iniciar-projeto`
 
 ---
 
@@ -68,7 +83,7 @@ Adicionar nova funcionalidade em projeto existente usando fluxo estruturado de 6
 **Se forneceu argumentos:**
 
 ```bash
-/mcp-feature Sistema de notificações push
+/nova-feature Sistema de notificações push
 ```
 
 → Usar como descrição, pedir apenas impacto
@@ -77,12 +92,21 @@ Adicionar nova funcionalidade em projeto existente usando fluxo estruturado de 6
 
 ### Passo 2: Iniciar Fluxo de Feature
 
+> [!IMPORTANT]
+> **Protocolo stateless:** sempre envie `estado_json` carregado do disco para os tools MCP.
+
 ```typescript
+const estadoJson = lerArquivo('.maestro/estado.json');
+
 await mcp_maestro_nova_feature({
   descricao: "[descrição fornecida]",
-  impacto_estimado: "[baixo/médio/alto]"
+  impacto_estimado: "[baixo/médio/alto]",
+  estado_json: estadoJson,
+  diretorio: process.cwd()
 });
 ```
+
+Após a resposta, atualize `estado.historico` com `acao: "feature_iniciada"`, registrando `feature_id` e impacto.
 
 **MCP cria contexto separado para a feature e retorna:**
 
@@ -146,25 +170,42 @@ Vamos começar. Que **entidades** ou **tabelas** serão afetadas?
 
 ### Passo 4: Avançar Entre Fases (Frontend-First)
 
-**Usar `/mcp-next` para cada fase:**
+**Usar `/avancar-fase` (via `/maestro`) para conectar com o fluxo principal**
+
+Quando estiver trabalhando dentro da feature, o acompanhamento das fases internas segue o mesmo padrão do Maestro. Utilize:
 
 ```
 Fase 1: Análise ✅
-  ↓ /mcp-next
+  ↓ /avancar-fase (passando o artefato docs/features/FEATURE-ID/01-impacto.md)
 Fase 2: Requisitos ✅
-  ↓ /mcp-next
-Fase 3: Design ✅
-  ✓ Gera: Contrato de API (OpenAPI)
-  ↓ /mcp-next
+  ↓ /avancar-fase
+...
+```
+
+Caso precise apenas retomar o trabalho da feature antes de avançar, use `/continuar-fase` com o arquivo da subfase correspondente.
+
+---
+
+### Passo 4: Avançar Entre Fases (Frontend-First)
+
+**Mapeie especialistas e templates** usando `guides/fases-mapeamento.md` para cada etapa abaixo e carregue os prompts adequados (ex.: Contrato API → especialista "Contrato de API").
+
+```
+Fase 1: Análise ✅
+  ↓ /avancar-fase (ou `/maestro` → sugere avanço)
+Fase 2: Requisitos ✅
+  ↓ /avancar-fase
+Fase 3: Design ✅ (gera contrato OpenAPI)
+  ↓ /avancar-fase
 Fase 4: Implementação
   ├─ US-001-CONT (Contrato) ✅
   ├─ US-001-FE (Frontend) 🔄 ← Paralelo
-  ├─ US-001-BE (Backend) 🔄  ← Paralelo
+  ├─ US-001-BE (Backend) 🔄 ← Paralelo
   └─ INT-001 (Integração) ⏳ ← Após FE+BE
-  ↓ /mcp-next
+  ↓ /avancar-fase
 Fase 5: Testes ✅
-  ↓ /mcp-next
-Fase 6: Deploy ✅
+  ↓ /avancar-fase
+Fase 6: Deploy ✅ (encerra feature e atualiza estado)
 ```
 
 **Protocolo Frontend-First:**
@@ -191,29 +232,41 @@ Fase 6: Deploy ✅
 **Na Fase 4 (Implementação):**
 
 ```typescript
+const estadoJson = lerArquivo('.maestro/estado.json');
+
 // Contrato
 await mcp_maestro_implementar_historia({
   historia_id: "US-001-CONT",
-  modo: "iniciar"
+  modo: "iniciar",
+  estado_json: estadoJson,
+  diretorio: process.cwd()
 });
 
 // Frontend (pode iniciar em paralelo após contrato)
 await mcp_maestro_implementar_historia({
   historia_id: "US-001-FE",
-  modo: "iniciar"
+  modo: "iniciar",
+  estado_json: estadoJson,
+  diretorio: process.cwd()
 });
 
 // Backend (pode iniciar em paralelo após contrato)
 await mcp_maestro_implementar_historia({
   historia_id: "US-001-BE",
-  modo: "iniciar"
+  modo: "iniciar",
+  estado_json: estadoJson,
+  diretorio: process.cwd()
 });
 
 // Integração (somente após FE e BE finalizados)
 await mcp_maestro_implementar_historia({
   historia_id: "INT-001",
-  modo: "iniciar"
+  modo: "iniciar",
+  estado_json: estadoJson,
+  diretorio: process.cwd()
 });
+
+salvarEstado(atualizarHistorico(estado, { acao: 'feature_historia_iniciada', historia: 'INT-001' }));
 ```
 
 ---
@@ -223,7 +276,7 @@ await mcp_maestro_implementar_historia({
 ### Exemplo 1: Feature Simples (Impacto Baixo)
 
 ```
-User: /mcp-feature Adicionar filtro de data na listagem de pedidos
+User: /nova-feature Adicionar filtro de data na listagem de pedidos
 
 AI: Qual o impacto estimado? (baixo/médio/alto)
 
@@ -244,13 +297,13 @@ AI: ✅ Fluxo de Feature Iniciado (FEAT-001)
 
 User: Sim
 
-AI: [Avança para Fase 2 com /mcp-next]
+AI: [Avança para Fase 2 executando `/maestro` → `/avancar-fase`]
 ```
 
 ### Exemplo 2: Feature Complexa (Impacto Alto)
 
 ```
-User: /mcp-feature Sistema de notificações push em tempo real
+User: /nova-feature Sistema de notificações push em tempo real
 
 AI: Qual o impacto estimado?
 
@@ -290,10 +343,10 @@ AI: ✅ Fluxo de Feature Iniciado (FEAT-002)
 ## Comandos Relacionados
 
 ```
-/mcp-feature [descrição]    → Inicia fluxo de feature
-/mcp-next                   → Avança entre fases
-/mcp-status                 → Ver status da feature
-/mcp-debug                  → Se bug aparecer durante feature
+/nova-feature [descrição] → Inicia fluxo de feature alinhado ao estado
+/continuar-fase          → Retoma etapa corrente da feature
+/avancar-fase            → Valida gate e registra próxima fase
+/corrigir-bug            → Se surgir bug durante a feature
 ```
 
 ---
@@ -369,7 +422,7 @@ FEAT-001: Sistema de Notificações (Épico)
 ├─ FEAT-001-B: Frontend (UI)
 └─ FEAT-001-C: Integração (Push)
 
-Implementar um por vez com /mcp-feature
+Implementar um por vez com `/nova-feature`
 ```
 
 ### Conflito com Feature em Andamento
