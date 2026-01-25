@@ -56,7 +56,7 @@ export async function init(options: InitOptions) {
         await fse.ensureDir(join(cwd, '.maestro'));
         await fse.ensureDir(join(cwd, '.maestro', 'history'));
         await fse.writeJSON(join(cwd, '.maestro', 'config.json'), {
-            version: '1.0.0',
+            version: '1.3.0',
             initialized: new Date().toISOString(),
             ide: options.ide || 'windsurf',
             mcpFree: true
