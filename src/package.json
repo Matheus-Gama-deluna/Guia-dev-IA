@@ -1,6 +1,6 @@
 {
   "name": "@maestro-ai/mcp-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP Server do Maestro - execução local via npx com acesso completo ao filesystem",
   "type": "module",
   "main": "dist/stdio.js",
