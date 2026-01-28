@@ -1,5 +1,5 @@
 {
-  "name": "@maestro/mcp-server",
+  "name": "@maestro-ai/mcp-server",
   "version": "1.0.0",
   "description": "MCP Server do Maestro - execução local via npx com acesso completo ao filesystem",
   "type": "module",
