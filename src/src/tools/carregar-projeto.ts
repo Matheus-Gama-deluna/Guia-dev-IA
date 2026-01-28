@@ -3,7 +3,7 @@ import { existsSync } from "fs";
 import type { ToolResult } from "../types/index.js";
 import { parsearEstado } from "../state/storage.js";
 import { setCurrentDirectory } from "../state/context.js";
-import { normalizeProjectPath, joinProjectPath } from "../utils/files.js";
+import { temContentLocal, normalizeProjectPath, joinProjectPath } from "../utils/files.js";
 import { getFase } from "../flows/types.js";
 import { lerEspecialista, lerTemplate } from "../utils/files.js";
 import { gerarInstrucaoRecursos } from "../utils/instructions.js";
@@ -94,34 +94,10 @@ ${args.estado_json.slice(0, 200)}...
     const diretorio = resolve(normalizeProjectPath(args.diretorio));
     setCurrentDirectory(diretorio);
 
-    // Verificar se o CLI foi executado
-    const configPath = joinProjectPath(diretorio, '.maestro', 'config.json');
-    if (!existsSync(configPath)) {
-        return {
-            content: [{ 
-                type: "text", 
-                text: `# ⚠️ Pré-requisito: CLI não inicializado
+    // Verifica se há conteúdo local disponível (via npx)
+    const avisoContentLocal = temContentLocal(diretorio) ? "" : `
 
-O Maestro CLI precisa ser executado primeiro para configurar o projeto.
-
-## 📦 Execute o comando:
-
-\`\`\`bash
-cd ${diretorio}
-npx @maestro-ai/cli
-\`\`\`
-
----
-
-**Após executar o CLI, tente novamente:**
-\`\`\`
-carregar_projeto(...)
-\`\`\`
-`
-            }],
-            isError: true,
-        };
-    }
+> ℹ️ **Contúdo embutido**: Usando conteúdo embutido via npx. Para especialistas/templates personalizados, execute \`npx @maestro-ai/cli\`.`;
 
     // Carregar info da fase atual
     const faseAtual = getFase(estado.nivel, estado.fase_atual);

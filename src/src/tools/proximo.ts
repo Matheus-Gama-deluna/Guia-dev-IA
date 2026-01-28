@@ -101,34 +101,8 @@ proximo(
     const diretorio = resolveProjectPath(args.diretorio);
     setCurrentDirectory(diretorio);
 
-    // Verificar se o CLI foi executado
-    const configPath = join(diretorio, '.maestro', 'config.json');
-    if (!existsSync(configPath)) {
-        return {
-            content: [{ 
-                type: "text", 
-                text: `# ⚠️ Pré-requisito: CLI não inicializado
-
-O Maestro CLI precisa ser executado primeiro para configurar o projeto.
-
-## 📦 Execute o comando:
-
-\`\`\`bash
-cd ${diretorio}
-npx @maestro-ai/cli
-\`\`\`
-
----
-
-**Após executar o CLI, tente novamente:**
-\`\`\`
-proximo(...)
-\`\`\`
-`
-            }],
-            isError: true,
-        };
-    }
+    // Verifica se há conteúdo local disponível (via npx)
+    const avisoContentLocal = ""; // Sem aviso crítico, funciona via npx
 
     // Obter fase atual para mensagens de erro
     const faseAtualInfo = getFaseComStitch(estado.nivel, estado.fase_atual, estado.usar_stitch);

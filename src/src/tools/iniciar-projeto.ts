@@ -79,66 +79,16 @@ export async function iniciarProjeto(args: IniciarProjetoArgs): Promise<ToolResu
     // Normalizar e resolver diretório
     const diretorio = resolveProjectPath(args.diretorio);
 
-    // Verificar se o CLI foi executado
-    const configPath = joinProjectPath(diretorio, '.maestro', 'config.json');
-    
-    if (!existsSync(configPath)) {
-        // Tentar listar o diretório para debug (se existir)
-        try {
-            if (existsSync(diretorio)) {
-                console.log('[DEBUG] Conteúdo do diretório:', readdirSync(diretorio));
-                if (existsSync(join(diretorio, '.maestro'))) {
-                    console.log('[DEBUG] Conteúdo de .maestro:', readdirSync(join(diretorio, '.maestro')));
-                }
-            } else {
-                console.log('[DEBUG] Diretório raiz não existe');
-            }
-        } catch (e) {
-            console.log('[DEBUG] Erro ao listar diretório:', e);
+    // 🚀 INJETAR CONTEÚDO AUTOMATICAMENTE (via npx)
+    try {
+        const injResult = await ensureContentInstalled(diretorio);
+        if (injResult.installed) {
+            console.log(`[INFO] Conteúdo embutido injetado em: ${injResult.targetDir} (${injResult.filesCopied} arquivos)`);
+        } else {
+            console.log(`[INFO] Conteúdo já existe em: ${injResult.targetDir}`);
         }
-
-        return {
-            content: [{ 
-                type: "text", 
-                text: `# ⚠️ Pré-requisito: CLI não inicializado
-
-O Maestro CLI precisa ser executado primeiro para configurar o projeto.
-
-## 📦 Execute o comando:
-
-\`\`\`bash
-cd ${diretorio}
-npx @maestro-ai/cli
-\`\`\`
-
-## Caminho verificado:
-\`${configPath}\`
-
-## O que o CLI faz:
-- Cria a estrutura \`.maestro/\` com config.json
-- Injeta especialistas, templates e prompts locais
-- Configura skills e workflows
-- Gera arquivos de regras para sua IDE
-
-## 🐛 Debug Info (Path Resolution)
-- **OS Platform**: ${platform()}
-- **Process CWD**: ${process.cwd()}
-- **Raw Args Directory**: ${args.diretorio}
-- **Resolved Directory**: ${diretorio}
-- **Config Path Checked**: ${configPath}
-- **FS Exists (Resolved)**: ${existsSync(diretorio)}
-- **FS Exists (Config)**: ${existsSync(configPath)}
-
----
-
-**Após executar o CLI, tente novamente:**
-\`\`\`
-iniciar_projeto(nome: "${args.nome}", diretorio: "${args.diretorio}")
-\`\`\`
-`
-            }],
-            isError: true,
-        };
+    } catch (error) {
+        console.warn('[WARN] Não foi possível injetar conteúdo embutido:', error);
     }
 
     // Inferir Classificação
@@ -199,39 +149,16 @@ export async function confirmarProjeto(args: ConfirmarProjetoArgs): Promise<Tool
     const diretorio = resolveProjectPath(args.diretorio);
     setCurrentDirectory(diretorio);
 
-    // Verificar se o CLI foi executado
-    const configPath = joinProjectPath(diretorio, '.maestro', 'config.json');
-    if (!existsSync(configPath)) {
-        return {
-            content: [{ 
-                type: "text", 
-                text: `# ⚠️ Pré-requisito: CLI não inicializado
-
-O Maestro CLI precisa ser executado primeiro para configurar o projeto.
-
-## 📦 Execute o comando:
-
-\`\`\`bash
-cd ${diretorio}
-npx @maestro-ai/cli
-\`\`\`
-
----
-
-**Após executar o CLI, tente novamente:**
-\`\`\`
-confirmar_projeto(
-    nome: "${args.nome}",
-    descricao: "${args.descricao || ''}",
-    diretorio: "${diretorio}",
-    tipo_artefato: "${args.tipo_artefato}",
-    nivel_complexidade: "${args.nivel_complexidade}"
-)
-\`\`\`
-`
-            }],
-            isError: true,
-        };
+    // 🚀 INJETAR CONTEÚDO AUTOMATICAMENTE (via npx)
+    try {
+        const injResult = await ensureContentInstalled(diretorio);
+        if (injResult.installed) {
+            console.log(`[INFO] Conteúdo embutido injetado em: ${injResult.targetDir} (${injResult.filesCopied} arquivos)`);
+        } else {
+            console.log(`[INFO] Conteúdo já existe em: ${injResult.targetDir}`);
+        }
+    } catch (error) {
+        console.warn('[WARN] Não foi possível injetar conteúdo embutido:', error);
     }
 
     // Recalcula tier baseado no confirmado
@@ -273,18 +200,6 @@ confirmar_projeto(
             'Identificar personas',
             'Criar PRD com problema e MVP'
         ]);
-
-        // 🚀 INJETAR CONTEÚDO AUTOMATICAMENTE
-        try {
-            const injResult = await ensureContentInstalled(diretorio);
-            if (injResult.installed) {
-                console.log(`[INFO] Conteúdo injetado em: ${injResult.targetDir} (${injResult.filesCopied} arquivos)`);
-            } else {
-                console.log(`[INFO] Conteúdo já existe em: ${injResult.targetDir}`);
-            }
-        } catch (error) {
-            console.warn('[WARN] Não foi possível injetar conteúdo:', error);
-        }
     } catch (error) {
         console.warn('Aviso: Não foi possível criar histórico/SYSTEM.md:', error);
     }

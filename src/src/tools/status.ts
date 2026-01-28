@@ -67,36 +67,9 @@ status(
 
     setCurrentDirectory(args.diretorio);
 
-    // Verifica se CLI foi executada (content local existe)
-    // Verifica se CLI foi executada (config.json existe)
-    const diretorio = resolve(normalizeProjectPath(args.diretorio));
-    const configPath = joinProjectPath(diretorio, '.maestro', 'config.json');
-    if (!existsSync(configPath)) {
-        return {
-            content: [{ 
-                type: "text", 
-                text: `# ⚠️ Pré-requisito: CLI não inicializado
-
-O Maestro CLI precisa ser executado primeiro para configurar o projeto.
-
-## 📦 Execute o comando:
-
-\`\`\`bash
-cd ${diretorio}
-npx @maestro-ai/cli
-\`\`\`
-
-## O que o CLI faz:
-- Cria a estrutura \`.maestro/\` com config.json
-- Injeta especialistas, templates e prompts locais
-- Configura skills e workflows
-- Gera arquivos de regras para sua IDE
-`
-            }],
-            isError: true,
-        };
-    }
-    const avisoContentLocal = "";
+    // Verifica se há conteúdo local disponível (via npx)
+    const avisoContentLocal = temContentLocal(args.diretorio) ? "" : `
+> ℹ️ **Contúdo embutido**: Usando conteúdo embutido via npx. Para especialistas/templates personalizados, execute \`npx @maestro-ai/cli\`.`;
 
     const fluxo = getFluxo(estado.nivel);
     const faseAtual = getFase(estado.nivel, estado.fase_atual);
