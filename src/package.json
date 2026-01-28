@@ -21,7 +21,8 @@
     "test": "node node_modules/vitest/vitest.mjs --run",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build && npm run test",
-    "pack": "npm pack"
+    "pack": "npm pack",
+    "publish:dry": "npm pack --dry-run"
   },
   "keywords": [
     "mcp",
