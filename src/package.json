@@ -18,7 +18,7 @@
     "dev:http": "tsx watch src/index.ts",
     "start": "node dist/stdio.js",
     "start:http": "node dist/index.js",
-    "test": "vitest",
+    "test": "node node_modules/vitest/vitest.mjs --run",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build && npm run test",
     "pack": "npm pack"
