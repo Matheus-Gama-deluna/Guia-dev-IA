@@ -11,17 +11,19 @@ import { logEvent, EventTypes } from "../utils/history.js";
 import { gerarSystemMd } from "../utils/system-md.js";
 import { detectarStack, gerarSecaoPrompts, gerarSecaoExemplo } from "../utils/prompt-mapper.js";
 import { resolveProjectPath, joinProjectPath } from "../utils/files.js";
-import { ensureContentInstalled } from "../utils/content-injector.js";
+import { ensureContentInstalled, injectContentForIDE } from "../utils/content-injector.js";
 
 interface IniciarProjetoArgs {
     nome: string;
     descricao?: string;
     diretorio: string;
+    ide?: 'windsurf' | 'cursor' | 'antigravity';
 }
 
 interface ConfirmarProjetoArgs extends IniciarProjetoArgs {
     tipo_artefato: TipoArtefato;
     nivel_complexidade: NivelComplexidade;
+    ide: 'windsurf' | 'cursor' | 'antigravity';
 }
 
 /**
@@ -80,15 +82,19 @@ export async function iniciarProjeto(args: IniciarProjetoArgs): Promise<ToolResu
     const diretorio = resolveProjectPath(args.diretorio);
 
     // 🚀 INJETAR CONTEÚDO AUTOMATICAMENTE (via npx)
+    // 🚀 INJETAR CONTEÚDO AUTOMATICAMENTE
+    // 🚀 INJETAR CONTEÚDO AUTOMATICAMENTE
     try {
-        const injResult = await ensureContentInstalled(diretorio);
-        if (injResult.installed) {
-            console.log(`[INFO] Conteúdo embutido injetado em: ${injResult.targetDir} (${injResult.filesCopied} arquivos)`);
+        if (args.ide) {
+            const injResult = await injectContentForIDE(diretorio, args.ide);
+            console.error(`[INFO] Rules/Skills injetados para ${args.ide} em: ${injResult.targetDir}`);
         } else {
-            console.log(`[INFO] Conteúdo já existe em: ${injResult.targetDir}`);
+            return {
+                content: [{ type: "text", text: `⚠️ **Ação Necessária**: Por favor, informe qual IDE você está utilizando para configurar o ambiente corretamente.\n\nExecute novamente o comando informando o parâmetro \`ide\`:\n\n- \`windsurf\`\n- \`cursor\`\n- \`antigravity\`\n\nExemplo:\n\`iniciar_projeto(..., ide: "cursor")\`` }],
+            };
         }
     } catch (error) {
-        console.warn('[WARN] Não foi possível injetar conteúdo embutido:', error);
+        console.error('[WARN] Não foi possível injetar conteúdo:', error);
     }
 
     // Inferir Classificação
@@ -115,12 +121,15 @@ Para efetivamente criar o projeto, você precisa **confirmar ou ajustar** estes 
 
 **Opção 1: Concordo (Criar como sugerido)**
 \`\`\`
+**Opção 1: Concordo (Criar como sugerido)**
+\`\`\`
 confirmar_projeto(
     nome: "${args.nome}",
     descricao: "${args.descricao || ''}",
     diretorio: "${args.diretorio}",
     tipo_artefato: "${inferenciaTipo.tipo}",
-    nivel_complexidade: "${inferenciaNivel.nivel}"
+    nivel_complexidade: "${inferenciaNivel.nivel}",
+    ide: "${args.ide}"
 )
 \`\`\`
 
@@ -131,7 +140,8 @@ confirmar_projeto(
     descricao: "${args.descricao || ''}",
     diretorio: "${args.diretorio}",
     tipo_artefato: "product",  <-- altere aqui
-    nivel_complexidade: "complexo" <-- altere aqui
+    nivel_complexidade: "complexo", <-- altere aqui
+    ide: "${args.ide}"
 )
 \`\`\`
 `;
@@ -150,15 +160,14 @@ export async function confirmarProjeto(args: ConfirmarProjetoArgs): Promise<Tool
     setCurrentDirectory(diretorio);
 
     // 🚀 INJETAR CONTEÚDO AUTOMATICAMENTE (via npx)
+    // 🚀 INJETAR CONTEÚDO AUTOMATICAMENTE (Garantia)
     try {
-        const injResult = await ensureContentInstalled(diretorio);
-        if (injResult.installed) {
-            console.log(`[INFO] Conteúdo embutido injetado em: ${injResult.targetDir} (${injResult.filesCopied} arquivos)`);
-        } else {
-            console.log(`[INFO] Conteúdo já existe em: ${injResult.targetDir}`);
+        if (args.ide) {
+             const injResult = await injectContentForIDE(diretorio, args.ide);
+             console.error(`[INFO] (Confirmar) Rules/Skills verificados para ${args.ide}`);
         }
     } catch (error) {
-        console.warn('[WARN] Não foi possível injetar conteúdo embutido:', error);
+        console.error('[WARN] Não foi possível injetar conteúdo embutido:', error);
     }
 
     // Recalcula tier baseado no confirmado
@@ -301,6 +310,7 @@ export const iniciarProjetoSchema = {
         nome: { type: "string", description: "Nome do projeto" },
         descricao: { type: "string", description: "Descrição para análise" },
         diretorio: { type: "string", description: "Diretório absoluto" },
+        ide: { type: "string", enum: ['windsurf', 'cursor', 'antigravity'], description: "IDE alvo para injection" }
     },
     required: ["nome", "diretorio"],
 };
@@ -313,6 +323,7 @@ export const confirmarProjetoSchema = {
         diretorio: { type: "string" },
         tipo_artefato: { type: "string", enum: ["poc", "script", "internal", "product"] },
         nivel_complexidade: { type: "string", enum: ["simples", "medio", "complexo"] },
+        ide: { type: "string", enum: ['windsurf', 'cursor', 'antigravity'], description: "IDE alvo para injection" }
     },
-    required: ["nome", "diretorio", "tipo_artefato", "nivel_complexidade"],
+    required: ["nome", "diretorio", "tipo_artefato", "nivel_complexidade", "ide"],
 };

@@ -36,146 +36,100 @@ export function temContentLocal(diretorio?: string): boolean {
 }
 
 /**
- * Obtém o diretório de content (local ou servidor)
+ * Obtém o diretório de content (SEMPRE do servidor para recursos internos)
  */
-function getContentRoot(diretorio?: string): string {
-    const dir = diretorio || currentProjectDir;
-    
-    // Tenta local primeiro
-    if (dir) {
-        const localContent = join(dir, '.maestro', 'content');
-        if (existsSync(localContent)) {
-            return localContent;
-        }
-    }
-    
-    // Fallback para servidor (usa o content-injector para encontrar)
+function getServerContentDir(): string {
     try {
         return getBuiltinContentDir();
     } catch {
-        // Último fallback - caminho relativo
-        return join(__dirname, "..", "..", "..", "content");
+        return SERVER_CONTENT_ROOT;
     }
 }
 
 /**
- * Lê conteúdo de um especialista (local ou servidor)
+ * Lê conteúdo de um especialista (apenas servidor)
  */
-export async function lerEspecialista(nome: string, diretorio?: string): Promise<string> {
-    const contentRoot = getContentRoot(diretorio);
+export async function lerEspecialista(nome: string): Promise<string> {
+    const contentRoot = getServerContentDir();
     const especialistasDir = join(contentRoot, "specialists");
     
-    try {
-        const files = await readdir(especialistasDir);
-        
-        // Busca arquivo que contém o nome do especialista
-        const arquivo = files.find(f =>
-            f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
-        );
+    const files = await readdir(especialistasDir);
+    
+    // Busca arquivo que contém o nome do especialista
+    const arquivo = files.find(f =>
+        f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
+    );
 
-        if (!arquivo) {
-            throw new Error(`Especialista não encontrado: ${nome}`);
-        }
-
-        const path = join(especialistasDir, arquivo);
-        return readFile(path, "utf-8");
-    } catch (error) {
-        // Se falhou no local, tenta no servidor
-        if (contentRoot !== SERVER_CONTENT_ROOT) {
-            return lerEspecialista(nome, undefined);
-        }
-        throw error;
+    if (!arquivo) {
+        throw new Error(`Especialista não encontrado: ${nome}`);
     }
+
+    const path = join(especialistasDir, arquivo);
+    return readFile(path, "utf-8");
 }
 
 /**
- * Lê conteúdo de um template (local ou servidor)
+ * Lê conteúdo de um template (apenas servidor)
  */
-export async function lerTemplate(nome: string, diretorio?: string): Promise<string> {
-    const contentRoot = getContentRoot(diretorio);
+export async function lerTemplate(nome: string): Promise<string> {
+    const contentRoot = getServerContentDir();
     const templatesDir = join(contentRoot, "templates");
     
-    try {
-        const files = await readdir(templatesDir);
+    const files = await readdir(templatesDir);
 
-        const arquivo = files.find(f =>
-            f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
-        );
+    const arquivo = files.find(f =>
+        f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
+    );
 
-        if (!arquivo) {
-            throw new Error(`Template não encontrado: ${nome}`);
-        }
-
-        const path = join(templatesDir, arquivo);
-        return readFile(path, "utf-8");
-    } catch (error) {
-        if (contentRoot !== SERVER_CONTENT_ROOT) {
-            return lerTemplate(nome, undefined);
-        }
-        throw error;
+    if (!arquivo) {
+        throw new Error(`Template não encontrado: ${nome}`);
     }
+
+    const path = join(templatesDir, arquivo);
+    return readFile(path, "utf-8");
 }
 
 /**
- * Lê conteúdo de um prompt (local ou servidor)
+ * Lê conteúdo de um prompt (apenas servidor)
  */
-export async function lerPrompt(categoria: string, nome: string, diretorio?: string): Promise<string> {
-    const contentRoot = getContentRoot(diretorio);
+export async function lerPrompt(categoria: string, nome: string): Promise<string> {
+    const contentRoot = getServerContentDir();
     const path = join(contentRoot, "prompts", categoria, `${nome}.md`);
-    
-    try {
-        return await readFile(path, "utf-8");
-    } catch (error) {
-        if (contentRoot !== SERVER_CONTENT_ROOT) {
-            return lerPrompt(categoria, nome, undefined);
-        }
-        throw error;
-    }
+    return await readFile(path, "utf-8");
 }
 
 /**
- * Lê conteúdo de um guia (local ou servidor)
+ * Lê conteúdo de um guia (apenas servidor)
  */
-export async function lerGuia(nome: string, diretorio?: string): Promise<string> {
-    const contentRoot = getContentRoot(diretorio);
+export async function lerGuia(nome: string): Promise<string> {
+    const contentRoot = getServerContentDir();
     const guiasDir = join(contentRoot, "guides");
     
-    try {
-        const files = await readdir(guiasDir);
+    const files = await readdir(guiasDir);
 
-        const arquivo = files.find(f =>
-            f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
-        );
+    const arquivo = files.find(f =>
+        f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
+    );
 
-        if (!arquivo) {
-            throw new Error(`Guia não encontrado: ${nome}`);
-        }
-
-        const path = join(guiasDir, arquivo);
-        return readFile(path, "utf-8");
-    } catch (error) {
-        if (contentRoot !== SERVER_CONTENT_ROOT) {
-            return lerGuia(nome, undefined);
-        }
-        throw error;
+    if (!arquivo) {
+        throw new Error(`Guia não encontrado: ${nome}`);
     }
+
+    const path = join(guiasDir, arquivo);
+    return readFile(path, "utf-8");
 }
 
 /**
- * Lista arquivos markdown em um diretório dentro de content
+ * Lista arquivos markdown em um diretório dentro de content (servidor)
  */
-export async function listarArquivos(subdir: string, diretorio?: string): Promise<string[]> {
-    const contentRoot = getContentRoot(diretorio);
+export async function listarArquivos(subdir: string): Promise<string[]> {
+    const contentRoot = getServerContentDir();
     const dir = join(contentRoot, subdir);
     
     try {
         const entries = await readdir(dir);
         return entries.filter(e => e.endsWith(".md"));
     } catch {
-        // Se falhar no local, tenta servidor
-        if (contentRoot !== SERVER_CONTENT_ROOT) {
-            return listarArquivos(subdir, undefined);
-        }
         return [];
     }
 }
@@ -183,24 +137,24 @@ export async function listarArquivos(subdir: string, diretorio?: string): Promis
 /**
  * Lista especialistas disponíveis
  */
-export async function listarEspecialistas(diretorio?: string): Promise<string[]> {
-    const files = await listarArquivos("specialists", diretorio);
+export async function listarEspecialistas(): Promise<string[]> {
+    const files = await listarArquivos("specialists");
     return files.map(f => f.replace(/^Especialista em /i, "").replace(".md", ""));
 }
 
 /**
  * Lista templates disponíveis
  */
-export async function listarTemplates(diretorio?: string): Promise<string[]> {
-    const files = await listarArquivos("templates", diretorio);
+export async function listarTemplates(): Promise<string[]> {
+    const files = await listarArquivos("templates");
     return files.map(f => f.replace(".md", ""));
 }
 
 /**
  * Lista guias disponíveis
  */
-export async function listarGuias(diretorio?: string): Promise<string[]> {
-    const files = await listarArquivos("guides", diretorio);
+export async function listarGuias(): Promise<string[]> {
+    const files = await listarArquivos("guides");
     return files.map(f => f.replace(".md", ""));
 }
 
@@ -224,40 +178,32 @@ export function getServerContentRoot(): string {
 }
 
 /**
- * Lê conteúdo de um exemplo de fluxo (local ou servidor)
+ * Lê conteúdo de um exemplo de fluxo (apenas servidor)
  */
-export async function lerExemplo(nome: string, diretorio?: string): Promise<string> {
-    const contentRoot = getContentRoot(diretorio);
+export async function lerExemplo(nome: string): Promise<string> {
+    const contentRoot = getServerContentDir();
     const examplesDir = join(contentRoot, "examples");
     
-    try {
-        const files = await readdir(examplesDir);
-        
-        // Busca arquivo que contém o nome do exemplo
-        const arquivo = files.find(f =>
-            f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
-        );
+    const files = await readdir(examplesDir);
+    
+    // Busca arquivo que contém o nome do exemplo
+    const arquivo = files.find(f =>
+        f.toLowerCase().includes(nome.toLowerCase()) && f.endsWith(".md")
+    );
 
-        if (!arquivo) {
-            throw new Error(`Exemplo não encontrado: ${nome}`);
-        }
-
-        const path = join(examplesDir, arquivo);
-        return readFile(path, "utf-8");
-    } catch (error) {
-        // Se falhou no local, tenta no servidor
-        if (contentRoot !== SERVER_CONTENT_ROOT) {
-            return lerExemplo(nome, undefined);
-        }
-        throw error;
+    if (!arquivo) {
+        throw new Error(`Exemplo não encontrado: ${nome}`);
     }
+
+    const path = join(examplesDir, arquivo);
+    return readFile(path, "utf-8");
 }
 
 /**
  * Lista exemplos disponíveis
  */
-export async function listarExemplos(diretorio?: string): Promise<string[]> {
-    const files = await listarArquivos("examples", diretorio);
+export async function listarExemplos(): Promise<string[]> {
+    const files = await listarArquivos("examples");
     return files.map(f => f.replace(".md", ""));
 }
 
@@ -292,14 +238,14 @@ export function resolveProjectPath(path: string): string {
     
     // Debug logging
     if (platform() !== 'win32') {
-        console.log(`[DEBUG] resolveProjectPath input: "${path}"`);
-        console.log(`[DEBUG] normalized: "${normalized}"`);
+        console.error(`[DEBUG] resolveProjectPath input: "${path}"`);
+        console.error(`[DEBUG] normalized: "${normalized}"`);
     }
 
     // Se o path é Windows (Drive Letter) mas estamos no Linux (Docker/WSL)
     // Checks for "C:" at start OR "C:\" inside string (handling weird mounting)
     if (platform() !== 'win32' && (normalized.match(/^[a-zA-Z]:/) || normalized.includes(':\\'))) {
-        console.log(`[DEBUG] Windows path detected on Linux. Mapping to CWD: ${process.cwd()}`);
+        console.error(`[DEBUG] Windows path detected on Linux. Mapping to CWD: ${process.cwd()}`);
         return process.cwd();
     }
 
