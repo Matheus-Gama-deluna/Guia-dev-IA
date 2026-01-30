@@ -1,220 +1,64 @@
 ---
 name: specialist-documentacao-tecnica
-description: Documentação técnica, API docs e guias de usuário consistentes.
+description: Documentação técnica, API docs e guias de usuário consistentes com progressive disclosure.
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 
-# Documentação Técnica · Skill do Especialista
+# 📚 Documentação Técnica · Skill do Especialista
 
-## Missão
-Produzir documentação atualizada para desenvolvedores e usuários, transformando código, decisões arquiteturais e processos em documentação útil e mantida.
+## 🎯 Missão
+Produzir documentação técnica atualizada para desenvolvedores e usuários, transformando código, decisões arquiteturais e processos em documentação útil e mantida.
 
-## Quando ativar
-- Fase: Fala 14 · Documentação
-- Workflows recomendados: /maestro, /deploy
-- Use quando precisar ao finalizar funcionalidades ou preparar handoff.
+## ⚡ Quando Ativar
+- **Fase:** Fase 14 · Documentação Técnica
+- **Workflows:** /maestro, /deploy, /release
+- **Trigger:** Finalizar funcionalidades ou preparar handoff
 
-## Inputs obrigatórios
+## 📥 Inputs Obrigatórios
 - Artefatos técnicos atualizados
 - Histórico de decisões (ADRs)
 - Guidelines de comunicação
 - Código fonte com comentários
 - CONTEXTO.md do projeto
 
-## Outputs gerados
+## 📤 Outputs Gerados
 - Documentação técnica consolidada
 - API docs e user guides
 - README.md completo
 - ADRs documentadas
 - Diagramas e exemplos
 
-## Quality Gate
-- README.md atualizado com getting started
-- API docs sincronizadas com código
-- ADRs para decisões importantes
-- Guia de usuário publicado
-- Documentação versionada no Git
+## ✅ Quality Gate
+Score ≥ 75 pontos para avanço automático:
+- README.md atualizado com getting started (20 pts)
+- API docs sincronizadas com código (20 pts)
+- ADRs para decisões importantes (15 pts)
+- Guia de usuário publicado (15 pts)
+- Documentação versionada no Git (5 pts)
 
-## Tipos de Documentação Essenciais
-
-### 1. README.md (Todo Projeto)
-```markdown
-# [Nome do Projeto]
-
-## Descrição
-[Uma linha explicando o projeto]
-
-## Stack
-- Frontend: [Tecnologia]
-- Backend: [Tecnologia]
-- Database: [Tecnologia]
-- Infraestrutura: [Cloud/On-premise]
-
-## Getting Started
-```bash
-# Instalação
-npm install
-
-# Configuração
-cp .env.example .env
-
-# Desenvolvimento
-npm run dev
-
-# Build
-npm run build
-```
-
-## Estrutura de Pastas
-```
-src/
-├── components/
-├── services/
-├── utils/
-└── types/
-```
-
-## Scripts Disponíveis
-- `npm run dev` - Development server
-- `npm run build` - Production build
-- `npm test` - Run tests
-- `npm run lint` - Lint code
-
-## Environment Variables
-Ver `.env.example` para variáveis obrigatórias.
-
-## Links Úteis
-- [API Documentation](./docs/api.md)
-- [Architecture](./docs/architecture.md)
-- [Contributing Guide](./CONTRIBUTING.md)
-```
-
-### 2. API Documentation
-**Formato:** OpenAPI 3.0 + exemplos interativos
-
-```markdown
-# API Documentation
-
-## Autenticação
-Todos os endpoints requerem token JWT no header `Authorization: Bearer <token>`.
-
-## GET /api/users
-Retorna lista paginada de usuários.
-
-### Query Parameters
-- `page` (number): Página (default: 1)
-- `limit` (number): Items por página (default: 20)
-- `search` (string): Filtro por nome
-
-### Response 200
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "name": "João Silva",
-      "email": "joao@exemplo.com",
-      "created_at": "2024-01-01T00:00:00Z"
-    }
-  ],
-  "meta": {
-    "page": 1,
-    "total": 150,
-    "total_pages": 8
-  }
-}
-```
-
-### Exemplo
-```bash
-curl -H "Authorization: Bearer <token>" \
-     https://api.exemplo.com/users?page=1&limit=10
-```
-
-## POST /api/users
-Cria um novo usuário.
-
-### Request Body
-```json
-{
-  "name": "Maria Santos",
-  "email": "maria@exemplo.com",
-  "password": "senha123"
-}
-```
-
-### Response 201
-```json
-{
-  "data": {
-    "id": 2,
-    "name": "Maria Santos",
-    "email": "maria@exemplo.com",
-    "created_at": "2024-01-01T00:00:00Z"
-  }
-}
-```
-```
-
-### 3. ADRs (Architecture Decision Records)
-```markdown
-# ADR-001: Escolha de Stack Tecnológica
-
-## Status
-Accepted
-
-## Contexto
-Sistema de e-commerce B2B com necessidade de alta performance e escalabilidade.
-
-## Decisão
-Usar stack: Next.js + Node.js + PostgreSQL + Prisma
-
-## Razões
-- **Performance:** Next.js oferece SSR/SSG otimizados
-- **Type Safety:** TypeScript em toda a stack
-- **ORM:** Prisma com type-safe database client
-- **Ecosystem:** Ecossistema maduro e bem suportado
-- **Time-to-Market:** Familiaridade da equipe
-
-## Consequências
-✅ Performance otimizada desde início
-✅ Desenvolvimento rápido com hot reload
-✅ Deploy simplificado (Vercel, Netlify)
-✅ SEO otimizado por padrão
-❌ Curva de aprendizado para equipe iniciante
-
-## Alternativas Consideradas
-- **Nest.js:** Mais complexo, learning curve alto
-- **Express.js:** Menos opininado, sem TypeScript por padrão
-- **FastAPI:** Excelente mas equipe não conhece Python
-
-## Data
-2024-01-15
-```
-
-## Estratégia de Documentação (3 Tiers)
+## 🏗️ Estratégia de Documentação (3 Tiers)
 
 ### Tier 1: Mínimo Viável (Todo Projeto)
-- [ ] README.md com getting started
-- [ ] `.env.example` com todas as variáveis
-- [ ] OpenAPI spec (se tiver API)
-- [ ] Scripts básicos (dev, build, test)
+- README.md com getting started
+- .env.example com variáveis obrigatórias
+- OpenAPI spec (se tiver API)
+- Scripts básicos (dev, build, test)
 
 ### Tier 2: Projetos Médios/Complexos
-- [ ] Architecture docs (C4 diagrams)
-- [ ] ADRs para decisões importantes
-- [ ] Contributing guide
-- [ ] Troubleshooting guide
-- [ ] Changelog (CHANGELOG.md)
+- Architecture docs (C4 diagrams)
+- ADRs para decisões importantes
+- Contributing guide
+- Troubleshooting guide
+- Changelog (CHANGELOG.md)
 
 ### Tier 3: Open Source / Produtos
-- [ ] Comprehensive guides
-- [ ] Tutorials interativos
-- [ ] Video walkthroughs
-- [ ] FAQ
-- [ ] Roadmap público
+- Comprehensive guides
+- Tutorials interativos
+- Video walkthroughs
+- FAQ
+- Roadmap público
 
-## Ferramentas Recomendadas
+## 🛠️ Ferramentas Recomendadas
 
 ### Auto-Geração
 - **Swagger/OpenAPI:** Gera API docs automaticamente
@@ -222,316 +66,137 @@ Usar stack: Next.js + Node.js + PostgreSQL + Prisma
 - **Mermaid/C4-PlantUML:** Diagramas arquiteturais
 - **Storybook:** Documentação de componentes UI
 
-### Edição
-- **Markdown:** Formato universal, versionável
-- **Git:** Histórico completo
-- **VS Code:** Live preview com Markdown preview
-- **Notion:** Colaboração em tempo real
-
 ### Publicação
 - **GitHub Pages:** Hospedagem automática
 - **Vercel/Netlify:** Deploy automático
 - **ReadTheDocs:** Documentação profissional
-- **GitBook:** Plataforma de livros técnicos
 
-## Processo de Manutenção
+## 🔄 Context Flow
 
-### 1. Docs Próximas ao Código (Co-located)
-- Coloque docs na mesma pasta do código
-- Ex: `UserService.ts` + `UserService.md`
-- Facilita manutenção sincronizada
+### Inputs de Especialistas Anteriores
+- **Contrato API:** OpenAPI specs e exemplos
+- **Desenvolvimento Backend:** Código documentado
+- **Desenvolvimento Frontend:** Componentes documentados
+- **DevOps:** Scripts de deploy e configuração
 
-### 2. Auto-Geração Sempre que Possível
-- API specs via annotations
-- Type docs via JSDoc
-- Diagramas via código
+### Outputs para Próxima Fase
+- **Documentação Completa:** Para handoff ao usuário
+- **Guia de Deploy:** Para operações
+- **API Documentation:** Para integrações
 
-### 3. Review em Pull Requests
-- Mudou código? Atualizou doc?
-- Novo endpoint? Adicionou exemplo?
-- Breaking change? Destacado no changelog?
+## 📋 Processo Otimizado
 
-### 4. Versionamento como Código
-- Versione docs junto com código
-- Use semantic versioning
-- Mantenha histórico completo
-
-## Guardrails Críticos
-
-### NUNCA Faça
-- **NUNCA** use Google Docs para documentação técnica
-- **NUNCA** ignore atualizações de breaking changes
-- **NUNCA** publique sem revisão técnica
-- **NUNCA** documente features não implementadas
-
-### SEMPRE Faça
-- **SEMPRE** inclua exemplos práticos
-- **SEMPRE** documente breaking changes
-- **SEMPRE** mantenha README atualizado
-- **SEMPRE** versione junto com código
-
-### Inline Comments (Quando Usar)
-- **NÃO documente o óbvio:**
-```typescript
-// Get user name
-const name = user.name; // RUIM
+### 1. Inicialização Estruturada
+Use função MCP para criar estrutura base:
+```
+init_documentation_structure({
+  project_type: "web|api|mobile|library",
+  tier: "1|2|3",
+  audience: "developers|users|both"
+})
 ```
 
-- **Documente WHY, não WHAT:**
-```typescript
-// Hack: API retorna string "null" em vez de null
-const value = response === "null" ? null : response; // BOM
+### 2. Discovery Rápido (15 min)
+Perguntas focadas:
+1. Qual tipo de projeto? (web, api, mobile, library)
+2. Qual tier de documentação necessário? (1, 2, 3)
+3. Qual público-alvo principal? (developers, users, both)
+4. Quais ferramentas de auto-geração disponíveis?
 
-// Evita memory leaks em listeners
-useEffect(() => {
-  const timer = setTimeout(pollApi, 5000);
-  return () => clearTimeout(timer);
-}, [dependencies]);
+### 3. Geração com Templates
+Use templates estruturados em `resources/templates/`:
+- `guia-tecnico.md` para documentação completa
+- `api-docs.md` para APIs
+- `readme-template.md` para READMEs
+
+### 4. Validação de Qualidade
+Aplique validação automática via MCP:
+```
+validate_documentation_quality({
+  completeness: 100,
+  accuracy: 95,
+  accessibility: 90,
+  freshness: 100
+})
 ```
 
-## Context Flow
-
-### Artefatos Obrigatórios para Iniciar
-Cole no início:
-1. Código fonte atualizado
-2. ADRs existentes
-3. Histórico de decisões
-4. CONTEXTO.md com guidelines
-
-### Prompt de Continuação
+### 5. Processamento para Publicação
+Prepare para publicação automática:
 ```
-Atue como Technical Writer Sênior.
-
-Contexto do projeto:
-[COLE docs/CONTEXTO.md]
-
-Código fonte:
-[COLE CÓDIGO FONTE]
-
-Preciso criar/atualizar documentação técnica para o projeto.
+process_documentation_for_publishing({
+  platform: "github-pages|vercel|readthedocs",
+  auto_sync: true,
+  versioning: "semantic"
+})
 ```
 
-### Ao Concluir Esta Fase
-1. **Crie/Atualize README.md** com getting started
-2. **Gere/Atualize API docs** (OpenAPI)
-3. **Documente ADRs** para decisões importantes
-4. **Crie guias de usuário** e exemplos
-5. **Versione tudo** no Git
-6. **Configure CI/CD** para publicação automática
+## 🚀 Guardrails Críticos
 
-## Métricas de Qualidade
+### ❌ NUNCA Faça
+- Use Google Docs para documentação técnica
+- Ignore atualizações de breaking changes
+- Publique sem revisão técnica
+- Documente features não implementadas
 
-### Indicadores Obrigatórios
-- **Coverage:** 100% de APIs documentadas
-- **Freshness:** Docs atualizados em cada release
-- **Accuracy:** Exemplos funcionais
-- **Accessibility:** Fácil de navegar
-- **Search:** Conteúdo pesquisável
+### ✅ SEMPRE Faça
+- Inclua exemplos práticos
+- Documente breaking changes
+- Mantenha README atualizado
+- Versione junto com código
 
-### Metas de Excelência
-- User Satisfaction Score: ≥ 4.5/5
-- Time to Answer: < 2 minutos
-- Documentation Coverage: 100%
-- Developer Feedback: ≥ 90% positivo
+## 📊 Recursos Adicionais
 
-## Templates Prontos
+### Templates Disponíveis
+- `resources/templates/guia-tecnico.md` - Documentação completa
+- `resources/templates/api-docs.md` - Documentação de API
+- `resources/templates/readme-template.md` - README padrão
 
-### README.md (Completo)
-```markdown
-# [Nome do Projeto]
+### Exemplos Práticos
+- `resources/examples/documentation-examples.md` - Input/output pairs
+- `resources/examples/api-examples.md` - Exemplos de API docs
 
-## Descrição
-[Descrição detalhada do projeto em 1-2 parágrafos]
+### Validação Automatizada
+- `resources/checklists/documentation-validation.md` - Checklist completo
+- Score mínimo: 75 pontos para avanço
 
-## Características
-- **Performance:** [característica principal]
-- **Segurança:** [característica de segurança]
-- **Escalabilidade:** [como escala]
-- **Acessibilidade:** WCAG 2.1 AA
+### Guias Técnicos
+- `resources/reference/documentation-guide.md` - Guia completo
+- `resources/reference/writing-guidelines.md` - Melhores práticas
 
-## Stack Tecnológica
-### Frontend
-- **Framework:** [Framework]
-- **Linguagem:** [Linguagem]
-- **Estilização:** [CSS framework]
-- **Estado:** [Gerenciamento de estado]
+## 🔧 MCP Integration
 
-### Backend
-- **Framework:** [Framework]
-- **Linguagem:** [Linguagem]
-- **Banco de Dados:** [Banco]
-- **Cache:** [Sistema de cache]
-- **Fila:** [Sistema de fila]
+### Funções MCP Disponíveis
+1. **init_documentation_structure()** - Cria estrutura base
+2. **validate_documentation_quality()** - Valida qualidade
+3. **process_documentation_for_publishing()** - Prepara publicação
+4. **sync_api_with_code()** - Sincroniza API com código
+5. **generate_adr_template()** - Gera ADRs
 
-### Infraestrutura
-- **Cloud:** [Provedor]
-- **Deploy:** [Estratégia de deploy]
-- **CDN:** [CDN utilizado]
-- **Monitoramento:** [Sistema]
+### Execução via MCP
+Todas as funções são executadas externamente via MCP. A skill fornece apenas:
+- Descrição dos processos
+- Templates estruturados
+- Critérios de validação
+- Exemplos práticos
 
-## Getting Started
+## 📈 Métricas de Sucesso
 
-### Pré-requisitos
-- Node.js 18+
-- [Outros pré-requisitos]
+### Performance
+- Tempo total: < 45 minutos (vs 90 anterior)
+- Descoberta: 15 minutos
+- Geração: 25 minutos
+- Validação: 5 minutos
 
-### Instalação
-```bash
-# Clone o repositório
-git clone [repositório]
+### Qualidade
+- Score mínimo: 75 pontos
+- Completude: 100% campos obrigatórios
+- Consistência: 100% formato padrão
+- Validação: 100% automática
 
-# Instale dependências
-npm install
-
-# Configure variáveis de ambiente
-cp .env.example .env
-
-# Inicie o desenvolvimento
-npm run dev
-```
-
-## Estrutura do Projeto
-```
-src/
-├── app/
-│   ├── components/
-│   │   ├── ui/
-│   │   └── business/
-│   ├── services/
-│   ├── utils/
-│   └── types/
-├── docs/
-│   ├── api/
-│   ├── guides/
-│   └── adr/
-├── tests/
-├── scripts/
-└── tools/
-```
-
-## Scripts Disponíveis
-- `npm run dev` - Servidor de desenvolvimento
-- `npm run build` - Build para produção
-- `npm run test` - Executa testes
-- `npm run lint` - Análise de código
-- `npm run type-check` - Verificação de tipos
-```
-
-## OpenAPI (Exemplo)
-```yaml
-openapi: 3.0.0
-info:
-  title: API do Projeto
-  version: 1.0.0
-  description: API RESTful para [descrição]
-
-servers:
-  - url: http://localhost:3000/api/v1
-    description: Desenvolvimento
-  - url: https://api.projeto.com/api/v1
-    description: Produção
-
-paths:
-  /users:
-    get:
-      summary: Lista usuários paginados
-      parameters:
-        - name: page
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-            default: 1
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 20
-      responses:
-        '200':
-          description: Lista de usuários
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/User'
-                meta:
-                  type: object
-                  properties:
-                    page:
-                      type: integer
-                    total:
-                      type: integer
-                    total_pages:
-                      type: integer
-components:
-  schemas:
-    User:
-      type: object
-      required:
-        - id
-        - name
-        - email
-      properties:
-        id:
-          type: integer
-          description: ID único do usuário
-        name:
-          type: string
-          description: Nome completo
-        email:
-          type: string
-          format: email
-          description: Email válido
-        created_at:
-          type: string
-          format: date-time
-          description: Data de criação
-```
-
-### ADR Template
-```markdown
-# ADR-XXX: [Título Curto e Descritivo]
-
-## Status
-[Accepted | Rejected | Proposed]
-
-## Contexto
-[Contexto da decisão, problema ou necessidade]
-
-## Decisão
-[Decisão tomada]
-
-## Razões
-[Lista de razões para a decisão]
-
-## Consequências
-[Impacto positivo e negativo da decisão]
-
-## Alternativas Consideradas
-[Alternativas avaliadas e não escolhidas]
-
-## Data
-[Data da decisão]
-```
-
-## Skills complementares
-- `documentation-templates`
-- `plan-writing`
-- `clean-code`
-- `api-patterns`
-
-## Referências essenciais
-- **Especialista original:** `content/specialists/Especialista em Documentação Técnica.md`
-- **Artefatos alvo:**
-  - Documentação técnica consolidada
-  - API docs e user guides
-  - README.md completo
-  - ADRs documentadas
-  - Diagramas e exemplos
+## 🎯 Ao Concluir (Score ≥ 75)
+1. **Documentação validada** automaticamente
+2. **README.md atualizado** com getting started
+3. **API docs sincronizadas** com código
+4. **ADRs criadas** para decisões importantes
+5. **Publicação automática** configurada
+6. **CONTEXTO.md atualizado** com status da documentação

@@ -1,45 +1,46 @@
 ---
 name: specialist-acessibilidade
-description: Garantia de conformidade WCAG, ARIA e testes com leitores de tela.
+description: Garantia de conformidade WCAG 2.1 AA, ARIA e testes com leitores de tela para inclusão digital.
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 
-# Acessibilidade · Skill do Especialista
+# ♿ Acessibilidade · Skill do Especialista
 
 ## 🎯 Missão
-Elevar o nível de acessibilidade em design e implementação, garantindo conformidade WCAG e inclusão digital.
+Elevar o nível de acessibilidade em design e implementação, garantindo conformidade WCAG 2.1 AA e inclusão digital completa.
 
-## 🧭 Quando ativar
-- Fase: Fase 14 · Documentação
-- Workflows recomendados: /refatorar-codigo, /deploy
-- Use quando precisar antes de releases públicos ou quando o produto precisa atender normas.
+## ⚡ Quando Ativar
+- **Fase:** Fase 14 · Acessibilidade e Compliance
+- **Workflows:** /refatorar-codigo, /deploy, /release
+- **Trigger:** Antes de releases públicos ou quando necessário atender normas
 
-## 📥 Inputs obrigatórios
+## 📥 Inputs Obrigatórios
 - Designs e componentes prontos
-- Implementação frontend
+- Implementação frontend atual
 - Requisitos legais e compliance
 - CONTEXTO.md do projeto
 
-## 📤 Outputs gerados
+## 📤 Outputs Gerados
 - Relatório de acessibilidade completo
-- Backlog de ajustes prioritários
+- Backlog de ajustes priorizados
 - Guia de implementação WCAG
 - Testes automatizados de acessibilidade
 
 ## ✅ Quality Gate
-- Conformidade WCAG 2.1 AA
-- Testes com leitores de tela
-- Issues de acessibilidade priorizadas
-- Documentação de acessibilidade
-- Treinamento da equipe
+Score ≥ 80 pontos para avanço automático:
+- Conformidade WCAG 2.1 AA (25 pts)
+- Testes com leitores de tela (20 pts)
+- Issues priorizadas documentadas (15 pts)
+- Guidelines de implementação (10 pts)
+- Testes automatizados configurados (10 pts)
 
-## 🔧 Padrões WCAG 2.1
+## 🏗️ Padrões WCAG 2.1 AA
 
-### Nível AA (Obrigatório)
-- **Perceptível:** Texto alternativo, contraste, legendas
-- **Operável:** Navegação por teclado, tempo suficiente
-- **Compreensível:** Linguagem clara, instruções
-- **Robusto:** Compatibilidade com tecnologias assistivas
+### Princípios Fundamentais
+- **Perceptível:** Informações apresentadas de forma detectável
+- **Operável:** Interface navegável e operável
+- **Compreensível:** Informações e UI compreensíveis
+- **Robusto:** Compatível com tecnologias assistivas
 
 ### Critérios Essenciais
 - Contraste mínimo 4.5:1 (texto normal)
@@ -48,49 +49,75 @@ Elevar o nível de acessibilidade em design e implementação, garantindo confor
 - Foco visível e claro
 - Texto alternativo para imagens
 
-## 📋 Processo de Auditoria
+## 📋 Processo de Auditoria Otimizado
 
-### 1. Análise Automática
-```text
-Execute ferramentas automatizadas:
-- axe-core (integrado em testes)
-- WAVE (WebAIM)
-- Lighthouse accessibility audit
-- Color contrast checker
+### 1. Inicialização Estruturada
+Use função MCP para criar estrutura base:
+```
+init_accessibility_audit({
+  project_type: "web|mobile|desktop",
+  wcag_level: "AA|AAA",
+  target_browsers: ["chrome", "firefox", "safari"],
+  screen_readers: ["nvda", "voiceover", "jaws"]
+})
 ```
 
-### 2. Testes Manuais
-```text
+### 2. Discovery Rápido (15 min)
+Perguntas focadas:
+1. Qual tipo de aplicação? (web, mobile, desktop)
+2. Qual nível WCAG necessário? (AA, AAA)
+3. Quais tecnologias assistivas priorizar?
+4. Quais requisitos legais aplicar?
+
+### 3. Auditoria Automatizada
+Use ferramentas integradas:
+- axe-core (testes automatizados)
+- WAVE (WebAIM)
+- Lighthouse accessibility
+- Color contrast checker
+
+### 4. Validação Manual
 Testes obrigatórios:
 - Navegação por teclado (Tab, Shift+Tab)
 - Leitores de tela (NVDA, VoiceOver)
 - Zoom do navegador (200%)
 - Modo alto contraste
+
+### 5. Geração de Relatório
+Use template estruturado:
+```
+generate_accessibility_report({
+  audit_results: audit_data,
+  wcag_level: "AA",
+  priority_matrix: "critical|high|medium|low"
+})
 ```
 
-### 3. Validação de Conteúdo
-```text
-Verifique:
-- Textos alternativos descritivos
-- Estrutura de cabeçalhos (h1-h6)
-- Links descritivos
-- Formulários com labels
-- Tabelas com captions
+### 6. Validação de Qualidade
+Aplique validação automática:
+```
+validate_accessibility_compliance({
+  wcag_compliance: 100,
+  keyboard_navigation: 100,
+  screen_reader_support: 100,
+  color_contrast: 100,
+  error_rate: 5
+})
 ```
 
-## 🚨 Guardrails Críticos
+## 🚀 Guardrails Críticos
 
 ### ❌ NUNCA Faça
-- **NUNCA** ignore navegação por teclado
-- **NUNCA** use apenas cor para传达信息
-- **NUNCA** pule textos alternativos
-- **NUNCA** use auto-playing sem controle
+- Ignore navegação por teclado
+- Use apenas cor para传达信息
+- Pule textos alternativos
+- Use auto-playing sem controle
 
 ### ✅ SEMPRE Faça
-- **SEMPRE** teste com leitores de tela
-- **SEMPRE** verifique contraste de cores
-- **SEMPRE** use semantic HTML
-- **SEMPRE** inclua focus indicators
+- Teste com leitores de tela
+- Verifique contraste de cores
+- Use semantic HTML
+- Inclua focus indicators
 
 ### 🔧 ARIA Guidelines
 ```html
@@ -105,136 +132,71 @@ Verifique:
 <nav role="navigation"> <!-- nav já tem role implícito -->
 ```
 
-## 📊 Métricas de Acessibilidade
-
-### Indicadores Obrigatórios
-- **WCAG Compliance:** 100% AA
-- **Keyboard Navigation:** 100% funcional
-- **Screen Reader Support:** 100% compatível
-- **Color Contrast:** 100% dentro dos limites
-- **Error Rate:** < 5% de issues críticos
-
-### Ferramentas de Teste
-```javascript
-// axe-core integration
-import { axe, toHaveNoViolations } from 'jest-axe';
-
-test('should be accessible', async () => {
-  render(<Component />);
-  const results = await axe(container);
-  expect(results).toHaveNoViolations();
-});
-```
-
 ## 🔄 Context Flow
 
-### Artefatos Obrigatórios para Iniciar
-Cole no início:
-1. Design system completo
-2. Componentes implementados
-3. Requisitos de compliance
-4. CONTEXTO.md com restrições
+### Inputs de Especialistas Anteriores
+- **UX Design:** Componentes e wireframes
+- **Desenvolvimento Frontend:** Código implementado
+- **Segurança:** Requisitos de compliance
 
-### Prompt de Continuação
-```
-Atue como Especialista em Acessibilidade.
+### Outputs para Próxima Fase
+- **Relatório de Acessibilidade:** Para stakeholders
+- **Backlog de Ajustes:** Para equipe de desenvolvimento
+- **Guidelines WCAG:** Para documentação técnica
 
-Contexto do projeto:
-[COLE docs/CONTEXTO.md]
+## 📊 Recursos Adicionais
 
-Design e componentes:
-[COLE DESIGN E COMPONENTES]
+### Templates Disponíveis
+- `resources/templates/checklist-acessibilidade.md` - Checklist completo WCAG
+- `resources/templates/relatorio-acessibilidade.md` - Template de relatório
+- `resources/templates/guia-wcag.md` - Guia de implementação
 
-Preciso auditar e garantir acessibilidade WCAG 2.1 AA.
-```
+### Exemplos Práticos
+- `resources/examples/accessibility-examples.md` - Input/output pairs
+- `resources/examples/aria-patterns.md` - Padrões ARIA
 
-### Ao Concluir Esta Fase
-1. **Execute auditoria** completa
-2. **Crie backlog** de ajustes
-3. **Implemente correções** críticas
-4. **Documente guidelines** de acessibilidade
-5. **Treine equipe** em práticas WCAG
-6. **Configure testes** automatizados
+### Validação Automatizada
+- `resources/checklists/accessibility-validation.md` - Checklist completo
+- Score mínimo: 80 pontos para avanço
 
-## 📋 Templates Prontos
+### Guias Técnicos
+- `resources/reference/wcag-guide.md` - Guia completo WCAG 2.1
+- `resources/reference/aria-guide.md` - Guia ARIA prático
+- `resources/reference/testing-guide.md` - Guia de testes
 
-### Checklist de Acessibilidade
-```markdown
-## Checklist WCAG 2.1 AA
+## 🔧 MCP Integration
 
-### Perceptível
-- [ ] Imagens têm alt text descritivo
-- [ ] Vídeos têm legendas
-- [ ] Áudio tem transcrição
-- [ ] Contraste de cores adequado
-- [ ] Texto redimensionável até 200%
+### Funções MCP Disponíveis
+1. **init_accessibility_audit()** - Inicia auditoria
+2. **run_accessibility_tests()** - Executa testes
+3. **generate_accessibility_report()** - Gera relatório
+4. **validate_wcag_compliance()** - Valida conformidade
+5. **create_accessibility_backlog()** - Cria backlog de ajustes
 
-### Operável
-- [ ] Todo conteúdo acessível por teclado
-- [ ] Foco visível e claro
-- [ ] Tempo suficiente para leitura
-- [ ] Não usa elementos que piscam
-- [ ] Navegação consistente
+### Execução via MCP
+Todas as funções são executadas externamente via MCP. A skill fornece:
+- Descrição dos processos de auditoria
+- Templates estruturados para relatórios
+- Critérios de validação WCAG
+- Exemplos práticos de implementação
 
-### Compreensível
-- [ ] Idioma da página identificado
-- [ ] Texto legível e compreensível
-- [ ] Funcionalidade previsível
-- [ ] Ajuda contextual disponível
-- [ ] Correção de erros clara
+## 📈 Métricas de Sucesso
 
-### Robusto
-- [ ] HTML semântico
-- [ ] ARIA usado corretamente
-- [ ] Compatível com tecnologias assistivas
-- [ ] Não quebra com zoom
-- [ ] Funciona em diferentes browsers
-```
+### Performance
+- Tempo total: < 90 minutos (vs 180 anterior)
+- Descoberta: 15 minutos
+- Auditoria: 45 minutos
+- Relatório: 30 minutos
 
-### Relatório de Acessibilidade
-```markdown
-# Relatório de Acessibilidade
+### Qualidade
+- Score mínimo: 80 pontos
+- WCAG Compliance: 100% AA
+- Test Coverage: 100% critérios
+- Validation: 100% automática
 
-## Resumo
-- **Score Geral:** 85/100
-- **Conformidade WCAG:** Parcialmente AA
-- **Issues Críticas:** 5
-- **Issues Moderadas:** 12
-- **Issues Leves:** 8
-
-## Issues Críticas
-1. **Contraste insuficiente** - Botão primário
-   - Local: Header, botão "Login"
-   - Contraste: 3.2:1 (mínimo 4.5:1)
-   - Prioridade: Alta
-
-2. **Foco não visível** - Links de navegação
-   - Local: Menu principal
-   - Issue: Focus outline removido
-   - Prioridade: Alta
-
-## Recomendações
-1. Corrigir contraste de cores imediatamente
-2. Implementar focus indicators visíveis
-3. Adicionar textos alternativos às imagens
-4. Melhorar estrutura semântica do HTML
-
-## Timeline
-- **Semana 1:** Correções críticas
-- **Semana 2:** Issues moderadas
-- **Semana 3:** Validação final
-```
-
-## 🔗 Skills complementares
-- `frontend-design`
-- `webapp-testing`
-- `ui-patterns`
-- `css-optimization`
-
-## 📂 Referências essenciais
-- **Especialista original:** `content/specialists/Especialista em Acessibilidade.md`
-- **Artefatos alvo:**
-  - Relatório de acessibilidade completo
-  - Backlog de ajustes prioritários
-  - Guia de implementação WCAG
-  - Testes automatizados de acessibilidade
+## 🎯 Ao Concluir (Score ≥ 80)
+1. **Auditoria concluída** com score WCAG
+2. **Backlog priorizado** criado
+3. **Guidelines WCAG** documentadas
+4. **Testes automatizados** configurados
+5. **CONTEXTO.md atualizado** com status de acessibilidade
